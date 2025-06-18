@@ -32,7 +32,6 @@ def login_view(request):
             if user.is_active:
                 login(request, user)
                 logger.info(f'User {username} logged in successfully')
-                messages.success(request, f'Welcome back, {user.username}!')
                 
                 # Redirect to next page if specified, otherwise dashboard
                 next_page = request.GET.get('next', 'dashboard')
