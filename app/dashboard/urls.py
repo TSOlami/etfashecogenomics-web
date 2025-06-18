@@ -16,6 +16,11 @@ urlpatterns = [
     path('batches/', views.batch_list_view, name='batch_list'),
     path('batches/<uuid:batch_id>/', views.batch_detail_view, name='batch_detail'),
     
+    # Statistical Analysis URLs
+    path('analysis/', views.statistical_analysis_view, name='statistical_analysis'),
+    path('analysis/run/', views.run_statistical_analysis, name='run_statistical_analysis'),
+    path('analysis/report/', views.generate_statistical_report, name='generate_statistical_report'),
+    
     # API endpoints (for future AJAX requests)
     path('api/environmental/', views.api_environmental_data, name='api_environmental'),
     path('api/genomic/', views.api_genomic_data, name='api_genomic'),

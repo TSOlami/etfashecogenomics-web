@@ -17,6 +17,7 @@ import logging
 import os
 import tempfile
 import uuid
+from datetime import datetime, timedelta
 
 from .models import (
     Location, PollutantType, EnvironmentalReading, 
@@ -24,6 +25,7 @@ from .models import (
 )
 from .forms import DataUploadForm, LocationForm, DataPreviewForm
 from .data_processor import DataProcessor, preview_data_file
+from .statistical_analysis import StatisticalAnalyzer, StatisticalReportGenerator
 
 # Get logger for this module
 logger = logging.getLogger('dashboard')
@@ -368,6 +370,129 @@ def batch_detail_view(request, batch_id):
         'stats': stats,
         'compliance_summary': compliance_summary
     })
+
+
+@login_required
+def statistical_analysis_view(request):
+    """Display statistical analysis interface and results"""
+    # Get user's data for filter options
+    pollutants = PollutantType.objects.filter(
+        readings__created_by=request.user
+    ).distinct().order_by('name')
+    
+    locations = Location.objects.filter(
+        created_by=request.user
+    ).order_by('name')
+    
+    batches = SampleBatch.objects.filter(
+        created_by=request.user
+    ).order_by('-sampling_date')
+    
+    context = {
+        'pollutants': pollutants,
+        'locations': locations,
+        'batches': batches,
+    }
+    
+    return render(request, 'dashboard/statistical_analysis.html', context)
+
+
+@login_required
+def run_statistical_analysis(request):
+    """Run statistical analysis based on user parameters"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST method required'})
+    
+    try:
+        data = json.loads(request.body)
+        analysis_type = data.get('analysis_type')
+        filters = data.get('filters', {})
+        
+        # Initialize analyzer
+        analyzer = StatisticalAnalyzer(request.user)
+        
+        # Convert filter IDs to objects
+        processed_filters = {}
+        if filters.get('pollutant_types'):
+            processed_filters['pollutant_types'] = PollutantType.objects.filter(
+                id__in=filters['pollutant_types']
+            )
+        if filters.get('locations'):
+            processed_filters['locations'] = Location.objects.filter(
+                id__in=filters['locations']
+            )
+        if filters.get('batches'):
+            processed_filters['batches'] = SampleBatch.objects.filter(
+                id__in=filters['batches']
+            )
+        if filters.get('date_from'):
+            processed_filters['date_from'] = datetime.fromisoformat(filters['date_from'])
+        if filters.get('date_to'):
+            processed_filters['date_to'] = datetime.fromisoformat(filters['date_to'])
+        
+        # Run appropriate analysis
+        if analysis_type == 'descriptive':
+            results = analyzer.descriptive_statistics(processed_filters)
+        
+        elif analysis_type == 't_test':
+            group1_filters = processed_filters.copy()
+            group2_filters = data.get('group2_filters', {})
+            # Process group2_filters similarly...
+            results = analyzer.t_test_analysis(group1_filters, group2_filters)
+        
+        elif analysis_type == 'anova':
+            group_filters_list = data.get('group_filters_list', [processed_filters])
+            results = analyzer.anova_analysis(group_filters_list)
+        
+        elif analysis_type == 'correlation':
+            results = analyzer.correlation_analysis(processed_filters)
+        
+        elif analysis_type == 'trend':
+            time_period = data.get('time_period', 'monthly')
+            results = analyzer.trend_analysis(processed_filters, time_period)
+        
+        elif analysis_type == 'compliance':
+            results = analyzer.compliance_analysis(processed_filters)
+        
+        elif analysis_type == 'multivariate':
+            results = analyzer.multivariate_analysis(processed_filters)
+        
+        else:
+            return JsonResponse({'error': 'Invalid analysis type'})
+        
+        return JsonResponse({
+            'success': True,
+            'results': results,
+            'analysis_type': analysis_type
+        })
+        
+    except Exception as e:
+        logger.error(f"Statistical analysis error: {str(e)}")
+        return JsonResponse({'error': str(e)})
+
+
+@login_required
+def generate_statistical_report(request):
+    """Generate comprehensive statistical report"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST method required'})
+    
+    try:
+        data = json.loads(request.body)
+        analysis_results = data.get('results', {})
+        
+        # Generate report
+        report_generator = StatisticalReportGenerator(analysis_results)
+        report = report_generator.generate_summary_report()
+        
+        return JsonResponse({
+            'success': True,
+            'report': report
+        })
+        
+    except Exception as e:
+        logger.error(f"Report generation error: {str(e)}")
+        return JsonResponse({'error': str(e)})
 
 
 def logout_view(request):
