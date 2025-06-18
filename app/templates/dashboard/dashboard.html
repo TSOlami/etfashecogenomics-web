@@ -7,44 +7,83 @@
 <div class="min-h-screen bg-gray-50">
     <!-- Header -->
     <header class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center space-x-4">
-                    <div class="etfash-logo">
+        <div class="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center py-3 sm:py-4 gap-3 sm:gap-0">
+                <div class="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto">
+                    <div class="etfash-logo flex-shrink-0">
                         <img src="{% static 'images/etfash-logo.jpeg' %}" alt="ETfash Environmental Services Logo" class="w-full h-full rounded-lg">
                     </div>
                     <div>
-                        <h1 class="text-xl font-bold brand-text">EcoGenomics Suite</h1>
-                        <p class="text-sm text-gray-600">Environmental & Genomic Analytics Platform</p>
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                            <span class="text-lg sm:text-xl md:text-2xl font-bold brand-text">EcoGenomics Suite</span>
+                            <span class="text-xs text-emerald-800">Professional Edition</span>
+                        </div>
+                        <p class="text-xs sm:text-sm text-gray-600">Environmental & Genomic Analytics Platform</p>
                     </div>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <span class="text-sm text-gray-700">Welcome, {{ user.username }}!</span>
-                    <a href="{% url 'logout' %}" class="text-sm text-red-600 hover:text-red-800 font-medium">Logout</a>
+                <div class="flex items-center space-x-3 sm:space-x-4 w-full sm:w-auto justify-between sm:justify-end">
+                    <div class="text-left sm:text-right">
+                        <span class="text-xs sm:text-sm text-gray-600">Welcome, <span class="font-medium text-emerald-700">{{ user.username }}</span></span>
+                        <p class="text-xs text-gray-500">EcoGenomics Suite User</p>
+                    </div>
+                    <a href="{% url 'logout' %}" class="text-xs sm:text-sm text-red-600 hover:text-red-800 transition-colors flex items-center">
+                        <i class="fas fa-sign-out-alt mr-1"></i><span class="hidden sm:inline">Logout</span>
+                    </a>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Tab Navigation -->
-        <div class="mb-8">
-            <nav class="flex space-x-8 border-b border-gray-200">
-                <button onclick="showTab('overview', event)" class="tab-btn py-4 px-1 border-b-2 font-medium text-sm active border-emerald-500 text-emerald-600 bg-emerald-50" data-tab="overview">
-                    <i class="fas fa-chart-line mr-2"></i>Overview
-                </button>
-                <button onclick="showTab('environmental', event)" class="tab-btn py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="environmental">
-                    <i class="fas fa-leaf mr-2"></i>Environmental Data
-                </button>
-                <button onclick="showTab('genomic', event)" class="tab-btn py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="genomic">
-                    <i class="fas fa-dna mr-2"></i>Genomic Analysis
-                </button>
-                <button onclick="showTab('biodiversity', event)" class="tab-btn py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="biodiversity">
-                    <i class="fas fa-map mr-2"></i>Biodiversity Map
-                </button>
-            </nav>
+    <!-- Navigation Tabs -->
+    <nav class="bg-white border-b border-gray-200 px-2 sm:px-4 md:px-6">
+        <div class="flex space-x-1 sm:space-x-4 md:space-x-8 overflow-x-auto">
+            <button onclick="showTab('overview', event)" class="tab-btn active py-3 sm:py-4 px-2 sm:px-4 border-b-2 border-emerald-500 text-emerald-600 font-medium whitespace-nowrap">
+                <i class="fas fa-tachometer-alt text-xl mr-1 sm:mr-2"></i><span class="hidden sm:inline">Dashboard </span>Overview
+            </button>
+            <button onclick="showTab('environmental', event)" class="tab-btn py-3 sm:py-4 px-2 sm:px-4 border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">
+                <i class="fas fa-globe text-xl mr-1 sm:mr-2"></i><span class="hidden sm:inline">Environmental </span>Monitoring
+            </button>
+            <button onclick="showTab('bioinformatics', event)" class="tab-btn py-3 sm:py-4 px-2 sm:px-4 border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">
+                <i class="fas fa-dna text-xl mr-1 sm:mr-2"></i><span class="hidden sm:inline">Genomic </span>Analytics
+            </button>
+            <button onclick="showTab('analytics', event)" class="tab-btn py-3 sm:py-4 px-2 sm:px-4 border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">
+                <i class="fas fa-chart-line text-xl mr-1 sm:mr-2"></i><span class="hidden sm:inline">Advanced </span>Analytics
+            </button>
+            <button onclick="showTab('reports', event)" class="tab-btn py-3 sm:py-4 px-2 sm:px-4 border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">
+                <i class="fas fa-file-alt text-xl mr-1 sm:mr-2"></i>Reports<span class="hidden sm:inline"> & Export</span>
+            </button>
         </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="container mx-auto px-4 py-6">
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message-container mb-4 p-4 rounded-md {% if message.tags == 'error' %}bg-red-50 border border-red-200{% elif message.tags == 'success' %}bg-green-50 border border-green-200{% else %}bg-blue-50 border border-blue-200{% endif %} relative">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            {% if message.tags == 'error' %}
+                                <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg>
+                            {% elif message.tags == 'success' %}
+                                <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                            {% else %}
+                                <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                </svg>
+                            {% endif %}
+                        </div>
+                        <div class="ml-3">
+                            <p class="{% if message.tags == 'error' %}text-red-800{% elif message.tags == 'success' %}text-green-800{% else %}text-blue-800{% endif %} text-sm">{{ message }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
 
         <!-- Tab Contents -->
         
@@ -119,8 +158,8 @@
             </div>
         </div>
 
-        <!-- Genomic Analysis Tab -->
-        <div id="genomic" class="tab-content" style="display: none;">
+        <!-- Bioinformatics Tab (Genomic Analysis) -->
+        <div id="bioinformatics" class="tab-content" style="display: none;">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                 <!-- Genomic Summary -->
                 <div class="bg-white rounded-lg card-shadow p-6">
@@ -171,37 +210,123 @@
             </div>
         </div>
 
-        <!-- Biodiversity Map Tab -->
-        <div id="biodiversity" class="tab-content" style="display: none;">
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content" style="display: none;">
             <div class="bg-white rounded-lg card-shadow p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-6">Biodiversity Heatmap</h3>
-                <p class="text-gray-600 mb-6">Interactive visualization of species diversity across different regions. Darker colors indicate higher biodiversity.</p>
+                <h3 class="text-lg font-semibold text-gray-900 mb-6">Advanced Analytics Dashboard</h3>
+                <p class="text-gray-600 mb-6">Comprehensive analysis tools for environmental and genomic data correlation.</p>
                 
-                <!-- Heatmap Container -->
-                <div class="flex justify-center mb-6">
-                    <div id="heatmap-container" class="grid grid-cols-7 gap-1 p-4 bg-gray-50 rounded-lg">
-                        <!-- Heatmap cells will be generated by JavaScript -->
+                <!-- Biodiversity Heatmap -->
+                <div class="mb-8">
+                    <h4 class="text-md font-semibold text-gray-800 mb-4">Biodiversity Heatmap</h4>
+                    <div class="flex justify-center mb-6">
+                        <div id="heatmap-container" class="grid grid-cols-7 gap-1 p-4 bg-gray-50 rounded-lg">
+                            <!-- Heatmap cells will be generated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="flex items-center justify-center space-x-4 text-sm text-gray-600">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-4 h-4 bg-blue-200 rounded"></div>
+                            <span>Low Diversity</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-4 h-4 bg-blue-400 rounded"></div>
+                            <span>Medium Diversity</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-4 h-4 bg-blue-600 rounded"></div>
+                            <span>High Diversity</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Legend -->
-                <div class="flex items-center justify-center space-x-4 text-sm text-gray-600">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-4 h-4 bg-blue-200 rounded"></div>
-                        <span>Low Diversity</span>
+                <!-- Analytics Summary -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="text-center p-6 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-lg">
+                        <div class="text-3xl font-bold text-emerald-600 mb-2">{{ genomic_data.total_samples }}</div>
+                        <div class="text-sm text-emerald-800">Total Samples Analyzed</div>
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <div class="w-4 h-4 bg-blue-400 rounded"></div>
-                        <span>Medium Diversity</span>
+                    <div class="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg">
+                        <div class="text-3xl font-bold text-blue-600 mb-2">{{ genomic_data.rare_species_count }}</div>
+                        <div class="text-sm text-blue-800">Rare Species Identified</div>
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <div class="w-4 h-4 bg-blue-600 rounded"></div>
-                        <span>High Diversity</span>
+                    <div class="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
+                        <div class="text-3xl font-bold text-purple-600 mb-2">{{ genomic_data.endemic_species }}</div>
+                        <div class="text-sm text-purple-800">Endemic Species</div>
                     </div>
                 </div>
             </div>
         </div>
-    </main>
+
+        <!-- Reports Tab -->
+        <div id="reports" class="tab-content" style="display: none;">
+            <div class="bg-white rounded-lg card-shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-6">Reports & Data Export</h3>
+                <p class="text-gray-600 mb-8">Generate comprehensive reports and export data for further analysis.</p>
+                
+                <!-- Report Generation Options -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="border border-gray-200 rounded-lg p-6">
+                        <h4 class="text-md font-semibold text-gray-800 mb-3">Environmental Report</h4>
+                        <p class="text-sm text-gray-600 mb-4">Comprehensive environmental monitoring data with trends and analysis.</p>
+                        <button class="w-full bg-emerald-600 text-white py-2 px-4 rounded-md hover:bg-emerald-700 transition-colors">
+                            <i class="fas fa-download mr-2"></i>Generate Report
+                        </button>
+                    </div>
+                    <div class="border border-gray-200 rounded-lg p-6">
+                        <h4 class="text-md font-semibold text-gray-800 mb-3">Genomic Analysis Report</h4>
+                        <p class="text-sm text-gray-600 mb-4">Detailed genomic analysis results including species diversity and genetic variants.</p>
+                        <button class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-download mr-2"></i>Generate Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Data Export Options -->
+                <div class="border-t border-gray-200 pt-6">
+                    <h4 class="text-md font-semibold text-gray-800 mb-4">Data Export Options</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <button class="flex items-center justify-center py-3 px-4 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-file-csv mr-2 text-green-600"></i>Export as CSV
+                        </button>
+                        <button class="flex items-center justify-center py-3 px-4 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-file-excel mr-2 text-green-600"></i>Export as Excel
+                        </button>
+                        <button class="flex items-center justify-center py-3 px-4 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-file-pdf mr-2 text-red-600"></i>Export as PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Reports -->
+                <div class="border-t border-gray-200 pt-6 mt-6">
+                    <h4 class="text-md font-semibold text-gray-800 mb-4">Recent Reports</h4>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between py-3 px-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <div class="font-medium text-gray-900">Environmental Analysis - December 2024</div>
+                                <div class="text-sm text-gray-600">Generated on {{ genomic_data.last_updated }}</div>
+                            </div>
+                            <button class="text-emerald-600 hover:text-emerald-800">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-between py-3 px-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <div class="font-medium text-gray-900">Genomic Diversity Report - November 2024</div>
+                                <div class="text-sm text-gray-600">Generated on 2024-11-28</div>
+                            </div>
+                            <button class="text-emerald-600 hover:text-emerald-800">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Chart Data Script -->
