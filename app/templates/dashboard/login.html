@@ -9,7 +9,7 @@
         <div>
             <div class="flex justify-center">
                 <div class="etfash-logo">
-                    <h1 class="text-2xl font-bold brand-text">ETFASH</h1>
+                    <h1 class="text-2xl font-bold text-white">ETFASH</h1>
                 </div>
             </div>
             <h2 class="mt-6 text-center text-3xl font-extrabold text-white">
@@ -25,8 +25,8 @@
             
             {% if messages %}
                 {% for message in messages %}
-                    <div class="mb-4 p-4 rounded-md bg-red-50 border border-red-200">
-                        <p class="text-red-800 text-sm">{{ message }}</p>
+                    <div class="mb-4 p-4 rounded-md {% if message.tags == 'error' %}bg-red-50 border border-red-200{% elif message.tags == 'success' %}bg-green-50 border border-green-200{% else %}bg-blue-50 border border-blue-200{% endif %}">
+                        <p class="{% if message.tags == 'error' %}text-red-800{% elif message.tags == 'success' %}text-green-800{% else %}text-blue-800{% endif %} text-sm">{{ message }}</p>
                     </div>
                 {% endfor %}
             {% endif %}
@@ -40,7 +40,8 @@
                     <div class="mt-1">
                         <input id="username" name="username" type="text" required 
                                class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-eco-green focus:border-eco-green focus:z-10 sm:text-sm"
-                               placeholder="Enter your username">
+                               placeholder="Enter your username"
+                               value="{{ request.POST.username|default:'' }}">
                     </div>
                 </div>
                 
@@ -74,6 +75,11 @@
                 <div>
                     <button type="submit" 
                             class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white eco-button focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-eco-green">
+                        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                            <svg class="h-5 w-5 text-white group-hover:text-gray-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
                         Sign In
                     </button>
                 </div>
@@ -89,9 +95,23 @@
             </form>
             
             <div class="mt-6 border-t border-gray-200 pt-6">
-                <p class="text-xs text-gray-500 text-center">
-                    <strong>Demo Mode:</strong> Use any username and password to login
-                </p>
+                <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-blue-800">
+                                Demo Mode Active
+                            </h3>
+                            <div class="mt-2 text-sm text-blue-700">
+                                <p>You can use any username and password to login, or create a new account. Demo accounts are automatically created for testing purposes.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
