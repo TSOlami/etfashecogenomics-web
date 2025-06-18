@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: etfash-ecogenomics
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: cd app && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn ecogenomics.wsgi:application
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.3
+      - key: DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4
+      - key: DEBUG
+        value: false
