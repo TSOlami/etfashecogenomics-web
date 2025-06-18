@@ -39,9 +39,10 @@
 <body class="bg-gray-50">
     {% block content %}
     {% endblock %}
-      <!-- Custom JavaScript -->
+    
+    <!-- Custom JavaScript - Load main.js only -->
     <script src="{% load static %}{% static 'js/main.js' %}"></script>
-    <script src="{% load static %}{% static 'js/dashboard.js' %}"></script>
+    
     {% block extra_js %}
     {% endblock %}
 </body>

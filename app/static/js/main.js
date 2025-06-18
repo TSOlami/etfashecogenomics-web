@@ -505,3 +505,16 @@ function getStatusColor(status) {
     };
     return statusColors[status.toLowerCase()] || 'text-gray-600';
 }
+
+// Simple test function for debugging
+function testTabSwitching() {
+    console.log('Testing tab switching...');
+    const tabs = ['overview', 'environmental', 'bioinformatics', 'analytics', 'reports'];
+    
+    tabs.forEach((tab, index) => {
+        setTimeout(() => {
+            console.log(`Testing tab: ${tab}`);
+            showTab(tab);
+        }, index * 1000);
+    });
+}
