@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(initializeCharts, 100);
 });
 
-// Tab functionality - matches demo behavior
+// Tab functionality - matches your dashboard design
 function showTab(tabName, event) {
     // Get all tab buttons and content sections
     const tabButtons = document.querySelectorAll('.tab-btn');
@@ -20,7 +20,7 @@ function showTab(tabName, event) {
     tabButtons.forEach(btn => {
         btn.classList.remove('active');
         btn.classList.remove('border-emerald-500', 'text-emerald-600', 'bg-emerald-50');
-        btn.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+        btn.classList.add('border-transparent', 'text-gray-500');
     });
 
     tabContents.forEach(content => {
@@ -33,16 +33,15 @@ function showTab(tabName, event) {
     if (event) {
         currentButton = event.currentTarget;
     } else {
-        // Find button by data-tab attribute or onclick content
-        currentButton = document.querySelector(`[data-tab="${tabName}"]`) || 
-                      document.querySelector(`[onclick*="'${tabName}'"]`);
+        // Find button by onclick content for initial load
+        currentButton = document.querySelector(`[onclick*="'${tabName}'"]`);
     }
 
     // Add active class to clicked button
     if (currentButton) {
         currentButton.classList.add('active');
-        currentButton.classList.add('border-emerald-500', 'text-emerald-600', 'bg-emerald-50');
-        currentButton.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+        currentButton.classList.add('border-emerald-500', 'text-emerald-600');
+        currentButton.classList.remove('border-transparent', 'text-gray-500');
     }
 
     // Show selected tab content
@@ -56,9 +55,9 @@ function showTab(tabName, event) {
     setTimeout(() => {
         if (tabName === 'overview') {
             initializeOverviewCharts();
-        } else if (tabName === 'genomic') {
+        } else if (tabName === 'bioinformatics') {
             initializeGenomicCharts();
-        } else if (tabName === 'biodiversity') {
+        } else if (tabName === 'analytics') {
             initializeHeatmap();
         }
     }, 100);
@@ -253,7 +252,7 @@ function initializeGenomicCharts() {
     }
 }
 
-// Initialize heatmap
+// Initialize heatmap for analytics tab
 function initializeHeatmap() {
     const heatmapContainer = document.getElementById('heatmap-container');
     if (heatmapContainer && typeof heatmapData !== 'undefined') {
