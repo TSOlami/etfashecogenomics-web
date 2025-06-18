@@ -1,0 +1,1019 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ETfash Environmental Services - Advanced environmental monitoring and genomic analysis platform for comprehensive ecological insights">
+    <meta name="keywords" content="environmental monitoring, genomic analytics, ETfash, bioinformatics, ecological research, environmental services">
+    <meta name="author" content="ETfash Environmental Services">
+    <title>ETfash Ecogenomics Suite - Environmental & Genomic Analytics Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50">
+
+<!-- Login Section -->
+<div id="loginSection" class="min-h-screen flex items-center justify-center gradient-bg p-4">
+    <div class="bg-white p-4 sm:p-6 md:p-8 rounded-xl card-shadow w-full max-w-md mx-4">
+        <div class="text-center mb-6 sm:mb-8">
+            <div class="etfash-logo mx-auto mb-4">
+                <img src="assets/images/etfash-logo.jpeg" alt="ETfash Environmental Services Logo" class="w-full h-full rounded-lg">
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-bold brand-text mb-2">EcoGenomics Suite</h2>
+            <p class="text-gray-600 text-sm sm:text-base mb-1">Environmental & Genomic Analytics Platform</p>
+            <p class="text-xs sm:text-sm text-gray-500">Advanced environmental monitoring with molecular insights</p>
+        </div>
+        
+        <form id="loginForm" class="space-y-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Username</label>
+                <input type="text" id="username" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500" placeholder="Enter any username">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" id="password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500" placeholder="Enter any password">
+            </div>
+            
+            <button type="button" onclick="login()" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white eco-button focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
+                Access EcoGenomics Suite
+            </button>
+        </form>
+        
+        <div class="mt-6 p-4 bg-emerald-50 rounded-lg border border-emerald-200">
+            <h3 class="text-sm font-medium text-emerald-800 mb-2">Demo Access Credentials:</h3>
+            <p class="text-xs text-emerald-700">Researcher: researcher | demo123</p>
+            <p class="text-xs text-emerald-700">Administrator: admin | admin123</p>
+            <p class="text-xs text-emerald-600 mt-1">Or use any username/password combination</p>
+        </div>
+    </div>
+</div>
+
+<!-- Main Dashboard -->
+<div id="mainDashboard" class="hidden">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="px-4 sm:px-6 py-4">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="flex items-center space-x-3 sm:space-x-4">
+                    <div class="etfash-logo flex-shrink-0">
+                        <img src="assets/images/etfash-logo.jpeg" alt="ETfash Environmental Services Logo" class="w-full h-full rounded-lg">
+                    </div>
+                    <div>
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                            <span class="text-lg sm:text-xl md:text-2xl font-bold brand-text">EcoGenomics Suite</span>
+                            <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-1 rounded-full w-fit">Professional Edition</span>
+                        </div>
+                        <p class="text-xs sm:text-sm text-gray-600">Environmental & Genomic Analytics Platform</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3 sm:space-x-4 w-full sm:w-auto justify-between sm:justify-end">
+                    <div class="text-left sm:text-right">
+                        <span class="text-xs sm:text-sm text-gray-600">Welcome, <span id="currentUser" class="font-medium text-emerald-700">Researcher</span></span>
+                        <p class="text-xs text-gray-500">EcoGenomics Suite User</p>
+                    </div>
+                    <button onclick="logout()" class="text-xs sm:text-sm text-red-600 hover:text-red-800 transition-colors flex items-center">
+                        <i class="fas fa-sign-out-alt mr-1"></i><span class="hidden sm:inline">Logout</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="bg-white border-b border-gray-200 px-2 sm:px-4 md:px-6">
+        <div class="flex space-x-1 sm:space-x-4 md:space-x-8 overflow-x-auto">
+            <button onclick="showTab('overview', event)" class="tab-btn active py-3 sm:py-4 px-2 sm:px-4 border-b-2 border-emerald-500 text-emerald-600 font-medium whitespace-nowrap">
+                <i class="fas fa-tachometer-alt mr-1 sm:mr-2"></i><span class="hidden sm:inline">Dashboard </span>Overview
+            </button>
+            <button onclick="showTab('environmental', event)" class="tab-btn py-3 sm:py-4 px-2 sm:px-4 border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">
+                <i class="fas fa-globe mr-1 sm:mr-2"></i><span class="hidden sm:inline">Environmental </span>Monitoring
+            </button>
+            <button onclick="showTab('bioinformatics', event)" class="tab-btn py-3 sm:py-4 px-2 sm:px-4 border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">
+                <i class="fas fa-dna mr-1 sm:mr-2"></i><span class="hidden sm:inline">Genomic </span>Analytics
+            </button>
+            <button onclick="showTab('analytics', event)" class="tab-btn py-3 sm:py-4 px-2 sm:px-4 border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">
+                <i class="fas fa-chart-line mr-1 sm:mr-2"></i><span class="hidden sm:inline">Advanced </span>Analytics
+            </button>
+            <button onclick="showTab('reports', event)" class="tab-btn py-3 sm:py-4 px-2 sm:px-4 border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">
+                <i class="fas fa-file-alt mr-1 sm:mr-2"></i>Reports<span class="hidden sm:inline"> & Export</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Overview Tab -->
+    <div id="overviewTab" class="tab-content p-4 sm:p-6">
+        <!-- EcoGenomics Suite Branding Header -->
+        <div class="bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 mb-3">
+                        <div class="etfash-logo bg-white bg-opacity-20 flex-shrink-0">
+                            <img src="assets/images/etfash-logo.jpeg" alt="ETfash Environmental Services Logo" class="w-full h-full rounded-lg">
+                        </div>
+                        <div>
+                            <h3 class="text-2xl sm:text-3xl font-bold brand-text">EcoGenomics Suite Dashboard</h3>
+                        </div>
+                    </div>
+                    <p class="text-emerald-100 text-sm sm:text-base">Comprehensive environmental monitoring with molecular insights</p>
+                    <p class="text-xs sm:text-sm text-emerald-200 mt-1">Real-time data • Genomic analysis • Regulatory compliance</p>
+                </div>
+                <div class="text-center sm:text-right">
+                    <div class="text-2xl sm:text-3xl font-bold text-emerald-200">24/7</div>
+                    <div class="text-xs sm:text-sm text-emerald-200">Monitoring Active</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+            <!-- KPI Cards -->
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 border-l-4 border-l-red-500">
+                <div class="flex items-center">
+                    <div class="p-2 sm:p-3 rounded-full bg-red-100 text-red-600 flex-shrink-0">
+                        <i class="fas fa-wind text-lg sm:text-xl"></i>
+                    </div>
+                    <div class="ml-3 sm:ml-4 min-w-0">
+                        <p class="text-xs sm:text-sm font-medium text-gray-600 truncate">Air Quality Index</p>
+                        <p class="text-xl sm:text-2xl font-bold text-gray-900">156</p>
+                        <p class="text-xs sm:text-sm text-red-600 font-medium">Unhealthy</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 border-l-4 border-l-emerald-500">
+                <div class="flex items-center">
+                    <div class="p-2 sm:p-3 rounded-full bg-emerald-100 text-emerald-600 flex-shrink-0">
+                        <i class="fas fa-tint text-lg sm:text-xl"></i>
+                    </div>
+                    <div class="ml-3 sm:ml-4 min-w-0">
+                        <p class="text-xs sm:text-sm font-medium text-gray-600 truncate">Water Quality</p>
+                        <p class="text-xl sm:text-2xl font-bold text-gray-900">78%</p>
+                        <p class="text-xs sm:text-sm text-emerald-600 font-medium">Good</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 border-l-4 border-l-yellow-500">
+                <div class="flex items-center">
+                    <div class="p-2 sm:p-3 rounded-full bg-yellow-100 text-yellow-600 flex-shrink-0">
+                        <i class="fas fa-seedling text-lg sm:text-xl"></i>
+                    </div>
+                    <div class="ml-3 sm:ml-4 min-w-0">
+                        <p class="text-xs sm:text-sm font-medium text-gray-600 truncate">Soil Health</p>
+                        <p class="text-xl sm:text-2xl font-bold text-gray-900">68%</p>
+                        <p class="text-xs sm:text-sm text-yellow-600 font-medium">Moderate</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 border-l-4 border-l-purple-500">
+                <div class="flex items-center">
+                    <div class="p-2 sm:p-3 rounded-full bg-purple-100 text-purple-600 flex-shrink-0">
+                        <i class="fas fa-dna text-lg sm:text-xl"></i>
+                    </div>
+                    <div class="ml-3 sm:ml-4 min-w-0">
+                        <p class="text-xs sm:text-sm font-medium text-gray-600 truncate">Genomic Studies</p>
+                        <p class="text-xl sm:text-2xl font-bold text-gray-900">247</p>
+                        <p class="text-xs sm:text-sm text-purple-600 font-medium">Active</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
+                <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-chart-line text-emerald-600 mr-2"></i>
+                    <span class="truncate">Environmental Trends</span>
+                </h3>
+                <div class="chart-container">
+                    <canvas id="airQualityChart"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
+                <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-fire text-cyan-600 mr-2"></i>
+                    <span class="truncate">Gene Expression Heatmap</span>
+                </h3>
+                <div id="geneHeatmap" class="grid grid-cols-5 gap-1 h-48 sm:h-64">
+                    <!-- Gene expression heatmap cells -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Environmental Monitoring Tab -->
+    <div id="environmentalTab" class="tab-content hidden p-4 sm:p-6">
+        <div class="mb-4 sm:mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold brand-text mb-2">Environmental Monitoring</h2>
+            <p class="text-sm sm:text-base text-gray-600">Comprehensive air, water, soil, and biological parameter monitoring</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <!-- Air Quality Monitoring -->
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
+                <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
+                    <i class="fas fa-wind text-blue-600 mr-2"></i>Air Quality Parameters
+                </h3>
+                <div class="space-y-2 sm:space-y-4">
+                    <div class="flex justify-between items-center tooltip p-2 rounded hover:bg-gray-50">
+                        <span class="text-xs sm:text-sm text-gray-600">PM1.0</span>
+                        <span class="font-semibold text-emerald-600 text-xs sm:text-sm">15.2 µg/m³</span>
+                        <span class="tooltiptext">Ultra-fine particles less than 1.0 micrometers</span>
+                    </div>
+                    <div class="flex justify-between items-center tooltip p-2 rounded hover:bg-gray-50">
+                        <span class="text-xs sm:text-sm text-gray-600">PM2.5</span>
+                        <span class="font-semibold text-red-600 text-xs sm:text-sm">45.7 µg/m³</span>
+                        <span class="tooltiptext">Fine particles less than 2.5 micrometers - Exceeds WHO limit</span>
+                    </div>
+                    <div class="flex justify-between items-center tooltip p-2 rounded hover:bg-gray-50">
+                        <span class="text-xs sm:text-sm text-gray-600">PM10</span>
+                        <span class="font-semibold text-yellow-600 text-xs sm:text-sm">78.3 µg/m³</span>
+                        <span class="tooltiptext">Coarse particles less than 10 micrometers</span>
+                    </div>
+                    <div class="flex justify-between items-center tooltip p-2 rounded hover:bg-gray-50">
+                        <span class="text-xs sm:text-sm text-gray-600">HCHO</span>
+                        <span class="font-semibold text-emerald-600 text-xs sm:text-sm">25.1 µg/m³</span>
+                        <span class="tooltiptext">Formaldehyde concentration</span>
+                    </div>
+                    <div class="flex justify-between items-center tooltip p-2 rounded hover:bg-gray-50">
+                        <span class="text-xs sm:text-sm text-gray-600">TVOC</span>
+                        <span class="font-semibold text-emerald-600 text-xs sm:text-sm">180.5 µg/m³</span>
+                        <span class="tooltiptext">Total Volatile Organic Compounds</span>
+                    </div>
+                    <div class="flex justify-between items-center tooltip p-2 rounded hover:bg-gray-50">
+                        <span class="text-xs sm:text-sm text-gray-600">SO₂</span>
+                        <span class="font-semibold text-emerald-600 text-xs sm:text-sm">18.4 µg/m³</span>
+                        <span class="tooltiptext">Sulfur Dioxide</span>
+                    </div>
+                    <div class="flex justify-between items-center tooltip p-2 rounded hover:bg-gray-50">
+                        <span class="text-xs sm:text-sm text-gray-600">NO₂</span>
+                        <span class="font-semibold text-emerald-600 text-xs sm:text-sm">35.8 µg/m³</span>
+                        <span class="tooltiptext">Nitrogen Dioxide</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Water Quality -->
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
+                <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
+                    <i class="fas fa-tint text-cyan-600 mr-2"></i>Water Quality Parameters
+                </h3>
+                <div class="space-y-2 sm:space-y-4">
+                    <div class="flex justify-between items-center tooltip p-2 rounded hover:bg-gray-50">
+                        <span class="text-xs sm:text-sm text-gray-600">BOD</span>
+                        <span class="font-semibold text-emerald-600 text-xs sm:text-sm">3.2 mg/L</span>
+                        <span class="tooltiptext">Biochemical Oxygen Demand</span>
+                    </div>
+                    <div class="flex justify-between items-center tooltip p-2 rounded hover:bg-gray-50">
+                        <span class="text-xs sm:text-sm text-gray-600">Dissolved Oxygen</span>
+                        <span class="font-semibold text-emerald-600 text-xs sm:text-sm">7.8 mg/L</span>
+                        <span class="tooltiptext">Dissolved Oxygen - Good level</span>
+                    </div>
+                    <div class="flex justify-between items-center tooltip p-2 rounded hover:bg-gray-50">
+                        <span class="text-xs sm:text-sm text-gray-600">Turbidity</span>
+                        <span class="font-semibold text-emerald-600 text-xs sm:text-sm">2.1 NTU</span>
+                        <span class="tooltiptext">Water clarity measurement</span>
+                    </div>
+                    <div class="flex justify-between items-center tooltip p-2 rounded hover:bg-gray-50">
+                        <span class="text-xs sm:text-sm text-gray-600">pH</span>
+                        <span class="font-semibold text-emerald-600 text-xs sm:text-sm">7.2</span>
+                        <span class="tooltiptext">Acidity/Alkalinity level</span>
+                    </div>
+                    <div class="flex justify-between items-center tooltip p-2 rounded hover:bg-gray-50">
+                        <span class="text-xs sm:text-sm text-gray-600">COD</span>
+                        <span class="font-semibold text-emerald-600 text-xs sm:text-sm">15.6 mg/L</span>
+                        <span class="tooltiptext">Chemical Oxygen Demand</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Heavy Metals Multi-Matrix -->
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 md:col-span-2 lg:col-span-1">
+                <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
+                    <i class="fas fa-atom text-purple-600 mr-2"></i>Heavy Metals (Multi-Matrix)
+                </h3>
+                <div class="space-y-3">
+                    <div class="text-xs font-bold text-gray-500 uppercase tracking-wide">Soil (mg/kg)</div>
+                    <div class="grid grid-cols-2 gap-2 text-xs sm:text-sm">
+                        <span class="tooltip p-1 rounded hover:bg-gray-50">Pb: <span class="font-semibold text-red-600">95.4</span><span class="tooltiptext">Lead - Exceeds WHO limit (85 mg/kg)</span></span>
+                        <span class="tooltip p-1 rounded hover:bg-gray-50">Zn: <span class="font-semibold text-emerald-600">285.3</span><span class="tooltiptext">Zinc - Within limits</span></span>
+                        <span class="tooltip p-1 rounded hover:bg-gray-50">Cd: <span class="font-semibold text-emerald-600">2.1</span><span class="tooltiptext">Cadmium - Safe level</span></span>
+                        <span class="tooltip p-1 rounded hover:bg-gray-50">Cr: <span class="font-semibold text-emerald-600">78.7</span><span class="tooltiptext">Chromium - Acceptable</span></span>
+                        <span class="tooltip p-1 rounded hover:bg-gray-50">Hg: <span class="font-semibold text-red-600">2.1</span><span class="tooltiptext">Mercury - Exceeds WHO limit</span></span>
+                        <span class="tooltip p-1 rounded hover:bg-gray-50">Cu: <span class="font-semibold text-yellow-600">168.4</span><span class="tooltiptext">Copper - Elevated but acceptable</span></span>
+                    </div>
+                    
+                    <div class="text-xs font-bold text-gray-500 uppercase tracking-wide">Water (mg/L)</div>
+                    <div class="grid grid-cols-2 gap-2 text-xs sm:text-sm">
+                        <span class="tooltip p-1 rounded hover:bg-gray-50">Pb: <span class="font-semibold text-emerald-600">0.008</span><span class="tooltiptext">Lead in water - Safe</span></span>
+                        <span class="tooltip p-1 rounded hover:bg-gray-50">Zn: <span class="font-semibold text-emerald-600">1.2</span><span class="tooltiptext">Zinc in water - Normal</span></span>
+                        <span class="tooltip p-1 rounded hover:bg-gray-50">Cd: <span class="font-semibold text-emerald-600">0.001</span><span class="tooltiptext">Cadmium in water - Safe</span></span>
+                        <span class="tooltip p-1 rounded hover:bg-gray-50">Hg: <span class="font-semibold text-yellow-600">0.004</span><span class="tooltiptext">Mercury in water - Slightly elevated</span></span>
+                    </div>
+                    
+                    <div class="text-xs font-bold text-gray-500 uppercase tracking-wide">Plant Tissue (mg/kg dry wt)</div>
+                    <div class="grid grid-cols-2 gap-2 text-xs sm:text-sm">
+                        <span class="tooltip p-1 rounded hover:bg-gray-50">Pb: <span class="font-semibold text-red-600">0.8</span><span class="tooltiptext">Lead bioaccumulation - Concerning</span></span>
+                        <span class="tooltip p-1 rounded hover:bg-gray-50">Zn: <span class="font-semibold text-emerald-600">45.2</span><span class="tooltiptext">Zinc in plants - Normal</span></span>
+                        <span class="tooltip p-1 rounded hover:bg-gray-50">Cd: <span class="font-semibold text-yellow-600">0.15</span><span class="tooltiptext">Cadmium uptake - Monitor</span></span>
+                        <span class="tooltip p-1 rounded hover:bg-gray-50">Cu: <span class="font-semibold text-emerald-600">12.3</span><span class="tooltiptext">Copper in plants - Acceptable</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Soil and Plant Health -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+            <div class="bg-white rounded-xl card-shadow p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">
+                    <i class="fas fa-seedling text-emerald-600 mr-2"></i>Soil Analysis
+                </h3>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Soil pH</span>
+                        <span class="font-semibold text-yellow-600">5.8</span>
+                        <span class="text-xs text-yellow-600">Slightly Acidic</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div class="bg-gradient-to-r from-yellow-400 to-yellow-600 h-3 rounded-full" style="width: 58%"></div>
+                    </div>
+                    <div class="text-xs text-gray-500">Optimal range: 6.0-7.5</div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl card-shadow p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">
+                    <i class="fas fa-leaf text-emerald-600 mr-2"></i>Plant Health Indicators
+                </h3>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Chlorophyll Content</span>
+                        <span class="font-semibold text-yellow-600">28.5 SPAD</span>
+                        <span class="text-xs text-yellow-600">Stress Detected</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div class="p-2 bg-red-50 rounded">
+                            <span class="text-gray-600">rbcL Expression:</span>
+                            <span class="font-semibold text-red-600">2.1x ↓</span>
+                        </div>
+                        <div class="p-2 bg-red-50 rounded">
+                            <span class="text-gray-600">HSP70 Expression:</span>
+                            <span class="font-semibold text-red-600">3.8x ↑</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Entry Section -->
+        <div class="bg-white rounded-xl card-shadow p-6 mt-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">
+                <i class="fas fa-upload text-emerald-600 mr-2"></i>EcoGenomics Data Upload
+            </h3>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="border-2 border-dashed border-emerald-300 rounded-xl p-6 text-center bg-emerald-50">
+                    <i class="fas fa-cloud-upload-alt text-4xl text-emerald-500 mb-4"></i>
+                    <p class="text-gray-600 mb-2 font-medium">Environmental Data Files</p>
+                    <p class="text-sm text-gray-500 mb-4">CSV, Excel, or Text files</p>
+                    <button class="eco-button text-white px-6 py-2 rounded-lg hover:bg-emerald-700">Browse Files</button>
+                </div>
+                
+                <div class="border-2 border-dashed border-cyan-300 rounded-xl p-6 text-center bg-cyan-50">
+                    <i class="fas fa-dna text-4xl text-cyan-500 mb-4"></i>
+                    <p class="text-gray-600 mb-2 font-medium">Genomic Sequence Files</p>
+                    <p class="text-sm text-gray-500 mb-4">FASTA, GenBank, EMBL, CLUSTAL</p>
+                    <button class="bg-gradient-to-r from-cyan-500 to-cyan-600 text-white px-6 py-2 rounded-lg hover:from-cyan-600 hover:to-cyan-700">Upload Sequences</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bioinformatics Tab -->
+    <div id="bioinformaticsTab" class="tab-content hidden p-4 sm:p-6">
+        <div class="mb-4 sm:mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold brand-text mb-2">Genomic Analytics Suite</h2>
+            <p class="text-sm sm:text-base text-gray-600">Advanced bioinformatics tools for genomic and proteomic analysis</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <!-- Database Integration -->
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
+                <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
+                    <i class="fas fa-database text-blue-600 mr-2"></i>Database Integration
+                </h3>
+                <div class="space-y-3 sm:space-y-4">
+                    <div class="flex items-center justify-between p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                        <div class="flex items-center min-w-0">
+                            <i class="fas fa-check-circle text-emerald-600 mr-2 flex-shrink-0"></i>
+                            <span class="font-medium text-sm sm:text-base truncate">NCBI Database</span>
+                        </div>
+                        <span class="text-xs sm:text-sm text-emerald-600 font-medium whitespace-nowrap ml-2">Connected</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                        <div class="flex items-center min-w-0">
+                            <i class="fas fa-check-circle text-emerald-600 mr-2 flex-shrink-0"></i>
+                            <span class="font-medium text-sm sm:text-base truncate">UniProt Database</span>
+                        </div>
+                        <span class="text-xs sm:text-sm text-emerald-600 font-medium whitespace-nowrap ml-2">Connected</span>
+                    </div>
+                    <div class="p-3 border border-gray-200 rounded-lg">
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Search Gene/Protein</label>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input type="text" placeholder="Enter gene symbol" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg sm:rounded-l-lg sm:rounded-r-none focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 text-sm">
+                            <button class="px-4 py-2 eco-button text-white rounded-lg sm:rounded-l-none sm:rounded-r-lg text-sm">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Primer Design -->
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
+                <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
+                    <i class="fas fa-cut text-purple-600 mr-2"></i>Enhanced Primer Design
+                </h3>
+                <div class="space-y-3 sm:space-y-4">
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Organism</label>
+                        <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 text-sm">
+                            <option>Arabidopsis thaliana</option>
+                            <option>Oryza sativa (Rice)</option>
+                            <option>Zea mays (Maize)</option>
+                            <option>Homo sapiens</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Reference Genome Accession</label>
+                        <input type="text" placeholder="GCF_000001735.4" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Target Gene</label>
+                        <input type="text" placeholder="rbcL" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 text-sm">
+                    </div>
+                    <button class="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-3 rounded-lg hover:from-purple-700 hover:to-purple-800 font-medium text-sm">Design Primers with BLAST Validation</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sequence Analysis Tools -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-4 sm:mt-6">
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
+                <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
+                    <i class="fas fa-align-left text-emerald-600 mr-2"></i>Sequence Alignment
+                </h3>
+                <div class="space-y-2 sm:space-y-3">
+                    <button class="w-full eco-button text-white py-2 rounded-lg font-medium text-sm">Pairwise Alignment</button>
+                    <button class="w-full eco-button text-white py-2 rounded-lg font-medium text-sm">Multiple Alignment</button>
+                    <button class="w-full eco-button text-white py-2 rounded-lg font-medium text-sm">Phylogenetic Analysis</button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
+                <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
+                    <i class="fas fa-exchange-alt text-orange-600 mr-2"></i>DNA Translation
+                </h3>
+                <div class="space-y-2 sm:space-y-3">
+                    <button class="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-2 rounded-lg hover:from-orange-600 hover:to-orange-700 font-medium text-sm">6-Frame Translation</button>
+                    <button class="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-2 rounded-lg hover:from-orange-600 hover:to-orange-700 font-medium text-sm">ORF Detection</button>
+                    <button class="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-2 rounded-lg hover:from-orange-600 hover:to-orange-700 font-medium text-sm">Codon Usage</button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 md:col-span-2 lg:col-span-1">
+                <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
+                    <i class="fas fa-cube text-red-600 mr-2"></i>Structure Modeling
+                </h3>
+                <div class="space-y-2 sm:space-y-3">
+                    <button class="w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-2 rounded-lg hover:from-red-600 hover:to-red-700 font-medium text-sm">Protein Modeling</button>
+                    <button class="w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-2 rounded-lg hover:from-red-600 hover:to-red-700 font-medium text-sm">Model Comparison</button>
+                    <button class="w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-2 rounded-lg hover:from-red-600 hover:to-red-700 font-medium text-sm">Mutation Analysis</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom Gene/Protein Panels -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mt-4 sm:mt-6">
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
+                <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
+                    <i class="fas fa-dna text-blue-600 mr-2"></i>Custom Gene Panels
+                </h3>
+                <div class="space-y-3 sm:space-y-4">
+                    <div class="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                        <h4 class="font-medium text-blue-800 text-sm sm:text-base">Stress Response Panel</h4>
+                        <div class="text-xs sm:text-sm text-blue-600 mt-1">rbcL, HSP70, WRKY5, SUT1</div>
+                    </div>
+                    <div class="p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                        <h4 class="font-medium text-emerald-800 text-sm sm:text-base">Heavy Metal Response</h4>
+                        <div class="text-xs sm:text-sm text-emerald-600 mt-1">MT1, MT2, HMA4, ZIP1</div>
+                    </div>
+                    <button class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2 rounded-lg hover:from-blue-600 hover:to-blue-700 font-medium text-sm">Add Custom Gene</button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
+                <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
+                    <i class="fas fa-atom text-purple-600 mr-2"></i>Custom Protein Panels
+                </h3>
+                <div class="space-y-3 sm:space-y-4">
+                    <div class="p-3 bg-purple-50 rounded-lg border border-purple-200">
+                        <h4 class="font-medium text-purple-800 text-sm sm:text-base">Antioxidant Enzymes</h4>
+                        <div class="text-xs sm:text-sm text-purple-600 mt-1">SOD, CAT, POX, APX</div>
+                    </div>
+                    <div class="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                        <h4 class="font-medium text-yellow-800 text-sm sm:text-base">Photosystem Proteins</h4>
+                        <div class="text-xs sm:text-sm text-yellow-600 mt-1">RuBisCO, PsaA, PsbA</div>
+                    </div>
+                    <button class="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white py-2 rounded-lg hover:from-purple-600 hover:to-purple-700 font-medium text-sm">Add Custom Protein</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Tab -->
+    <div id="analyticsTab" class="tab-content hidden p-4 sm:p-6">
+        <div class="mb-4 sm:mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold brand-text mb-2">Advanced Analytics</h2>
+            <p class="text-sm sm:text-base text-gray-600">Comprehensive data analysis and visualization tools</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <!-- Interactive Charts -->
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
+                <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
+                    <span class="truncate">Water Quality Trends</span>
+                </h3>
+                <div class="chart-container">
+                    <canvas id="waterQualityChart"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
+                <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
+                    <span class="truncate">Heavy Metals Distribution</span>
+                </h3>
+                <div class="chart-container">
+                    <canvas id="heavyMetalsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Correlation Analysis -->
+        <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 mt-4 sm:mt-6">
+            <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
+                <i class="fas fa-project-diagram text-emerald-600 mr-2"></i>Cross-Parameter Correlation Analysis
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                <div class="p-3 sm:p-4 bg-red-50 rounded-lg border border-red-200">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs sm:text-sm font-medium text-red-800 truncate">PM2.5 vs Chlorophyll</span>
+                        <span class="font-bold text-red-800 text-sm sm:text-base ml-2">-0.72</span>
+                    </div>
+                    <div class="text-xs text-red-800 mt-1">Strong negative correlation</div>
+                </div>
+                <div class="p-3 sm:p-4 bg-orange-50 rounded-lg border border-orange-200">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs sm:text-sm font-medium text-orange-800 truncate">Lead vs Gene Expression</span>
+                        <span class="font-bold text-orange-600 text-sm sm:text-base ml-2">0.68</span>
+                    </div>
+                    <div class="text-xs text-orange-600 mt-1">Moderate positive correlation</div>
+                </div>
+                <div class="p-3 sm:p-4 bg-blue-50 rounded-lg border border-blue-200 md:col-span-2 lg:col-span-1">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs sm:text-sm font-medium text-blue-800 truncate">BOD vs Dissolved O₂</span>
+                        <span class="font-bold text-blue-600 text-sm sm:text-base ml-2">-0.85</span>
+                    </div>
+                    <div class="text-xs text-blue-600 mt-1">Strong negative correlation</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Protein Expression Heatmap -->
+        <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 mt-4 sm:mt-6">
+            <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">Protein Expression Heatmap</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs sm:text-sm">
+                    <thead>
+                        <tr class="border-b-2 border-gray-200">
+                            <th class="text-left py-2 sm:py-3 font-bold">Protein</th>
+                            <th class="text-center py-2 sm:py-3 font-bold">Control</th>
+                            <th class="text-center py-2 sm:py-3 font-bold">Low Stress</th>
+                            <th class="text-center py-2 sm:py-3 font-bold">Med Stress</th>
+                            <th class="text-center py-2 sm:py-3 font-bold">High Stress</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b border-gray-100">
+                            <td class="py-2 sm:py-3 font-medium">SOD</td>
+                            <td class="text-center"><div class="heatmap-cell w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-lg bg-emerald-200" title="1.0x"></div></td>
+                            <td class="text-center"><div class="heatmap-cell w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-lg bg-yellow-300" title="1.8x"></div></td>
+                            <td class="text-center"><div class="heatmap-cell w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-lg bg-orange-400" title="3.2x"></div></td>
+                            <td class="text-center"><div class="heatmap-cell w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-lg bg-red-500" title="5.1x"></div></td>
+                        </tr>
+                        <tr class="border-b border-gray-100">
+                            <td class="py-2 sm:py-3 font-medium">CAT</td>
+                            <td class="text-center"><div class="heatmap-cell w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-lg bg-emerald-200" title="1.0x"></div></td>
+                            <td class="text-center"><div class="heatmap-cell w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-lg bg-yellow-200" title="1.5x"></div></td>
+                            <td class="text-center"><div class="heatmap-cell w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-lg bg-orange-300" title="2.8x"></div></td>
+                            <td class="text-center"><div class="heatmap-cell w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-lg bg-red-400" title="4.2x"></div></td>
+                        </tr>
+                        <tr class="border-b border-gray-100">
+                            <td class="py-2 sm:py-3 font-medium">RuBisCO</td>
+                            <td class="text-center"><div class="heatmap-cell w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-lg bg-emerald-200" title="1.0x"></div></td>
+                            <td class="text-center"><div class="heatmap-cell w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-lg bg-emerald-300" title="0.8x"></div></td>
+                            <td class="text-center"><div class="heatmap-cell w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-lg bg-blue-300" title="0.5x"></div></td>
+                            <td class="text-center"><div class="heatmap-cell w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-lg bg-blue-500" title="0.2x"></div></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-4 flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
+                <div class="flex items-center">
+                    <div class="w-3 h-3 sm:w-4 sm:h-4 bg-blue-500 rounded mr-2"></div>
+                    <span>Downregulated</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-3 h-3 sm:w-4 sm:h-4 bg-emerald-200 rounded mr-2"></div>
+                    <span>Normal</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-3 h-3 sm:w-4 sm:h-4 bg-red-500 rounded mr-2"></div>
+                    <span>Upregulated</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reports Tab -->
+    <div id="reportsTab" class="tab-content hidden p-4 sm:p-6">
+        <div class="mb-4 sm:mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold brand-text mb-2">Reports & Export</h2>
+            <p class="text-sm sm:text-base text-gray-600">Generate professional reports and export data in multiple formats</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <!-- Export Options -->
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
+                <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
+                    <i class="fas fa-download text-emerald-600 mr-2"></i>Data Export Options
+                </h3>
+                <div class="space-y-2 sm:space-y-3">
+                    <button class="w-full flex items-center justify-center px-4 py-3 eco-button text-white rounded-lg font-medium text-sm">
+                        <i class="fas fa-file-csv mr-2"></i>Export as CSV
+                    </button>
+                    <button class="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 font-medium text-sm">
+                        <i class="fas fa-file-excel mr-2"></i>Export as Excel
+                    </button>
+                    <button class="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 font-medium text-sm">
+                        <i class="fas fa-file-pdf mr-2"></i>Generate PDF Report
+                    </button>
+                    <button class="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 font-medium text-sm">
+                        <i class="fas fa-file-powerpoint mr-2"></i>PowerPoint Export
+                    </button>
+                </div>
+            </div>
+
+            <!-- Report Templates -->
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
+                <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
+                    <i class="fas fa-file-alt text-purple-600 mr-2"></i>Report Templates
+                </h3>
+                <div class="space-y-2 sm:space-y-3">
+                    <div class="p-3 border border-gray-200 rounded-lg hover:bg-emerald-50 hover:border-emerald-300 cursor-pointer transition-colors">
+                        <h4 class="font-medium text-gray-800 text-sm sm:text-base">Environmental Compliance Report</h4>
+                        <p class="text-xs sm:text-sm text-gray-600">WHO, EPA, NESREA standards comparison</p>
+                    </div>
+                    <div class="p-3 border border-gray-200 rounded-lg hover:bg-emerald-50 hover:border-emerald-300 cursor-pointer transition-colors">
+                        <h4 class="font-medium text-gray-800 text-sm sm:text-base">Research Publication Format</h4>
+                        <p class="text-xs sm:text-sm text-gray-600">Scientific journal ready format</p>
+                    </div>
+                    <div class="p-3 border border-gray-200 rounded-lg hover:bg-emerald-50 hover:border-emerald-300 cursor-pointer transition-colors">
+                        <h4 class="font-medium text-gray-800 text-sm sm:text-base">Executive Summary</h4>
+                        <p class="text-xs sm:text-sm text-gray-600">High-level overview for management</p>
+                    </div>
+                    <div class="p-3 border border-gray-200 rounded-lg hover:bg-emerald-50 hover:border-emerald-300 cursor-pointer transition-colors">
+                        <h4 class="font-medium text-gray-800 text-sm sm:text-base">Genomic Analysis Report</h4>
+                        <p class="text-xs sm:text-sm text-gray-600">Complete molecular analysis documentation</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Documentation -->
+        <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 mt-4 sm:mt-6">
+            <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
+                <i class="fas fa-code text-emerald-600 mr-2"></i>EcoGenomics Suite API Access
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                <div>
+                    <h4 class="font-medium text-gray-800 mb-3 text-sm sm:text-base">Environmental Data API</h4>
+                    <div class="bg-gray-100 p-3 rounded-lg font-mono text-xs sm:text-sm overflow-x-auto">
+                        <div>GET /api/v1/environmental/air</div>
+                        <div>GET /api/v1/environmental/water</div>
+                        <div>GET /api/v1/environmental/soil</div>
+                        <div>POST /api/v1/environmental/upload</div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-medium text-gray-800 mb-3 text-sm sm:text-base">Genomics API</h4>
+                    <div class="bg-gray-100 p-3 rounded-lg font-mono text-xs sm:text-sm overflow-x-auto">
+                        <div>GET /api/v1/genomics/sequences</div>
+                        <div>GET /api/v1/genomics/expression</div>
+                        <div>POST /api/v1/genomics/analysis</div>
+                        <div>GET /api/v1/genomics/primers</div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 p-4 bg-emerald-50 rounded-lg border border-emerald-200">
+                <h4 class="font-medium text-emerald-800 mb-2 text-sm sm:text-base">EcoGenomics API Authentication</h4>
+                <p class="text-xs sm:text-sm text-emerald-700">Bearer token required. Rate limit: 1000 requests/hour. Full documentation available.</p>
+            </div>
+        </div>
+
+        <!-- Scheduled Reports -->
+        <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 mt-4 sm:mt-6">
+            <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
+                <i class="fas fa-clock text-orange-600 mr-2"></i>Automated Reporting
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                <div class="p-3 sm:p-4 border border-gray-200 rounded-lg">
+                    <h4 class="font-medium text-gray-800 text-sm sm:text-base">Daily Environmental Summary</h4>
+                    <p class="text-xs sm:text-sm text-gray-600 mt-1">Every day at 6:00 AM</p>
+                    <div class="mt-2">
+                        <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                            Active
+                        </span>
+                    </div>
+                </div>
+                <div class="p-3 sm:p-4 border border-gray-200 rounded-lg">
+                    <h4 class="font-medium text-gray-800 text-sm sm:text-base">Weekly Genomic Analysis</h4>
+                    <p class="text-xs sm:text-sm text-gray-600 mt-1">Every Monday at 8:00 AM</p>
+                    <div class="mt-2">
+                        <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                            Active
+                        </span>
+                    </div>
+                </div>
+                <div class="p-3 sm:p-4 border border-gray-200 rounded-lg md:col-span-2 lg:col-span-1">
+                    <h4 class="font-medium text-gray-800 text-sm sm:text-base">Monthly Compliance Report</h4>
+                    <p class="text-xs sm:text-sm text-gray-600 mt-1">First day of each month</p>
+                    <div class="mt-2">
+                        <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                            Active
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-gray-800 text-white py-6 mt-12">
+    <div class="container mx-auto px-6">
+        <div class="flex flex-col md:flex-row items-center md:justify-between gap-4">
+            <div class="flex items-center space-x-4">
+                <div class="etfash-logo bg-white bg-opacity-20">
+                    <img src="assets/images/etfash-logo.jpeg" alt="ETfash Environmental Services Logo" class="w-full h-full rounded-lg">
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold text-gray-300">EcoGenomics Suite</h4>
+                    <p class="text-sm text-gray-400">Professional Environmental & Genomic Analytics</p>
+                </div>
+            </div>
+            <div class="text-sm text-gray-400 text-center md:text-right">
+                © 2025 ETfash Environmental Services. All rights reserved.
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+// Authentication Functions
+function login() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    
+    if (username && password) {
+        document.getElementById('currentUser').textContent = username.charAt(0).toUpperCase() + username.slice(1);
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('mainDashboard').classList.remove('hidden');
+        initializeCharts();
+        initializeHeatmap();
+    } else {
+        alert('Please enter both username and password to access EcoGenomics Suite');
+    }
+}
+
+function logout() {
+    document.getElementById('loginSection').classList.remove('hidden');
+    document.getElementById('mainDashboard').classList.add('hidden');
+    document.getElementById('username').value = '';
+    document.getElementById('password').value = '';
+}
+
+// Tab Management
+function showTab(tabName, event) {
+    // Hide all tabs
+    const tabs = document.querySelectorAll('.tab-content');
+    tabs.forEach(tab => tab.classList.add('hidden'));
+    
+    // Remove active styling from all tab buttons
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    tabButtons.forEach(btn => {
+        btn.classList.remove('border-emerald-500', 'text-emerald-600', 'active');
+        btn.classList.add('border-transparent', 'text-gray-500');
+    });
+    
+    // Show selected tab
+    document.getElementById(tabName + 'Tab').classList.remove('hidden');
+    
+    // Add active styling to clicked tab button
+    if (event && event.target) {
+        event.target.classList.remove('border-transparent', 'text-gray-500');
+        event.target.classList.add('border-emerald-500', 'text-emerald-600', 'active');
+    }
+}
+
+// Chart Initialization
+function initializeCharts() {
+    // Air Quality Chart
+    const airCtx = document.getElementById('airQualityChart').getContext('2d');
+    new Chart(airCtx, {
+        type: 'line',
+        data: {
+            labels: ['6 AM', '9 AM', '12 PM', '3 PM', '6 PM', '9 PM'],
+            datasets: [{
+                label: 'PM2.5',
+                data: [25, 35, 45, 52, 48, 40],
+                borderColor: '#ef4444',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                tension: 0.4
+            }, {
+                label: 'PM10',
+                data: [45, 55, 75, 85, 78, 65],
+                borderColor: '#f59e0b',
+                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                tension: 0.4
+            }, {
+                label: 'NO₂',
+                data: [20, 28, 35, 42, 38, 30],
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'EcoGenomics Suite - Real-time Air Quality Trends'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Concentration (µg/m³)'
+                    }
+                }
+            }
+        }
+    });
+
+    // Water Quality Chart
+    const waterCtx = document.getElementById('waterQualityChart').getContext('2d');
+    new Chart(waterCtx, {
+        type: 'bar',
+        data: {
+            labels: ['BOD', 'DO', 'Turbidity', 'pH', 'COD'],
+            datasets: [{
+                label: 'Current Values',
+                data: [3.2, 7.8, 2.1, 7.2, 15.6],
+                backgroundColor: [
+                    '#10b981',
+                    '#06b6d4',
+                    '#f59e0b',
+                    '#8b5cf6',
+                    '#ef4444'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                title: {
+                    display: true,
+                    text: 'Water Quality Parameters'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Heavy Metals Chart
+    const metalsCtx = document.getElementById('heavyMetalsChart').getContext('2d');
+    new Chart(metalsCtx, {
+        type: 'radar',
+        data: {
+            labels: ['Lead (Pb)', 'Zinc (Zn)', 'Cadmium (Cd)', 'Chromium (Cr)', 'Mercury (Hg)', 'Copper (Cu)'],
+            datasets: [{
+                label: 'Soil Concentration',
+                data: [95.4, 285.3, 2.1, 78.7, 2.1, 168.4],
+                fill: true,
+                backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                borderColor: '#10b981',
+                pointBackgroundColor: '#10b981',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: '#10b981'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            elements: {
+                line: {
+                    borderWidth: 3
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Heavy Metals Distribution (mg/kg)'
+                }
+            }
+        }
+    });
+}
+
+// Gene Expression Heatmap
+function initializeHeatmap() {
+    const heatmapContainer = document.getElementById('geneHeatmap');
+    const genes = ['rbcL', 'HSP70', 'WRKY5', 'SUT1', 'SOD'];
+    const conditions = ['Control', 'Low Stress', 'Med Stress', 'High Stress', 'Recovery'];
+    const expressionData = [
+        [1.0, 0.8, 0.5, 0.2, 0.7],
+        [1.0, 2.1, 3.8, 5.2, 2.8],
+        [1.0, 1.5, 4.2, 6.8, 3.1],
+        [1.0, 0.9, 0.6, 0.3, 0.8],
+        [1.0, 1.8, 3.2, 4.5, 2.1]
+    ];
+
+    heatmapContainer.innerHTML = '';
+    
+    for (let i = 0; i < genes.length; i++) {
+        for (let j = 0; j < conditions.length; j++) {
+            const cell = document.createElement('div');
+            const value = expressionData[i][j];
+            let bgColor;
+            
+            if (value < 0.5) bgColor = 'bg-blue-500';
+            else if (value < 1.5) bgColor = 'bg-emerald-200';
+            else if (value < 3.0) bgColor = 'bg-yellow-400';
+            else if (value < 5.0) bgColor = 'bg-orange-500';
+            else bgColor = 'bg-red-600';
+            
+            cell.className = `heatmap-cell ${bgColor} rounded-lg cursor-pointer`;
+            cell.title = `${genes[i]} - ${conditions[j]}: ${value}x`;
+            heatmapContainer.appendChild(cell);
+        }
+    }
+}
+
+// Initialize demo data
+document.addEventListener('DOMContentLoaded', function() {
+    // Set demo credentials
+    document.getElementById('username').value = 'researcher';
+    document.getElementById('password').value = 'demo123';
+});
+</script>
+
+
+
+    <script id="html_badge_script1">
+        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDhgF4aDMgetMcOz%2BQtbirzwzsiEnQxe1ehRxOgWyBh4f0g3i3g7dsjDjMT7PfykwWUoLwinTGutQUG086HrKMx5nnY%2FzHg4RIywLaw%2B4%2Bkvi8kmIYcWnmXo8d3PQTGlWoRfrW9wSB1b5QCFTrBYONkVAhRhhSsPmtVy%2FVwCZPS5ZA1V8KdaFJHv5%2FDfjc4Te%2F3pPiYFSzmFoU1lEaek%2FYIQquj5lP7vPJwucWLArwknxXATwXvJYnoWc0X9moPBRAdiuruDHp594Bi9L3od2Pfz6kdKABA%2BIZR%2FlJLa%2BVERQMCMhL3kFPgOk4ykbtVyHKbbTHSzMxzekJYn9E3n0hp6Tqw6f6%2FX4aWEEIVrhJiMxfkW4W4ubZo5D%2BLGWAP4FfKGEmx%2Fu%2FYS27eGb6UKDbaXdlNswSZ5xsCdueH3UJcngsrWtW0jZNd9VswUowhM1MX66rAe1Ze5QNCrwXfGbE6Dbb%2BSu9EAY9eWiu1dTcQiv%2FKWV2Tr4oufCcNbuIrOhQ4Tg16xQmZNn6w3Tq8epHVo%3D";
+        window.__genspark_locale = "en-US";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDhgF4aDMgetMcOz+QtbirzwzsiEnQxe1ehRxOgWyBh4f0g3i3g7dsjDjMT7PfykwWUoLwinTGutQUG086HrKMx5nnY/zHg4RIywLaw+4+kvi8kmIYcWnmXo8d3PQTGlWoRfrW9wSB1b5QCFTrBYONkVAhRhhSsPmtVy/VwCZPS5ZA1V8KdaFJHv5/Dfjc4Te/3pPiYFSzmFoU1lEaek/YIQquj5lP7vPJwucWLArwknxXATwXvJYnoWc0X9moPBRAdiuruDHp594Bi9L3od2Pfz6kdKABA+IZR/lJLa+VERQMCMhL3kFPgOk4ykbtVyHKbbTHSzMxzekJYn9E3n0hp6Tqw6f6/X4aWEEIVrhJiMxfkW4W4ubZo5D+LGWAP4FfKGEmx/u/YS27eGb6UKDbaXdlNswSZ5xsCdueH3UJcngsrWtW0jZNd9VswUowhM1MX66rAe1Ze5QNCrwXfGbE6Dbb+Su9EAY9eWiu1dTcQiv/KWV2Tr4oufCcNbuIrOhQ4Tg16xQmZNn6w3Tq8epHVo=";
+    </script>
+    
+    <script id="html_notice_dialog_script" src="assets/js/notice_dialog.js"></script>
+    </body></html>
