@@ -1,0 +1,406 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Visualizations - EcoGenomics Suite{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <div class="etfash-logo">
+                        <img src="{% static 'images/etfash-logo.jpeg' %}" alt="ETfash Logo" class="w-full h-full rounded-lg">
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold brand-text">EcoGenomics Suite</h1>
+                        <p class="text-sm text-gray-600">Data Visualization</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-600">Welcome, {{ user.username }}</span>
+                    <a href="{% url 'dashboard' %}" class="text-emerald-600 hover:text-emerald-700 text-sm font-medium">Dashboard</a>
+                    <a href="{% url 'logout' %}" class="text-gray-600 hover:text-gray-700 text-sm">Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <!-- Breadcrumb -->
+        <nav class="flex mb-8" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="{% url 'dashboard' %}" class="text-gray-700 hover:text-emerald-600 inline-flex items-center">
+                        <i class="fas fa-home w-4 h-4 mr-2"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 w-4 h-4"></i>
+                        <span class="ml-1 text-gray-500 md:ml-2">Visualizations</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+
+        <!-- Visualization Interface -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Visualization Controls -->
+            <div class="lg:col-span-1">
+                <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                    <div class="px-6 py-4 bg-gradient-to-r from-blue-500 to-purple-500">
+                        <h2 class="text-xl font-semibold text-white flex items-center">
+                            <i class="fas fa-chart-area mr-3"></i>
+                            Visualization Controls
+                        </h2>
+                    </div>
+
+                    <div class="p-6 space-y-6">
+                        <!-- Visualization Type Selection -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Visualization Type</label>
+                            <select id="visualizationType" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500">
+                                <option value="">Select Visualization</option>
+                                <option value="time_series">Time Series Chart</option>
+                                <option value="spatial_map">Spatial Distribution Map</option>
+                                <option value="correlation_heatmap">Correlation Heatmap</option>
+                                <option value="box_plot">Box Plot Distribution</option>
+                                <option value="compliance_chart">Compliance Chart</option>
+                                <option value="trend_analysis">Trend Analysis</option>
+                                <option value="environmental_factors">Environmental Factors</option>
+                                <option value="dashboard_summary">Dashboard Summary</option>
+                            </select>
+                        </div>
+
+                        <!-- Data Filters -->
+                        <div class="border-t pt-6">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Data Filters</h3>
+                            
+                            <!-- Pollutants Filter -->
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Pollutants</label>
+                                <select id="pollutantFilter" multiple class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500" size="4">
+                                    {% for pollutant in pollutants %}
+                                        <option value="{{ pollutant.id }}">{{ pollutant.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <p class="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple</p>
+                            </div>
+
+                            <!-- Locations Filter -->
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Locations</label>
+                                <select id="locationFilter" multiple class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500" size="4">
+                                    {% for location in locations %}
+                                        <option value="{{ location.id }}">{{ location.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Date Range Filter -->
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">From Date</label>
+                                    <input type="date" id="dateFrom" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">To Date</label>
+                                    <input type="date" id="dateTo" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500">
+                                </div>
+                            </div>
+
+                            <!-- Batches Filter -->
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Sample Batches</label>
+                                <select id="batchFilter" multiple class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500" size="3">
+                                    {% for batch in batches %}
+                                        <option value="{{ batch.id }}">{{ batch.name }} ({{ batch.sampling_date }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Visualization-Specific Options -->
+                        <div id="visualizationOptions" class="border-t pt-6 hidden">
+                            <!-- Time Series Options -->
+                            <div id="timeSeriesOptions" class="hidden">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Chart Type</label>
+                                <select id="chartType" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500">
+                                    <option value="line">Line Chart</option>
+                                    <option value="scatter">Scatter Plot</option>
+                                </select>
+                            </div>
+
+                            <!-- Box Plot Options -->
+                            <div id="boxPlotOptions" class="hidden">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Group By</label>
+                                <select id="groupBy" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500">
+                                    <option value="location">Location</option>
+                                    <option value="pollutant">Pollutant</option>
+                                </select>
+                            </div>
+
+                            <!-- Trend Analysis Options -->
+                            <div id="trendAnalysisOptions" class="hidden">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Time Period</label>
+                                <select id="timePeriod" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500">
+                                    <option value="daily">Daily</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly" selected>Monthly</option>
+                                    <option value="quarterly">Quarterly</option>
+                                    <option value="yearly">Yearly</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Generate Visualization Button -->
+                        <button id="generateVisualization" class="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-md hover:from-blue-600 hover:to-purple-600 transition-colors flex items-center justify-center">
+                            <i class="fas fa-chart-bar mr-2"></i>
+                            Generate Visualization
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visualization Display -->
+            <div class="lg:col-span-3">
+                <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                    <div class="px-6 py-4 bg-gradient-to-r from-emerald-500 to-cyan-500">
+                        <h2 class="text-xl font-semibold text-white flex items-center">
+                            <i class="fas fa-chart-line mr-3"></i>
+                            Visualization Display
+                        </h2>
+                    </div>
+
+                    <div class="p-6">
+                        <!-- Loading State -->
+                        <div id="loadingState" class="hidden text-center py-12">
+                            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
+                            <p class="mt-4 text-gray-600">Generating visualization...</p>
+                        </div>
+
+                        <!-- Initial State -->
+                        <div id="initialState" class="text-center py-12">
+                            <div class="mx-auto w-24 h-24 text-gray-400 mb-4">
+                                <i class="fas fa-chart-area text-6xl"></i>
+                            </div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">Ready to Visualize Your Data</h3>
+                            <p class="text-gray-600">Select a visualization type and configure your parameters to begin.</p>
+                        </div>
+
+                        <!-- Visualization Container -->
+                        <div id="visualizationContainer" class="hidden">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 id="visualizationTitle" class="text-lg font-medium text-gray-900"></h3>
+                                <div class="flex space-x-2">
+                                    <button id="downloadVisualization" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors">
+                                        <i class="fas fa-download mr-2"></i>
+                                        Download
+                                    </button>
+                                    <button id="fullscreenVisualization" class="px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 transition-colors">
+                                        <i class="fas fa-expand mr-2"></i>
+                                        Fullscreen
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Visualization Content -->
+                            <div id="visualizationContent" class="min-h-96">
+                                <!-- Dynamic content will be inserted here -->
+                            </div>
+                        </div>
+
+                        <!-- Error State -->
+                        <div id="errorState" class="hidden text-center py-12">
+                            <div class="mx-auto w-24 h-24 text-red-400 mb-4">
+                                <i class="fas fa-exclamation-triangle text-6xl"></i>
+                            </div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">Visualization Error</h3>
+                            <p id="errorMessage" class="text-gray-600"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Visualization JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const visualizationType = document.getElementById('visualizationType');
+    const visualizationOptions = document.getElementById('visualizationOptions');
+    const timeSeriesOptions = document.getElementById('timeSeriesOptions');
+    const boxPlotOptions = document.getElementById('boxPlotOptions');
+    const trendAnalysisOptions = document.getElementById('trendAnalysisOptions');
+    const generateBtn = document.getElementById('generateVisualization');
+    
+    const loadingState = document.getElementById('loadingState');
+    const initialState = document.getElementById('initialState');
+    const visualizationContainer = document.getElementById('visualizationContainer');
+    const errorState = document.getElementById('errorState');
+    const visualizationContent = document.getElementById('visualizationContent');
+    const visualizationTitle = document.getElementById('visualizationTitle');
+
+    // Show/hide visualization-specific options
+    visualizationType.addEventListener('change', function() {
+        const selectedType = this.value;
+        
+        // Hide all options first
+        visualizationOptions.classList.add('hidden');
+        timeSeriesOptions.classList.add('hidden');
+        boxPlotOptions.classList.add('hidden');
+        trendAnalysisOptions.classList.add('hidden');
+        
+        // Show relevant options
+        if (selectedType === 'time_series') {
+            visualizationOptions.classList.remove('hidden');
+            timeSeriesOptions.classList.remove('hidden');
+        } else if (selectedType === 'box_plot') {
+            visualizationOptions.classList.remove('hidden');
+            boxPlotOptions.classList.remove('hidden');
+        } else if (selectedType === 'trend_analysis') {
+            visualizationOptions.classList.remove('hidden');
+            trendAnalysisOptions.classList.remove('hidden');
+        }
+    });
+
+    // Generate visualization
+    generateBtn.addEventListener('click', function() {
+        const selectedVisualization = visualizationType.value;
+        
+        if (!selectedVisualization) {
+            alert('Please select a visualization type');
+            return;
+        }
+
+        // Show loading state
+        showState('loading');
+
+        // Collect filters
+        const filters = {
+            pollutant_types: Array.from(document.getElementById('pollutantFilter').selectedOptions).map(opt => opt.value),
+            locations: Array.from(document.getElementById('locationFilter').selectedOptions).map(opt => opt.value),
+            batches: Array.from(document.getElementById('batchFilter').selectedOptions).map(opt => opt.value),
+            date_from: document.getElementById('dateFrom').value,
+            date_to: document.getElementById('dateTo').value
+        };
+
+        // Prepare visualization parameters
+        const vizParams = {
+            visualization_type: selectedVisualization,
+            filters: filters
+        };
+
+        // Add visualization-specific parameters
+        if (selectedVisualization === 'time_series') {
+            vizParams.chart_type = document.getElementById('chartType').value;
+        } else if (selectedVisualization === 'box_plot') {
+            vizParams.group_by = document.getElementById('groupBy').value;
+        } else if (selectedVisualization === 'trend_analysis') {
+            vizParams.time_period = document.getElementById('timePeriod').value;
+        }
+
+        // Generate visualization
+        fetch('{% url "generate_visualization" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(vizParams)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayVisualization(data.visualization, data.visualization_type);
+            } else {
+                showError(data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Visualization error:', error);
+            showError('An error occurred while generating the visualization');
+        });
+    });
+
+    function showState(state) {
+        // Hide all states
+        loadingState.classList.add('hidden');
+        initialState.classList.add('hidden');
+        visualizationContainer.classList.add('hidden');
+        errorState.classList.add('hidden');
+
+        // Show selected state
+        if (state === 'loading') {
+            loadingState.classList.remove('hidden');
+        } else if (state === 'initial') {
+            initialState.classList.remove('hidden');
+        } else if (state === 'visualization') {
+            visualizationContainer.classList.remove('hidden');
+        } else if (state === 'error') {
+            errorState.classList.remove('hidden');
+        }
+    }
+
+    function showError(message) {
+        document.getElementById('errorMessage').textContent = message;
+        showState('error');
+    }
+
+    function displayVisualization(visualization, vizType) {
+        visualizationTitle.textContent = getVisualizationTitle(vizType);
+        
+        if (visualization.error) {
+            showError(visualization.error);
+            return;
+        }
+        
+        // Display the visualization
+        if (visualization.chart_html) {
+            visualizationContent.innerHTML = visualization.chart_html;
+        } else {
+            visualizationContent.innerHTML = '<p class="text-gray-600">Visualization data received but no chart HTML available.</p>';
+        }
+        
+        showState('visualization');
+    }
+
+    function getVisualizationTitle(vizType) {
+        const titles = {
+            'time_series': 'Time Series Analysis',
+            'spatial_map': 'Spatial Distribution Map',
+            'correlation_heatmap': 'Correlation Heatmap',
+            'box_plot': 'Distribution Box Plot',
+            'compliance_chart': 'Regulatory Compliance Chart',
+            'trend_analysis': 'Temporal Trend Analysis',
+            'environmental_factors': 'Environmental Factors Analysis',
+            'dashboard_summary': 'Comprehensive Dashboard'
+        };
+        return titles[vizType] || 'Data Visualization';
+    }
+
+    // Download and fullscreen functionality
+    document.getElementById('downloadVisualization').addEventListener('click', function() {
+        // Implementation for downloading visualization
+        alert('Download functionality will be implemented');
+    });
+
+    document.getElementById('fullscreenVisualization').addEventListener('click', function() {
+        // Implementation for fullscreen view
+        const content = document.getElementById('visualizationContent');
+        if (content.requestFullscreen) {
+            content.requestFullscreen();
+        } else if (content.webkitRequestFullscreen) {
+            content.webkitRequestFullscreen();
+        } else if (content.msRequestFullscreen) {
+            content.msRequestFullscreen();
+        }
+    });
+});
+</script>
+{% endblock %}

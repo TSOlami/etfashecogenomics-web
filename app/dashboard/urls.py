@@ -21,6 +21,13 @@ urlpatterns = [
     path('analysis/run/', views.run_statistical_analysis, name='run_statistical_analysis'),
     path('analysis/report/', views.generate_statistical_report, name='generate_statistical_report'),
     
+    # Visualization URLs
+    path('visualizations/', views.visualization_dashboard, name='visualization_dashboard'),
+    path('visualizations/generate/', views.generate_visualization, name='generate_visualization'),
+    path('reports/', views.reports_dashboard, name='reports_dashboard'),
+    path('reports/generate/', views.generate_report, name='generate_report'),
+    path('reports/export/<str:format>/', views.export_report, name='export_report'),
+    
     # API endpoints (for future AJAX requests)
     path('api/environmental/', views.api_environmental_data, name='api_environmental'),
     path('api/genomic/', views.api_genomic_data, name='api_genomic'),

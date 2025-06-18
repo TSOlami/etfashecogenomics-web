@@ -26,6 +26,7 @@ from .models import (
 from .forms import DataUploadForm, LocationForm, DataPreviewForm
 from .data_processor import DataProcessor, preview_data_file
 from .statistical_analysis import StatisticalAnalyzer, StatisticalReportGenerator
+from .visualization import VisualizationGenerator, ReportGenerator
 
 # Get logger for this module
 logger = logging.getLogger('dashboard')
@@ -492,6 +493,220 @@ def generate_statistical_report(request):
         
     except Exception as e:
         logger.error(f"Report generation error: {str(e)}")
+        return JsonResponse({'error': str(e)})
+
+
+@login_required
+def visualization_dashboard(request):
+    """Display visualization dashboard"""
+    # Get user's data for filter options
+    pollutants = PollutantType.objects.filter(
+        readings__created_by=request.user
+    ).distinct().order_by('name')
+    
+    locations = Location.objects.filter(
+        created_by=request.user
+    ).order_by('name')
+    
+    batches = SampleBatch.objects.filter(
+        created_by=request.user
+    ).order_by('-sampling_date')
+    
+    context = {
+        'pollutants': pollutants,
+        'locations': locations,
+        'batches': batches,
+    }
+    
+    return render(request, 'dashboard/visualization_dashboard.html', context)
+
+
+@login_required
+def generate_visualization(request):
+    """Generate visualization based on user parameters"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST method required'})
+    
+    try:
+        data = json.loads(request.body)
+        viz_type = data.get('visualization_type')
+        filters = data.get('filters', {})
+        
+        # Initialize visualization generator
+        viz_generator = VisualizationGenerator(request.user)
+        
+        # Convert filter IDs to objects
+        processed_filters = {}
+        if filters.get('pollutant_types'):
+            processed_filters['pollutant_types'] = PollutantType.objects.filter(
+                id__in=filters['pollutant_types']
+            )
+        if filters.get('locations'):
+            processed_filters['locations'] = Location.objects.filter(
+                id__in=filters['locations']
+            )
+        if filters.get('batches'):
+            processed_filters['batches'] = SampleBatch.objects.filter(
+                id__in=filters['batches']
+            )
+        if filters.get('date_from'):
+            processed_filters['date_from'] = datetime.fromisoformat(filters['date_from'])
+        if filters.get('date_to'):
+            processed_filters['date_to'] = datetime.fromisoformat(filters['date_to'])
+        
+        # Generate appropriate visualization
+        if viz_type == 'time_series':
+            chart_type = data.get('chart_type', 'line')
+            result = viz_generator.generate_time_series_chart(processed_filters, chart_type)
+        
+        elif viz_type == 'spatial_map':
+            result = viz_generator.generate_spatial_map(processed_filters)
+        
+        elif viz_type == 'correlation_heatmap':
+            result = viz_generator.generate_correlation_heatmap(processed_filters)
+        
+        elif viz_type == 'box_plot':
+            group_by = data.get('group_by', 'location')
+            result = viz_generator.generate_box_plot(processed_filters, group_by)
+        
+        elif viz_type == 'compliance_chart':
+            result = viz_generator.generate_compliance_chart(processed_filters)
+        
+        elif viz_type == 'trend_analysis':
+            time_period = data.get('time_period', 'monthly')
+            result = viz_generator.generate_trend_analysis_chart(processed_filters, time_period)
+        
+        elif viz_type == 'environmental_factors':
+            result = viz_generator.generate_environmental_factors_chart(processed_filters)
+        
+        elif viz_type == 'dashboard_summary':
+            result = viz_generator.generate_dashboard_summary(processed_filters)
+        
+        else:
+            return JsonResponse({'error': 'Invalid visualization type'})
+        
+        return JsonResponse({
+            'success': True,
+            'visualization': result,
+            'visualization_type': viz_type
+        })
+        
+    except Exception as e:
+        logger.error(f"Visualization generation error: {str(e)}")
+        return JsonResponse({'error': str(e)})
+
+
+@login_required
+def reports_dashboard(request):
+    """Display reports dashboard"""
+    # Get user's data for filter options
+    pollutants = PollutantType.objects.filter(
+        readings__created_by=request.user
+    ).distinct().order_by('name')
+    
+    locations = Location.objects.filter(
+        created_by=request.user
+    ).order_by('name')
+    
+    batches = SampleBatch.objects.filter(
+        created_by=request.user
+    ).order_by('-sampling_date')
+    
+    context = {
+        'pollutants': pollutants,
+        'locations': locations,
+        'batches': batches,
+    }
+    
+    return render(request, 'dashboard/reports_dashboard.html', context)
+
+
+@login_required
+def generate_report(request):
+    """Generate comprehensive environmental report"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST method required'})
+    
+    try:
+        data = json.loads(request.body)
+        filters = data.get('filters', {})
+        include_charts = data.get('include_charts', True)
+        
+        # Initialize report generator
+        report_generator = ReportGenerator(request.user)
+        
+        # Convert filter IDs to objects
+        processed_filters = {}
+        if filters.get('pollutant_types'):
+            processed_filters['pollutant_types'] = PollutantType.objects.filter(
+                id__in=filters['pollutant_types']
+            )
+        if filters.get('locations'):
+            processed_filters['locations'] = Location.objects.filter(
+                id__in=filters['locations']
+            )
+        if filters.get('batches'):
+            processed_filters['batches'] = SampleBatch.objects.filter(
+                id__in=filters['batches']
+            )
+        if filters.get('date_from'):
+            processed_filters['date_from'] = datetime.fromisoformat(filters['date_from'])
+        if filters.get('date_to'):
+            processed_filters['date_to'] = datetime.fromisoformat(filters['date_to'])
+        
+        # Generate comprehensive report
+        report = report_generator.generate_comprehensive_report(processed_filters, include_charts)
+        
+        return JsonResponse({
+            'success': True,
+            'report': report
+        })
+        
+    except Exception as e:
+        logger.error(f"Report generation error: {str(e)}")
+        return JsonResponse({'error': str(e)})
+
+
+@login_required
+def export_report(request, format):
+    """Export report in specified format"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST method required'})
+    
+    try:
+        data = json.loads(request.body)
+        report_data = data.get('report', {})
+        
+        if format == 'pdf':
+            # Generate PDF report
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="environmental_report.pdf"'
+            
+            # TODO: Implement PDF generation using reportlab or weasyprint
+            response.write(b'PDF generation not yet implemented')
+            return response
+        
+        elif format == 'excel':
+            # Generate Excel report
+            response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = 'attachment; filename="environmental_report.xlsx"'
+            
+            # TODO: Implement Excel generation using openpyxl
+            response.write(b'Excel generation not yet implemented')
+            return response
+        
+        elif format == 'json':
+            # Return JSON format
+            response = HttpResponse(content_type='application/json')
+            response['Content-Disposition'] = 'attachment; filename="environmental_report.json"'
+            response.write(json.dumps(report_data, indent=2))
+            return response
+        
+        else:
+            return JsonResponse({'error': 'Invalid export format'})
+        
+    except Exception as e:
+        logger.error(f"Report export error: {str(e)}")
         return JsonResponse({'error': str(e)})
 
 
