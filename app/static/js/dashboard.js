@@ -1,25 +1,26 @@
-// Dashboard-specific JavaScript functionality
+// Initialize charts when the document is ready
 document.addEventListener('DOMContentLoaded', function() {
-    initializeCharts();
-    initializeHeatmap();
+    initializeAirQualityChart();
+    initializeGeneHeatmap();
 });
 
-function initializeCharts() {
-    // Temperature Trend Chart
-    const tempCtx = document.getElementById('temperatureChart');
-    if (tempCtx && typeof chartData !== 'undefined') {
-        new Chart(tempCtx, {
+function initializeAirQualityChart() {
+    const ctx = document.getElementById('airQualityChart');    if (ctx) {
+        const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(16, 185, 129, 0.2)');
+        gradient.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+
+        new Chart(ctx, {
             type: 'line',
             data: {
-                labels: chartData.temperature_trend.labels,
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
                 datasets: [{
-                    label: 'Temperature (°C)',
-                    data: chartData.temperature_trend.data,
+                    label: 'Air Quality Index',
+                    data: [65, 78, 90, 85, 95, 110, 156],
                     borderColor: '#10b981',
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4
+                    backgroundColor: gradient,
+                    tension: 0.4,
+                    fill: true
                 }]
             },
             options: {
@@ -32,9 +33,9 @@ function initializeCharts() {
                 },
                 scales: {
                     y: {
-                        beginAtZero: false,
+                        beginAtZero: true,
                         grid: {
-                            color: 'rgba(0, 0, 0, 0.1)'
+                            color: 'rgba(0,0,0,0.05)'
                         }
                     },
                     x: {
@@ -45,45 +46,29 @@ function initializeCharts() {
                 }
             }
         });
-    }
+    }}
 
-    // Species Distribution Chart
-    const speciesCtx = document.getElementById('speciesChart');
-    if (speciesCtx && typeof chartData !== 'undefined') {
-        new Chart(speciesCtx, {
-            type: 'doughnut',
-            data: {
-                labels: chartData.species_count.labels,
-                datasets: [{
-                    data: chartData.species_count.data,
-                    backgroundColor: [
-                        '#10b981',
-                        '#06b6d4',
-                        '#3b82f6',
-                        '#8b5cf6',
-                        '#f59e0b'
-                    ],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            padding: 20,
-                            usePointStyle: true
-                        }
-                    }
-                }
-            }
-        });
-    }
+function initializeGeneHeatmap() {
+    const heatmapContainer = document.getElementById('geneHeatmap');
+    if (heatmapContainer) {
+        const numRows = 5;
+        const numCols = 5;
+        
+        // Clear existing content
+        heatmapContainer.innerHTML = '';
 
-    // Genetic Diversity Chart
-    const geneticCtx = document.getElementById('geneticChart');
+        // Generate random heatmap data
+        for (let i = 0; i < numRows * numCols; i++) {
+            const cell = document.createElement('div');
+            const value = Math.random();
+            const hue = value > 0.66 ? 'from-red-500 to-red-600' :
+                       value > 0.33 ? 'from-yellow-500 to-yellow-600' :
+                       'from-emerald-500 to-emerald-600';
+            
+            cell.className = `w-full h-full rounded bg-gradient-to-br ${hue}`;
+            heatmapContainer.appendChild(cell);
+        }
+    }
     if (geneticCtx && typeof chartData !== 'undefined') {
         new Chart(geneticCtx, {
             type: 'bar',

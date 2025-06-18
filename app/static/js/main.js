@@ -1,42 +1,45 @@
 // Main JavaScript functionality
 document.addEventListener('DOMContentLoaded', function() {
-    // Tab functionality
-    const tabButtons = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
-
-    tabButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const targetTab = this.getAttribute('data-tab');
-            
-            // Remove active class from all buttons
-            tabButtons.forEach(btn => {
-                btn.classList.remove('active');
-                btn.classList.add('border-transparent', 'text-gray-500');
-                btn.classList.remove('border-eco-green', 'text-eco-dark');
-            });
-            
-            // Add active class to clicked button
-            this.classList.add('active');
-            this.classList.remove('border-transparent', 'text-gray-500');
-            this.classList.add('border-eco-green', 'text-eco-dark');
-            
-            // Hide all tab contents
-            tabContents.forEach(content => {
-                content.classList.add('hidden');
-            });
-            
-            // Show target tab content
-            const targetContent = document.getElementById(targetTab);
-            if (targetContent) {
-                targetContent.classList.remove('hidden');
-            }
-        });
-    });
-
     // Initialize tooltips
     initializeTooltips();
+
+    // Set initial active tab
+    showTab('overview');
 });
 
+// Tab functionality
+function showTab(tabName, event) {
+    // Get all tab buttons and content sections
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const currentButton = event ? event.currentTarget : document.querySelector(`[onclick*="showTab('${tabName}"]`);
+
+    // Remove active class from all buttons and content sections
+    tabButtons.forEach(btn => {
+        btn.classList.remove('active');
+        btn.classList.remove('border-emerald-500', 'text-emerald-600');
+        btn.classList.add('border-transparent', 'text-gray-500');
+    });
+
+    tabContents.forEach(content => {
+        content.classList.remove('active');
+    });
+
+    // Add active class to clicked button
+    if (currentButton) {
+        currentButton.classList.add('active');
+        currentButton.classList.add('border-emerald-500', 'text-emerald-600');
+        currentButton.classList.remove('border-transparent', 'text-gray-500');
+    }
+
+    // Show selected tab content
+    const selectedTab = document.getElementById(tabName);
+    if (selectedTab) {
+        selectedTab.classList.add('active');
+    }
+}
+
+// Tooltip functionality
 function initializeTooltips() {
     const tooltipElements = document.querySelectorAll('[data-tooltip]');
     
@@ -83,10 +86,10 @@ function formatNumber(num) {
 
 function getStatusColor(status) {
     const statusColors = {
-        'normal': 'text-green-600',
-        'optimal': 'text-green-600',
-        'good': 'text-green-600',
-        'clear': 'text-green-600',
+        'normal': 'text-emerald-600',
+        'optimal': 'text-emerald-600',
+        'good': 'text-emerald-600',
+        'clear': 'text-emerald-600',
         'warning': 'text-yellow-600',
         'critical': 'text-red-600'
     };

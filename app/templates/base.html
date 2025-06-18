@@ -3,11 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ETfash Environmental Services - Advanced environmental monitoring and genomic analysis platform for comprehensive ecological insights">
+    <meta name="keywords" content="environmental monitoring, genomic analytics, ETfash, bioinformatics, ecological research, environmental services">
+    <meta name="author" content="ETfash Environmental Services">
     <title>{% block title %}EcoGenomics Suite{% endblock %}</title>
     <link rel="icon" type="image/x-icon" href="{% load static %}{% static 'images/favicon.ico' %}">
     
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -33,9 +39,9 @@
 <body class="bg-gray-50">
     {% block content %}
     {% endblock %}
-    
-    <!-- Custom JavaScript -->
+      <!-- Custom JavaScript -->
     <script src="{% load static %}{% static 'js/main.js' %}"></script>
+    <script src="{% load static %}{% static 'js/dashboard.js' %}"></script>
     {% block extra_js %}
     {% endblock %}
 </body>

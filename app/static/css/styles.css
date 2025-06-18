@@ -3,6 +3,22 @@
     display: none !important;
 }
 
+/* Tab Styles */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Chart Styles */
+.chart-container {
+    width: 100%;
+    height: 300px;
+    position: relative;
+}
+
 /* Gradients */
 .gradient-bg {
     background: linear-gradient(135deg, #059669 0%, #0284c7 50%, #1e40af 100%);
@@ -20,7 +36,7 @@
 /* Logo Styling */
 .etfash-logo {
     width: 120px;
-    height: 120px;
+    height: 40px;
     overflow: hidden;
     border-radius: 0.5rem;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -51,11 +67,40 @@
     background-clip: text;
 }
 
+/* Tooltip Styles */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 10px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
 /* Enhanced Responsive Styles */
 @media (max-width: 768px) {
     .etfash-logo {
-        width: 80px;
-        height: 32px;
+        width: 48px;
+        height: 48px;
     }
     .chart-container {
         height: 250px;
@@ -70,16 +115,12 @@
         min-width: 16px;
         min-height: 16px;
     }
-    .tab-btn {
-        font-size: 14px;
-        padding: 12px 8px;
-    }
 }
 
 @media (max-width: 640px) {
     .etfash-logo {
-        width: 60px;
-        height: 24px;
+        width: 40px;
+        height: 40px;
     }
     .chart-container {
         height: 200px;
@@ -89,19 +130,20 @@
         margin-left: -60px;
         font-size: 11px;
     }
-    .tab-btn {
-        font-size: 12px;
-        padding: 10px 6px;
-    }
 }
 
 /* Print Styles */
 @media print {
     body {
-        margin: 0;
-        padding: 0;
+        background: white;
     }
     .no-print {
         display: none !important;
+    }
+    .print-break-before {
+        page-break-before: always;
+    }
+    .print-break-after {
+        page-break-after: always;
     }
 }
