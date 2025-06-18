@@ -4,125 +4,77 @@
 {% block title %}Sign Up - EcoGenomics Suite{% endblock %}
 
 {% block content %}
-<div class="min-h-screen gradient-bg flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
-        <div class="bg-white rounded-lg shadow-xl p-8">
-            <!-- Logo Section -->
-            <div class="flex justify-center mb-6">
-                <div class="etfash-logo">
-                    <img src="{% static 'images/etfash-logo.jpeg' %}" alt="ETFASH Logo" class="w-20 h-20 rounded-full object-cover border-2 border-gray-200 shadow-lg hover:scale-105 transition-transform duration-200">
-                </div>
+<div class="min-h-screen flex items-center justify-center gradient-bg p-4">
+    <div class="bg-white p-4 sm:p-6 md:p-8 rounded-xl card-shadow w-full max-w-md mx-4">
+        <div class="text-center mb-6 sm:mb-8">
+            <div class="etfash-logo mx-auto mb-4">
+                <img src="{% static 'images/etfash-logo.jpeg' %}" alt="ETfash Environmental Services Logo" class="w-full h-full rounded-lg">
             </div>
-            
-            <!-- Title and Description -->
-            <div class="text-center mb-8">
-                <h1 class="text-3xl font-bold text-gray-900 mb-2">EcoGenomics Suite</h1>
-                <p class="text-lg text-gray-600 mb-2">Environmental & Genomic Analytics Platform</p>
-                <p class="text-sm text-gray-500">Advanced environmental monitoring with molecular insights</p>
-            </div>
-            
-            <!-- Messages -->
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="mb-4 p-4 rounded-md {% if message.tags == 'error' %}bg-red-50 border border-red-200{% elif message.tags == 'success' %}bg-green-50 border border-green-200{% else %}bg-blue-50 border border-blue-200{% endif %}">
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                {% if message.tags == 'error' %}
-                                    <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                                    </svg>
-                                {% elif message.tags == 'success' %}
-                                    <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                    </svg>
-                                {% else %}
-                                    <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                                    </svg>
-                                {% endif %}
-                            </div>
-                            <div class="ml-3">
-                                <p class="{% if message.tags == 'error' %}text-red-800{% elif message.tags == 'success' %}text-green-800{% else %}text-blue-800{% endif %} text-sm">{{ message }}</p>
-                            </div>
+            <h2 class="text-2xl sm:text-3xl font-bold brand-text mb-2">EcoGenomics Suite</h2>
+            <p class="text-gray-600 text-sm sm:text-base mb-1">Environmental & Genomic Analytics Platform</p>
+            <p class="text-xs sm:text-sm text-gray-500">Advanced environmental monitoring with molecular insights</p>
+        </div>
+        
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mb-4 p-4 rounded-md {% if message.tags == 'error' %}bg-red-50 border border-red-200{% elif message.tags == 'success' %}bg-green-50 border border-green-200{% else %}bg-blue-50 border border-blue-200{% endif %}">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            {% if message.tags == 'error' %}
+                                <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg>
+                            {% elif message.tags == 'success' %}
+                                <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                            {% else %}
+                                <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                </svg>
+                            {% endif %}
+                        </div>
+                        <div class="ml-3">
+                            <p class="{% if message.tags == 'error' %}text-red-800{% elif message.tags == 'success' %}text-green-800{% else %}text-blue-800{% endif %} text-sm">{{ message }}</p>
                         </div>
                     </div>
-                {% endfor %}
-            {% endif %}
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            <div>
+                <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                <input type="text" name="username" id="username" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500" placeholder="Choose a username">
+            </div>
             
-            <!-- Signup Form -->
-            <form method="post" class="space-y-6">
-                {% csrf_token %}
-                <div>
-                    <label for="username" class="block text-sm font-medium text-gray-700">
-                        Username
-                    </label>
-                    <div class="mt-1">
-                        <input id="username" name="username" type="text" required 
-                               class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-eco-green focus:border-eco-green focus:z-10 sm:text-sm"
-                               placeholder="Choose a username"
-                               value="{{ request.POST.username|default:'' }}">
-                    </div>
-                </div>
-                
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700">
-                        Email Address
-                    </label>
-                    <div class="mt-1">
-                        <input id="email" name="email" type="email" required 
-                               class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-eco-green focus:border-eco-green focus:z-10 sm:text-sm"
-                               placeholder="Enter your email"
-                               value="{{ request.POST.email|default:'' }}">
-                    </div>
-                </div>
-                
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700">
-                        Password
-                    </label>
-                    <div class="mt-1">
-                        <input id="password" name="password" type="password" required 
-                               class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-eco-green focus:border-eco-green focus:z-10 sm:text-sm"
-                               placeholder="Create a password">
-                    </div>
-                </div>
-                
-                <div>
-                    <label for="confirm_password" class="block text-sm font-medium text-gray-700">
-                        Confirm Password
-                    </label>
-                    <div class="mt-1">
-                        <input id="confirm_password" name="confirm_password" type="password" required 
-                               class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-eco-green focus:border-eco-green focus:z-10 sm:text-sm"
-                               placeholder="Confirm your password">
-                    </div>
-                </div>
-                
-                <div class="flex items-center">
-                    <input id="terms" name="terms" type="checkbox" required
-                           class="h-4 w-4 text-eco-green focus:ring-eco-green border-gray-300 rounded">
-                    <label for="terms" class="ml-2 block text-sm text-gray-900">
-                        I agree to the <a href="#" class="text-eco-green hover:text-eco-dark">Terms of Service</a> and 
-                        <a href="#" class="text-eco-green hover:text-eco-dark">Privacy Policy</a>
-                    </label>
-                </div>
-                
-                <div>
-                    <button type="submit" 
-                            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white eco-button focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-eco-green">
-                        Create Account
-                    </button>
-                </div>
-                
-                <div class="text-center">
-                    <p class="text-sm text-gray-600">
-                        Already have an account? 
-                        <a href="{% url 'login' %}" class="font-medium text-eco-green hover:text-eco-dark">
-                            Sign in here
-                        </a>
-                    </p>
-                </div>
-            </form>
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
+                <input type="email" name="email" id="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500" placeholder="Enter your email">
+            </div>
+            
+            <div>
+                <label for="password1" class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" name="password1" id="password1" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500" placeholder="Create a password">
+            </div>
+            
+            <div>
+                <label for="password2" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                <input type="password" name="password2" id="password2" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500" placeholder="Confirm your password">
+            </div>
+            
+            <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white eco-button focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
+                Create Account
+            </button>
+        </form>
+        
+        <div class="mt-6 text-center text-sm text-gray-600">
+            Already have an account? 
+            <a href="{% url 'login' %}" class="font-medium text-emerald-600 hover:text-emerald-500">
+                Log in here
+            </a>
         </div>
     </div>
 </div>

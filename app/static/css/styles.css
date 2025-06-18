@@ -17,83 +17,38 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-/* Interactive Elements */
-.heatmap-cell {
-    transition: all 0.2s ease;
-}
-
-.heatmap-cell:hover {
-    transform: scale(1.1);
-}
-
-/* Chart Container */
-.chart-container {
-    position: relative;
-    height: 300px;
-}
-
-/* Tooltips */
-.tooltip {
-    position: relative;
-    display: inline-block;
-}
-
-.tooltip .tooltiptext {
-    visibility: hidden;
-    width: 200px;
-    background-color: #555;
-    color: white;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px;
-    position: absolute;
-    z-index: 1;
-    bottom: 125%;
-    left: 50%;
-    margin-left: -100px;
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-
-.tooltip:hover .tooltiptext {
-    visibility: visible;
-    opacity: 1;
-}
-
 /* Logo Styling */
 .etfash-logo {
     width: 120px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
+    height: 120px;
+    overflow: hidden;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-/* Brand Text Styling */
-.brand-text {
-    background: linear-gradient(135deg, #059669, #0284c7);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+.etfash-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-/* Button Styles */
+/* Custom Buttons */
 .eco-button {
-    background: linear-gradient(135deg, #10b981, #06b6d4);
-    transition: all 0.2s ease;
-    color: white;
+    background: linear-gradient(135deg, #059669 0%, #0284c7 100%);
+    transition: all 0.3s ease;
 }
 
 .eco-button:hover {
-    background: linear-gradient(135deg, #059669, #0284c7);
+    background: linear-gradient(135deg, #047857 0%, #0369a1 100%);
     transform: translateY(-1px);
 }
 
-/* Tab Navigation */
-.tab-btn.active {
-    border-color: #10b981 !important;
-    color: #059669 !important;
+/* Brand Text */
+.brand-text {
+    background: linear-gradient(135deg, #059669 0%, #0284c7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 /* Enhanced Responsive Styles */
