@@ -2,6 +2,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     initializeAirQualityChart();
     initializeGeneHeatmap();
+    showTab('overview');
 });
 
 function initializeAirQualityChart() {
@@ -146,6 +147,42 @@ function initializeHeatmap() {
             
             heatmapContainer.appendChild(rowDiv);
         });
+    }
+}
+
+// Tab switching functionality
+function showTab(tabName, event) {
+    // Remove active class from all tab buttons
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    tabButtons.forEach(button => {
+        button.classList.remove('active');
+        button.classList.add('text-gray-500');
+        button.classList.remove('text-emerald-600');
+        button.classList.remove('border-emerald-500');
+        button.classList.add('border-transparent');
+    });
+
+    // Add active class to clicked tab button
+    if (event) {
+        event.currentTarget.classList.add('active');
+        event.currentTarget.classList.remove('text-gray-500');
+        event.currentTarget.classList.add('text-emerald-600');
+        event.currentTarget.classList.add('border-emerald-500');
+        event.currentTarget.classList.remove('border-transparent');
+    }
+
+    // Hide all tab content
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(content => {
+        content.classList.remove('active');
+        content.style.display = 'none';
+    });
+
+    // Show selected tab content
+    const selectedTab = document.getElementById(tabName);
+    if (selectedTab) {
+        selectedTab.classList.add('active');
+        selectedTab.style.display = 'block';
     }
 }
 
