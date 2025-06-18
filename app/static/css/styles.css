@@ -1,0 +1,152 @@
+/* Base Utility Classes */
+.hidden {
+    display: none !important;
+}
+
+/* Gradients */
+.gradient-bg {
+    background: linear-gradient(135deg, #059669 0%, #0284c7 50%, #1e40af 100%);
+}
+
+.eco-gradient {
+    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+}
+
+/* Shadows and Effects */
+.card-shadow {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Interactive Elements */
+.heatmap-cell {
+    transition: all 0.2s ease;
+}
+
+.heatmap-cell:hover {
+    transform: scale(1.1);
+}
+
+/* Chart Container */
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+/* Tooltips */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 200px;
+    background-color: #555;
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Logo Styling */
+.etfash-logo {
+    width: 120px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* Brand Text Styling */
+.brand-text {
+    background: linear-gradient(135deg, #059669, #0284c7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Button Styles */
+.eco-button {
+    background: linear-gradient(135deg, #10b981, #06b6d4);
+    transition: all 0.2s ease;
+    color: white;
+}
+
+.eco-button:hover {
+    background: linear-gradient(135deg, #059669, #0284c7);
+    transform: translateY(-1px);
+}
+
+/* Tab Navigation */
+.tab-btn.active {
+    border-color: #10b981 !important;
+    color: #059669 !important;
+}
+
+/* Enhanced Responsive Styles */
+@media (max-width: 768px) {
+    .etfash-logo {
+        width: 80px;
+        height: 32px;
+    }
+    .chart-container {
+        height: 250px;
+    }
+    .tooltip .tooltiptext {
+        width: 150px;
+        margin-left: -75px;
+        font-size: 12px;
+        padding: 3px;
+    }
+    .heatmap-cell {
+        min-width: 16px;
+        min-height: 16px;
+    }
+    .tab-btn {
+        font-size: 14px;
+        padding: 12px 8px;
+    }
+}
+
+@media (max-width: 640px) {
+    .etfash-logo {
+        width: 60px;
+        height: 24px;
+    }
+    .chart-container {
+        height: 200px;
+    }
+    .tooltip .tooltiptext {
+        width: 120px;
+        margin-left: -60px;
+        font-size: 11px;
+    }
+    .tab-btn {
+        font-size: 12px;
+        padding: 10px 6px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    body {
+        margin: 0;
+        padding: 0;
+    }
+    .no-print {
+        display: none !important;
+    }
+}

@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login - EcoGenomics Suite{% endblock %}
+
+{% block content %}
+<div class="min-h-screen gradient-bg flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <div>
+            <div class="flex justify-center">
+                <div class="etfash-logo">
+                    <h1 class="text-2xl font-bold brand-text">ETFASH</h1>
+                </div>
+            </div>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-white">
+                EcoGenomics Suite
+            </h2>
+            <p class="mt-2 text-center text-sm text-gray-200">
+                Environmental Monitoring & Genomic Analytics Platform
+            </p>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-xl p-8">
+            <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">Sign In</h3>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="mb-4 p-4 rounded-md bg-red-50 border border-red-200">
+                        <p class="text-red-800 text-sm">{{ message }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700">
+                        Username
+                    </label>
+                    <div class="mt-1">
+                        <input id="username" name="username" type="text" required 
+                               class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-eco-green focus:border-eco-green focus:z-10 sm:text-sm"
+                               placeholder="Enter your username">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">
+                        Password
+                    </label>
+                    <div class="mt-1">
+                        <input id="password" name="password" type="password" required 
+                               class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-eco-green focus:border-eco-green focus:z-10 sm:text-sm"
+                               placeholder="Enter your password">
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input id="remember-me" name="remember-me" type="checkbox" 
+                               class="h-4 w-4 text-eco-green focus:ring-eco-green border-gray-300 rounded">
+                        <label for="remember-me" class="ml-2 block text-sm text-gray-900">
+                            Remember me
+                        </label>
+                    </div>
+                    
+                    <div class="text-sm">
+                        <a href="#" class="font-medium text-eco-green hover:text-eco-dark">
+                            Forgot your password?
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <button type="submit" 
+                            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white eco-button focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-eco-green">
+                        Sign In
+                    </button>
+                </div>
+                
+                <div class="text-center">
+                    <p class="text-sm text-gray-600">
+                        Don't have an account? 
+                        <a href="{% url 'signup' %}" class="font-medium text-eco-green hover:text-eco-dark">
+                            Sign up here
+                        </a>
+                    </p>
+                </div>
+            </form>
+            
+            <div class="mt-6 border-t border-gray-200 pt-6">
+                <p class="text-xs text-gray-500 text-center">
+                    <strong>Demo Mode:</strong> Use any username and password to login
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
