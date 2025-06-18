@@ -3,12 +3,43 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize tooltips
     initializeTooltips();
 
-    // Set initial active tab
-    showTab('overview');
+    // Set initial active tab - make sure overview is active on load
+    setInitialActiveTab();
     
     // Initialize charts after DOM is loaded
     setTimeout(initializeCharts, 100);
 });
+
+// Set initial active tab state
+function setInitialActiveTab() {
+    // Hide all tab contents first
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(content => {
+        content.style.display = 'none';
+        content.classList.remove('active');
+    });
+
+    // Remove active state from all tab buttons
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    tabButtons.forEach(btn => {
+        btn.classList.remove('active', 'border-emerald-500', 'text-emerald-600');
+        btn.classList.add('border-transparent', 'text-gray-500');
+    });
+
+    // Set overview tab as active
+    const overviewButton = document.querySelector('[onclick*="overview"]');
+    const overviewContent = document.getElementById('overview');
+    
+    if (overviewButton) {
+        overviewButton.classList.add('active', 'border-emerald-500', 'text-emerald-600');
+        overviewButton.classList.remove('border-transparent', 'text-gray-500');
+    }
+    
+    if (overviewContent) {
+        overviewContent.style.display = 'block';
+        overviewContent.classList.add('active');
+    }
+}
 
 // Tab functionality - matches your dashboard design
 function showTab(tabName, event) {
@@ -16,16 +47,16 @@ function showTab(tabName, event) {
     const tabButtons = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
 
-    // Remove active class from all buttons and content sections
-    tabButtons.forEach(btn => {
-        btn.classList.remove('active');
-        btn.classList.remove('border-emerald-500', 'text-emerald-600', 'bg-emerald-50');
-        btn.classList.add('border-transparent', 'text-gray-500');
+    // Hide all tab contents and remove active class
+    tabContents.forEach(content => {
+        content.style.display = 'none';
+        content.classList.remove('active');
     });
 
-    tabContents.forEach(content => {
-        content.classList.remove('active');
-        content.style.display = 'none';
+    // Remove active class from all buttons
+    tabButtons.forEach(btn => {
+        btn.classList.remove('active', 'border-emerald-500', 'text-emerald-600');
+        btn.classList.add('border-transparent', 'text-gray-500');
     });
 
     // Find the clicked button
@@ -39,16 +70,15 @@ function showTab(tabName, event) {
 
     // Add active class to clicked button
     if (currentButton) {
-        currentButton.classList.add('active');
-        currentButton.classList.add('border-emerald-500', 'text-emerald-600');
+        currentButton.classList.add('active', 'border-emerald-500', 'text-emerald-600');
         currentButton.classList.remove('border-transparent', 'text-gray-500');
     }
 
     // Show selected tab content
     const selectedTab = document.getElementById(tabName);
     if (selectedTab) {
-        selectedTab.classList.add('active');
         selectedTab.style.display = 'block';
+        selectedTab.classList.add('active');
     }
 
     // Reinitialize charts for the active tab
