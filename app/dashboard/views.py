@@ -5,82 +5,102 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.db import IntegrityError
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 import json
+import logging
+
+# Get logger for this module
+logger = logging.getLogger('dashboard')
 
 
 def login_view(request):
-    """Handle user login with both demo and real authentication"""
+    """Handle user login with secure authentication"""
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
         
+        # Input validation
         if not username or not password:
             messages.error(request, 'Please enter both username and password.')
             return render(request, 'dashboard/login.html')
         
-        # First try normal authentication
+        # Attempt authentication
         user = authenticate(request, username=username, password=password)
         
         if user is not None:
-            # User exists and password is correct
             if user.is_active:
                 login(request, user)
+                logger.info(f'User {username} logged in successfully')
                 messages.success(request, f'Welcome back, {user.username}!')
-                return redirect('dashboard')
+                
+                # Redirect to next page if specified, otherwise dashboard
+                next_page = request.GET.get('next', 'dashboard')
+                return redirect(next_page)
             else:
-                messages.error(request, 'Your account has been disabled.')
+                logger.warning(f'Inactive user {username} attempted login')
+                messages.error(request, 'Your account has been disabled. Please contact support.')
         else:
-            # Check if user exists but password is wrong
-            if User.objects.filter(username=username).exists():
-                messages.error(request, 'Invalid password. Please try again.')
-            else:
-                # Demo mode: Create user if doesn't exist (for demo purposes)
-                try:
-                    user = User.objects.create_user(
-                        username=username,
-                        password=password,
-                        email=f"{username}@demo.com"  # Demo email
-                    )
-                    user = authenticate(request, username=username, password=password)
-                    if user:
-                        login(request, user)
-                        messages.success(request, f'Demo account created and logged in as {user.username}!')
-                        return redirect('dashboard')
-                except IntegrityError:
-                    messages.error(request, 'An error occurred. Please try again.')
+            logger.warning(f'Failed login attempt for username: {username}')
+            messages.error(request, 'Invalid username or password. Please try again.')
     
     return render(request, 'dashboard/login.html')
 
 
 def signup_view(request):
-    """Handle user registration"""
+    """Handle user registration with comprehensive validation"""
     if request.method == 'POST':
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
+        username = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip().lower()
+        password = request.POST.get('password', '')
+        confirm_password = request.POST.get('confirm_password', '')
         
-        # Validation
+        # Comprehensive validation
+        errors = []
+        
+        # Required fields validation
         if not all([username, email, password, confirm_password]):
-            messages.error(request, 'All fields are required.')
-            return render(request, 'dashboard/signup.html')
+            errors.append('All fields are required.')
         
-        if password != confirm_password:
-            messages.error(request, 'Passwords do not match.')
-            return render(request, 'dashboard/signup.html')
+        # Username validation
+        if username:
+            if len(username) < 3:
+                errors.append('Username must be at least 3 characters long.')
+            elif len(username) > 150:
+                errors.append('Username must be less than 150 characters.')
+            elif not username.replace('_', '').replace('-', '').replace('.', '').isalnum():
+                errors.append('Username can only contain letters, numbers, and .-_ characters.')
+            elif User.objects.filter(username=username).exists():
+                errors.append('Username already exists. Please choose a different one.')
         
-        if len(password) < 6:
-            messages.error(request, 'Password must be at least 6 characters long.')
-            return render(request, 'dashboard/signup.html')
+        # Email validation
+        if email:
+            try:
+                validate_email(email)
+                if User.objects.filter(email=email).exists():
+                    errors.append('Email already registered. Please use a different email.')
+            except ValidationError:
+                errors.append('Please enter a valid email address.')
         
-        # Check if username already exists
-        if User.objects.filter(username=username).exists():
-            messages.error(request, 'Username already exists. Please choose a different one.')
-            return render(request, 'dashboard/signup.html')
+        # Password validation
+        if password:
+            if len(password) < 8:
+                errors.append('Password must be at least 8 characters long.')
+            elif password.isdigit():
+                errors.append('Password cannot be entirely numeric.')
+            elif password.lower() in ['password', '12345678', 'qwerty', 'abc123']:
+                errors.append('Password is too common. Please choose a stronger password.')
+            elif username and password.lower() == username.lower():
+                errors.append('Password cannot be the same as your username.')
         
-        # Check if email already exists
-        if User.objects.filter(email=email).exists():
-            messages.error(request, 'Email already registered. Please use a different email.')
+        # Password confirmation validation
+        if password and confirm_password and password != confirm_password:
+            errors.append('Passwords do not match.')
+        
+        # Display errors if any
+        if errors:
+            for error in errors:
+                messages.error(request, error)
             return render(request, 'dashboard/signup.html')
         
         try:
@@ -91,19 +111,25 @@ def signup_view(request):
                 password=password
             )
             
+            logger.info(f'New user account created: {username}')
+            
             # Automatically log in the user
             user = authenticate(request, username=username, password=password)
             if user:
                 login(request, user)
-                messages.success(request, f'Account created successfully! Welcome, {user.username}!')
+                logger.info(f'New user {username} automatically logged in')
+                messages.success(request, f'Account created successfully! Welcome to EcoGenomics Suite, {user.username}!')
                 return redirect('dashboard')
             else:
-                messages.error(request, 'Account created but login failed. Please try logging in manually.')
+                logger.error(f'Account created for {username} but automatic login failed')
+                messages.success(request, 'Account created successfully! Please log in.')
                 return redirect('login')
                 
         except IntegrityError as e:
+            logger.error(f'Database integrity error during user creation: {str(e)}')
             messages.error(request, 'An error occurred while creating your account. Please try again.')
         except Exception as e:
+            logger.error(f'Unexpected error during user creation: {str(e)}')
             messages.error(request, 'An unexpected error occurred. Please try again.')
     
     return render(request, 'dashboard/signup.html')
@@ -112,6 +138,8 @@ def signup_view(request):
 @login_required
 def dashboard_view(request):
     """Display the main dashboard with environmental and genomic data"""
+    logger.info(f'User {request.user.username} accessed dashboard')
+    
     context = {
         'user': request.user,
         'environmental_data': get_environmental_data(),
@@ -126,6 +154,7 @@ def logout_view(request):
     """Handle user logout"""
     username = request.user.username if request.user.is_authenticated else "User"
     logout(request)
+    logger.info(f'User {username} logged out')
     messages.success(request, f'You have been successfully logged out. Goodbye, {username}!')
     return redirect('login')
 
