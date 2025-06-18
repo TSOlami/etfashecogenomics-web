@@ -12,23 +12,21 @@
     display: block !important;
 }
 
-/* Tab Button Styles - Enhanced for beautiful design */
+/* Tab Button Styles */
 .tab-btn {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
+    transition: all 0.2s ease-in-out;
+    border-bottom: 2px solid transparent;
 }
 
 .tab-btn.active {
-    background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%) !important;
-    color: white !important;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+    border-bottom-color: #10b981 !important;
+    color: #059669 !important;
+    background-color: rgba(16, 185, 129, 0.05) !important;
 }
 
 .tab-btn:hover:not(.active) {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    color: #374b5c !important;
+    border-bottom-color: #d1d5db !important;
 }
 
 /* Chart Styles */
@@ -38,38 +36,15 @@
     position: relative;
 }
 
-/* Heatmap Styles - Enhanced */
+/* Heatmap Styles */
 .heatmap-cell {
-    width: 40px;
-    height: 40px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s ease;
     cursor: pointer;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    position: relative;
-    overflow: hidden;
-}
-
-.heatmap-cell::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
 }
 
 .heatmap-cell:hover {
-    transform: scale(1.15) rotate(2deg);
+    transform: scale(1.1);
     z-index: 10;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-}
-
-.heatmap-cell:hover::before {
-    opacity: 1;
 }
 
 /* Gradients */
@@ -83,7 +58,7 @@
 
 /* Shadows and Effects */
 .card-shadow {
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 /* Logo Styling */
@@ -91,13 +66,8 @@
     width: 120px;
     height: 40px;
     overflow: hidden;
-    border-radius: 0.75rem;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    transition: transform 0.3s ease;
-}
-
-.etfash-logo:hover {
-    transform: scale(1.05);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .etfash-logo img {
@@ -109,14 +79,12 @@
 /* Custom Buttons */
 .eco-button {
     background: linear-gradient(135deg, #059669 0%, #0284c7 100%);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+    transition: all 0.3s ease;
 }
 
 .eco-button:hover {
     background: linear-gradient(135deg, #047857 0%, #0369a1 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
+    transform: translateY(-1px);
 }
 
 /* Brand Text */
@@ -127,7 +95,7 @@
     background-clip: text;
 }
 
-/* Tooltip Styles - Enhanced */
+/* Tooltip Styles */
 .tooltip {
     position: relative;
     display: inline-block;
@@ -135,68 +103,32 @@
 
 .tooltip .tooltiptext {
     visibility: hidden;
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.8) 100%);
+    background-color: rgba(0, 0, 0, 0.8);
     color: #fff;
     text-align: center;
-    border-radius: 8px;
-    padding: 8px 12px;
+    border-radius: 6px;
+    padding: 5px 10px;
     position: absolute;
-    z-index: 1000;
+    z-index: 1;
     bottom: 125%;
     left: 50%;
     transform: translateX(-50%);
     opacity: 0;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.3s;
     font-size: 0.75rem;
     white-space: nowrap;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px);
-}
-
-.tooltip .tooltiptext::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent;
 }
 
 .tooltip:hover .tooltiptext {
     visibility: visible;
     opacity: 1;
-    transform: translateX(-50%) translateY(-5px);
-}
-
-/* Card Hover Effects */
-.hover\:shadow-xl:hover {
-    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
-    transform: translateY(-2px);
-}
-
-/* Backdrop Blur Support */
-.backdrop-blur-sm {
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-}
-
-/* Progress Bar Animation */
-@keyframes progressFill {
-    from { width: 0%; }
-    to { width: var(--progress-width); }
-}
-
-.progress-bar {
-    animation: progressFill 1.5s ease-out;
 }
 
 /* Enhanced Responsive Styles */
 @media (max-width: 768px) {
     .etfash-logo {
-        width: 80px;
-        height: 32px;
+        width: 48px;
+        height: 48px;
     }
     .chart-container {
         height: 250px;
@@ -205,22 +137,22 @@
         width: 150px;
         margin-left: -75px;
         font-size: 12px;
-        padding: 6px 8px;
+        padding: 3px;
     }
     .heatmap-cell {
-        width: 28px;
-        height: 28px;
+        min-width: 16px;
+        min-height: 16px;
     }
     .tab-btn {
         font-size: 14px;
-        padding: 12px 16px;
+        padding: 8px 12px;
     }
 }
 
 @media (max-width: 640px) {
     .etfash-logo {
-        width: 60px;
-        height: 24px;
+        width: 40px;
+        height: 40px;
     }
     .chart-container {
         height: 200px;
@@ -229,15 +161,10 @@
         width: 120px;
         margin-left: -60px;
         font-size: 11px;
-        padding: 4px 6px;
-    }
-    .heatmap-cell {
-        width: 24px;
-        height: 24px;
     }
     .tab-btn {
         font-size: 12px;
-        padding: 10px 12px;
+        padding: 6px 8px;
     }
 }
 
@@ -255,44 +182,4 @@
     .print-break-after {
         page-break-after: always;
     }
-}
-
-/* Loading Animation */
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-}
-
-.animate-pulse {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Smooth Scrolling */
-html {
-    scroll-behavior: smooth;
-}
-
-/* Focus States for Accessibility */
-.tab-btn:focus {
-    outline: 2px solid #10b981;
-    outline-offset: 2px;
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #10b981, #3b82f6);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #059669, #2563eb);
 }
