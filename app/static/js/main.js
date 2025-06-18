@@ -1,19 +1,27 @@
-// Main JavaScript functionality
+// Main JavaScript functionality - Consolidated and Fixed
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing dashboard...');
+    
     // Initialize tooltips
     initializeTooltips();
-
-    // Set initial active tab - make sure overview is active on load
+    
+    // Set initial active tab
     setInitialActiveTab();
     
-    // Initialize charts after DOM is loaded
-    setTimeout(initializeCharts, 100);
+    // Initialize charts after a short delay
+    setTimeout(() => {
+        initializeAllCharts();
+    }, 200);
 });
 
 // Set initial active tab state
 function setInitialActiveTab() {
+    console.log('Setting initial active tab...');
+    
     // Hide all tab contents first
     const tabContents = document.querySelectorAll('.tab-content');
+    console.log('Found tab contents:', tabContents.length);
+    
     tabContents.forEach(content => {
         content.style.display = 'none';
         content.classList.remove('active');
@@ -21,6 +29,8 @@ function setInitialActiveTab() {
 
     // Remove active state from all tab buttons
     const tabButtons = document.querySelectorAll('.tab-btn');
+    console.log('Found tab buttons:', tabButtons.length);
+    
     tabButtons.forEach(btn => {
         btn.classList.remove('active', 'border-emerald-500', 'text-emerald-600');
         btn.classList.add('border-transparent', 'text-gray-500');
@@ -30,6 +40,9 @@ function setInitialActiveTab() {
     const overviewButton = document.querySelector('[onclick*="overview"]');
     const overviewContent = document.getElementById('overview');
     
+    console.log('Overview button found:', !!overviewButton);
+    console.log('Overview content found:', !!overviewContent);
+    
     if (overviewButton) {
         overviewButton.classList.add('active', 'border-emerald-500', 'text-emerald-600');
         overviewButton.classList.remove('border-transparent', 'text-gray-500');
@@ -38,19 +51,26 @@ function setInitialActiveTab() {
     if (overviewContent) {
         overviewContent.style.display = 'block';
         overviewContent.classList.add('active');
+        console.log('Overview tab activated');
     }
 }
 
-// Tab functionality - matches your dashboard design
+// Tab functionality - Main function for switching tabs
 function showTab(tabName, event) {
+    console.log('Switching to tab:', tabName);
+    
     // Get all tab buttons and content sections
     const tabButtons = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
+    
+    console.log('Tab buttons found:', tabButtons.length);
+    console.log('Tab contents found:', tabContents.length);
 
     // Hide all tab contents and remove active class
     tabContents.forEach(content => {
         content.style.display = 'none';
         content.classList.remove('active');
+        console.log('Hiding content:', content.id);
     });
 
     // Remove active class from all buttons
@@ -64,7 +84,6 @@ function showTab(tabName, event) {
     if (event) {
         currentButton = event.currentTarget;
     } else {
-        // Find button by onclick content for initial load
         currentButton = document.querySelector(`[onclick*="'${tabName}'"]`);
     }
 
@@ -72,6 +91,7 @@ function showTab(tabName, event) {
     if (currentButton) {
         currentButton.classList.add('active', 'border-emerald-500', 'text-emerald-600');
         currentButton.classList.remove('border-transparent', 'text-gray-500');
+        console.log('Button activated:', currentButton);
     }
 
     // Show selected tab content
@@ -79,32 +99,57 @@ function showTab(tabName, event) {
     if (selectedTab) {
         selectedTab.style.display = 'block';
         selectedTab.classList.add('active');
+        console.log('Content shown for tab:', tabName);
+    } else {
+        console.error('Tab content not found for:', tabName);
     }
 
     // Reinitialize charts for the active tab
     setTimeout(() => {
-        if (tabName === 'overview') {
-            initializeOverviewCharts();
-        } else if (tabName === 'bioinformatics') {
-            initializeGenomicCharts();
-        } else if (tabName === 'analytics') {
-            initializeHeatmap();
-        }
+        initializeChartsForTab(tabName);
     }, 100);
 }
 
+// Initialize charts for specific tab
+function initializeChartsForTab(tabName) {
+    console.log('Initializing charts for tab:', tabName);
+    
+    switch(tabName) {
+        case 'overview':
+            initializeOverviewCharts();
+            break;
+        case 'environmental':
+            initializeEnvironmentalCharts();
+            break;
+        case 'bioinformatics':
+            initializeGenomicCharts();
+            break;
+        case 'analytics':
+            initializeHeatmap();
+            break;
+        default:
+            console.log('No specific charts for tab:', tabName);
+    }
+}
+
 // Initialize all charts
-function initializeCharts() {
+function initializeAllCharts() {
+    console.log('Initializing all charts...');
     initializeOverviewCharts();
+    initializeEnvironmentalCharts();
     initializeGenomicCharts();
     initializeHeatmap();
 }
 
 // Initialize overview tab charts
 function initializeOverviewCharts() {
+    console.log('Initializing overview charts...');
+    
     // Temperature trend chart
     const tempCtx = document.getElementById('temperatureChart');
     if (tempCtx && typeof chartData !== 'undefined') {
+        console.log('Creating temperature chart...');
+        
         // Destroy existing chart if it exists
         if (window.temperatureChart) {
             window.temperatureChart.destroy();
@@ -151,6 +196,8 @@ function initializeOverviewCharts() {
     // Species count chart
     const speciesCtx = document.getElementById('speciesChart');
     if (speciesCtx && typeof chartData !== 'undefined') {
+        console.log('Creating species chart...');
+        
         // Destroy existing chart if it exists
         if (window.speciesChart) {
             window.speciesChart.destroy();
@@ -188,10 +235,70 @@ function initializeOverviewCharts() {
     }
 }
 
+// Initialize environmental monitoring charts
+function initializeEnvironmentalCharts() {
+    console.log('Initializing environmental charts...');
+    
+    const airQualityCtx = document.getElementById('airQualityChart');
+    if (airQualityCtx) {
+        console.log('Creating air quality chart...');
+        
+        // Destroy existing chart if it exists
+        if (window.airQualityChart) {
+            window.airQualityChart.destroy();
+        }
+        
+        const gradient = airQualityCtx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(16, 185, 129, 0.2)');
+        gradient.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+
+        window.airQualityChart = new Chart(airQualityCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                datasets: [{
+                    label: 'Air Quality Index',
+                    data: [65, 78, 90, 85, 95, 110, 156],
+                    borderColor: '#10b981',
+                    backgroundColor: gradient,
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    }
+}
+
 // Initialize genomic tab charts
 function initializeGenomicCharts() {
+    console.log('Initializing genomic charts...');
+    
     const geneticCtx = document.getElementById('geneticChart');
     if (geneticCtx && typeof chartData !== 'undefined') {
+        console.log('Creating genetic diversity chart...');
+        
         // Destroy existing chart if it exists
         if (window.geneticChart) {
             window.geneticChart.destroy();
@@ -238,6 +345,8 @@ function initializeGenomicCharts() {
     // Monthly samples chart
     const samplesCtx = document.getElementById('samplesChart');
     if (samplesCtx && typeof chartData !== 'undefined') {
+        console.log('Creating samples chart...');
+        
         // Destroy existing chart if it exists
         if (window.samplesChart) {
             window.samplesChart.destroy();
@@ -280,12 +389,40 @@ function initializeGenomicCharts() {
             }
         });
     }
+
+    // Gene heatmap
+    const geneHeatmapContainer = document.getElementById('geneHeatmap');
+    if (geneHeatmapContainer) {
+        console.log('Creating gene heatmap...');
+        
+        const numRows = 5;
+        const numCols = 5;
+        
+        // Clear existing content
+        geneHeatmapContainer.innerHTML = '';
+
+        // Generate random heatmap data
+        for (let i = 0; i < numRows * numCols; i++) {
+            const cell = document.createElement('div');
+            const value = Math.random();
+            const hue = value > 0.66 ? 'from-red-500 to-red-600' :
+                       value > 0.33 ? 'from-yellow-500 to-yellow-600' :
+                       'from-emerald-500 to-emerald-600';
+            
+            cell.className = `w-full h-full rounded bg-gradient-to-br ${hue}`;
+            geneHeatmapContainer.appendChild(cell);
+        }
+    }
 }
 
 // Initialize heatmap for analytics tab
 function initializeHeatmap() {
+    console.log('Initializing biodiversity heatmap...');
+    
     const heatmapContainer = document.getElementById('heatmap-container');
     if (heatmapContainer && typeof heatmapData !== 'undefined') {
+        console.log('Creating biodiversity heatmap...');
+        
         heatmapContainer.innerHTML = '';
         
         heatmapData.forEach((row, rowIndex) => {
