@@ -1,64 +1,36 @@
-# EcoGenomics Suite - Core Requirements
-# Django Framework
-Django==4.2.7
-gunicorn==21.2.0
-whitenoise==6.5.0
-python-dotenv==1.0.0
-dj-database-url==2.1.0
-
-# Database Support
-psycopg2-binary==2.9.9
-
-# Data Processing and Analysis
-pandas==2.1.4
-numpy==1.24.3
-scipy==1.11.4
-openpyxl==3.1.2
-xlrd==2.0.1
-
-# Statistical Analysis
-scikit-learn==1.3.2
-statsmodels==0.14.0
-pingouin==0.5.3
-
-# Visualization
-matplotlib==3.8.2
-seaborn==0.13.0
-plotly==5.17.0
-
-# Basic Bioinformatics
-biopython==1.81
-pysam==0.21.0
-
-# Geospatial Analysis (for environmental data)
-geopandas==0.14.1
-folium==0.15.0
-shapely==2.0.2
-
-# Report Generation
-reportlab==4.0.7
-python-docx==0.8.11
-jinja2==3.1.2
-
-# Image Processing (for microscopy/sample images)
-Pillow>=9.0.0
-
-# Web Requests and Data Exchange
-requests==2.31.0
-beautifulsoup4==4.12.2
-
-# Caching and Performance
-redis==5.0.1
-django-redis==5.4.0
-
-# Security
-cryptography==41.0.7
-
-# Utilities
-python-dateutil==2.8.2
-pytz==2023.3
-
-# Development and Testing
-pytest==7.4.3
-pytest-django==4.7.0
-coverage==7.3.2
+Django
+gunicorn
+whitenoise
+python-dotenv
+dj-database-url
+psycopg2-binary
+pandas
+numpy
+scipy
+openpyxl
+xlrd
+scikit-learn
+statsmodels
+pingouin
+matplotlib
+seaborn
+plotly
+biopython
+pysam
+geopandas
+folium
+shapely
+reportlab
+python-docx
+jinja2
+Pillow
+requests
+beautifulsoup4
+redis
+django-redis
+cryptography
+python-dateutil
+pytz
+pytest
+pytest-django
+coverage
