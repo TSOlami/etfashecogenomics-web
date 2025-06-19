@@ -1,7 +1,61 @@
+# Production Requirements for EcoGenomics Suite
+# Core Django and Web Framework
 Django==4.2.7
-Pillow>=9.0.0
 gunicorn==21.2.0
 whitenoise==6.5.0
 python-dotenv==1.0.0
 dj-database-url==2.1.0
+
+# Database Support
 psycopg2-binary==2.9.9
+sqlite3
+
+# Data Processing and Analysis
+pandas==2.1.4
+numpy==1.24.3
+scipy==1.11.4
+openpyxl==3.1.2
+xlrd==2.0.1
+
+# Scientific Computing and Statistics
+scikit-learn==1.3.2
+statsmodels==0.14.0
+
+# Visualization
+matplotlib==3.8.2
+seaborn==0.13.0
+plotly==5.17.0
+
+# Bioinformatics and Genomics
+biopython==1.81
+pysam==0.21.0
+
+# Report Generation
+reportlab==4.0.7
+python-docx==0.8.11
+fpdf2==2.7.6
+
+# Image Processing
+Pillow>=9.0.0
+
+# API and Data Exchange
+requests==2.31.0
+xmltodict==0.13.0
+
+# Caching and Performance
+redis==5.0.1
+django-redis==5.4.0
+
+# Security
+cryptography==41.0.7
+bcrypt==4.1.2
+
+# Utilities
+python-dateutil==2.8.2
+pytz==2023.3
+six==1.16.0
+
+# Development and Testing (included for completeness)
+pytest==7.4.3
+pytest-django==4.7.0
+coverage==7.3.2

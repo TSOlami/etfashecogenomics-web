@@ -1,0 +1,58 @@
+# Specialized Bioinformatics Requirements for EcoGenomics Suite
+# Advanced genomic analysis and bioinformatics tools
+
+# Core bioinformatics
+biopython==1.81
+pysam==0.21.0
+pyvcf==0.6.8
+
+# Sequence analysis
+muscle==0.1.3
+clustalw==1.2.9
+
+# Phylogenetics
+dendropy==4.5.2
+ete3==3.1.3
+
+# Protein structure prediction and analysis
+biotite==0.37.0
+mdanalysis==2.6.1
+
+# Gene expression analysis
+scanpy==1.9.6
+anndata==0.10.3
+
+# Genomic data formats
+pybedtools==0.9.1
+pyBigWig==0.3.22
+
+# Statistical genetics
+scikit-allel==1.3.7
+pandas-plink==2.2.9
+
+# Molecular visualization
+py3Dmol==2.0.4
+nglview==3.0.8
+
+# Database connectivity for biological databases
+psycopg2-binary==2.9.9
+pymongo==4.6.0
+
+# Web scraping for biological data
+beautifulsoup4==4.12.2
+selenium==4.15.2
+
+# Parallel processing for large datasets
+dask[complete]==2023.11.0
+joblib==1.3.2
+
+# Machine learning for genomics
+tensorflow==2.15.0
+torch==2.1.1
+transformers==4.35.2
+
+# Note: Some packages may require additional system dependencies
+# For protein structure prediction, consider installing:
+# - PyMOL (commercial license required)
+# - ChimeraX (free for academic use)
+# - VMD (free)

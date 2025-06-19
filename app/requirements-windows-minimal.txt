@@ -1,19 +1,35 @@
-# Windows-friendly minimal requirements
+# Windows-friendly minimal requirements for EcoGenomics Suite
+# For users who have issues with complex scientific packages
+
+# Core Django Framework
 Django==4.2.7
 python-dotenv==1.0.0
 whitenoise==6.5.0
 
-# Data processing (essential)
-pandas
-openpyxl
+# Essential Data Processing
+pandas>=2.0.0
+openpyxl>=3.1.0
 
-# Optional: Install these if you have Visual Studio Build Tools
-# scikit-learn
-# matplotlib
-# seaborn
-# plotly
-# reportlab
+# Basic Scientific Computing (install via conda if pip fails)
+# numpy>=1.24.0  # Install via: conda install numpy
+# scipy>=1.10.0  # Install via: conda install scipy
 
-# Note: For full functionality, install Anaconda/Miniconda and use:
-# conda install pandas numpy scipy scikit-learn matplotlib seaborn plotly
-# pip install Django python-dotenv whitenoise openpyxl reportlab
+# Database Support
+# psycopg2-binary>=2.9.0  # Only needed for PostgreSQL
+
+# Alternative installation commands for Windows users:
+# 1. Install Anaconda/Miniconda first
+# 2. Run: conda install numpy scipy scikit-learn matplotlib pandas
+# 3. Run: pip install Django python-dotenv whitenoise openpyxl
+
+# If you have Visual Studio Build Tools installed, you can try:
+# pip install -r requirements.txt
+
+# Minimal visualization (fallback)
+# matplotlib>=3.7.0  # Install via: conda install matplotlib
+
+# Report generation (optional)
+# reportlab>=4.0.0
+
+# Note: For full functionality, we recommend using Anaconda/Miniconda
+# and installing scientific packages via conda, then Django packages via pip

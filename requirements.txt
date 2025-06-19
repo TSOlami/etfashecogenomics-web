@@ -1,0 +1,16 @@
+# Root level requirements for deployment
+# Points to the main application requirements
+
+-r app/requirements.txt
+
+# Additional deployment-specific packages
+gunicorn==21.2.0
+dj-database-url==2.1.0
+whitenoise==6.5.0
+
+# Environment variables
+python-dotenv==1.0.0
+
+# Health checks and monitoring
+django-health-check==3.17.0
+sentry-sdk[django]==1.38.0
