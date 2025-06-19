@@ -1,6 +1,6 @@
-// Main JavaScript functionality - Consolidated and Fixed
+// Main JavaScript functionality - Enhanced for Real Data Integration
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, initializing dashboard...');
+    console.log('DOM loaded, initializing EcoGenomics dashboard...');
     
     // Initialize tooltips
     initializeTooltips();
@@ -12,6 +12,12 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         initializeAllCharts();
     }, 200);
+    
+    // Initialize upload functionality
+    initializeUploadFunctionality();
+    
+    // Initialize analysis functionality
+    initializeAnalysisFunctionality();
 });
 
 // Set initial active tab state
@@ -174,6 +180,10 @@ function initializeOverviewCharts() {
                 plugins: {
                     legend: {
                         display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Temperature Trend'
                     }
                 },
                 scales: {
@@ -181,11 +191,19 @@ function initializeOverviewCharts() {
                         beginAtZero: false,
                         grid: {
                             color: 'rgba(0, 0, 0, 0.1)'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Temperature (°C)'
                         }
                     },
                     x: {
                         grid: {
                             display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Date'
                         }
                     }
                 }
@@ -193,29 +211,30 @@ function initializeOverviewCharts() {
         });
     }
 
-    // Species count chart
-    const speciesCtx = document.getElementById('speciesChart');
-    if (speciesCtx && typeof chartData !== 'undefined') {
-        console.log('Creating species chart...');
+    // Pollution levels chart
+    const pollutionCtx = document.getElementById('pollutionChart');
+    if (pollutionCtx && typeof chartData !== 'undefined') {
+        console.log('Creating pollution levels chart...');
         
         // Destroy existing chart if it exists
-        if (window.speciesChart) {
-            window.speciesChart.destroy();
+        if (window.pollutionChart) {
+            window.pollutionChart.destroy();
         }
         
-        window.speciesChart = new Chart(speciesCtx, {
-            type: 'doughnut',
+        window.pollutionChart = new Chart(pollutionCtx, {
+            type: 'bar',
             data: {
-                labels: chartData.species_count.labels,
+                labels: chartData.pollution_levels.labels,
                 datasets: [{
-                    data: chartData.species_count.data,
+                    label: 'Concentration (µg/m³)',
+                    data: chartData.pollution_levels.data,
                     backgroundColor: [
-                        '#10b981',
-                        '#06b6d4',
-                        '#8b5cf6',
-                        '#f59e0b',
-                        '#ef4444'
-                    ]
+                        '#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6'
+                    ],
+                    borderColor: [
+                        '#dc2626', '#ea580c', '#ca8a04', '#16a34a', '#2563eb'
+                    ],
+                    borderWidth: 1
                 }]
             },
             options: {
@@ -223,10 +242,19 @@ function initializeOverviewCharts() {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        position: 'bottom',
-                        labels: {
-                            padding: 20,
-                            usePointStyle: true
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Average Pollution Levels'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Concentration (µg/m³)'
                         }
                     }
                 }
@@ -240,7 +268,7 @@ function initializeEnvironmentalCharts() {
     console.log('Initializing environmental charts...');
     
     const airQualityCtx = document.getElementById('airQualityChart');
-    if (airQualityCtx) {
+    if (airQualityCtx && typeof chartData !== 'undefined') {
         console.log('Creating air quality chart...');
         
         // Destroy existing chart if it exists
@@ -255,10 +283,10 @@ function initializeEnvironmentalCharts() {
         window.airQualityChart = new Chart(airQualityCtx, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                labels: chartData.air_quality_trend.labels,
                 datasets: [{
                     label: 'Air Quality Index',
-                    data: [65, 78, 90, 85, 95, 110, 156],
+                    data: chartData.air_quality_trend.data,
                     borderColor: '#10b981',
                     backgroundColor: gradient,
                     tension: 0.4,
@@ -271,6 +299,10 @@ function initializeEnvironmentalCharts() {
                 plugins: {
                     legend: {
                         display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Air Quality Index Trend'
                     }
                 },
                 scales: {
@@ -278,11 +310,19 @@ function initializeEnvironmentalCharts() {
                         beginAtZero: true,
                         grid: {
                             color: 'rgba(0,0,0,0.05)'
+                        },
+                        title: {
+                            display: true,
+                            text: 'AQI Value'
                         }
                     },
                     x: {
                         grid: {
                             display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Date'
                         }
                     }
                 }
@@ -295,25 +335,28 @@ function initializeEnvironmentalCharts() {
 function initializeGenomicCharts() {
     console.log('Initializing genomic charts...');
     
-    const geneticCtx = document.getElementById('geneticChart');
-    if (geneticCtx && typeof chartData !== 'undefined') {
-        console.log('Creating genetic diversity chart...');
+    // Mutation by distance chart
+    const mutationCtx = document.getElementById('mutationChart');
+    if (mutationCtx && typeof chartData !== 'undefined') {
+        console.log('Creating mutation by distance chart...');
         
         // Destroy existing chart if it exists
-        if (window.geneticChart) {
-            window.geneticChart.destroy();
+        if (window.mutationChart) {
+            window.mutationChart.destroy();
         }
         
-        window.geneticChart = new Chart(geneticCtx, {
-            type: 'bar',
+        window.mutationChart = new Chart(mutationCtx, {
+            type: 'scatter',
             data: {
-                labels: chartData.genetic_diversity.labels,
                 datasets: [{
-                    label: 'Diversity Index',
-                    data: chartData.genetic_diversity.data,
-                    backgroundColor: '#06b6d4',
-                    borderColor: '#0891b2',
-                    borderWidth: 1
+                    label: 'Mutations vs Distance',
+                    data: chartData.mutation_by_distance.labels.map((label, index) => ({
+                        x: parseFloat(label.replace('m', '')),
+                        y: chartData.mutation_by_distance.data[index]
+                    })),
+                    backgroundColor: '#8b5cf6',
+                    borderColor: '#7c3aed',
+                    borderWidth: 2
                 }]
             },
             options: {
@@ -322,67 +365,24 @@ function initializeGenomicCharts() {
                 plugins: {
                     legend: {
                         display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Mutations vs Distance from Pollution Source'
                     }
                 },
                 scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 1,
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.1)'
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Distance from Source (m)'
                         }
                     },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    // Monthly samples chart
-    const samplesCtx = document.getElementById('samplesChart');
-    if (samplesCtx && typeof chartData !== 'undefined') {
-        console.log('Creating samples chart...');
-        
-        // Destroy existing chart if it exists
-        if (window.samplesChart) {
-            window.samplesChart.destroy();
-        }
-        
-        window.samplesChart = new Chart(samplesCtx, {
-            type: 'line',
-            data: {
-                labels: chartData.monthly_samples.labels,
-                datasets: [{
-                    label: 'Monthly Samples',
-                    data: chartData.monthly_samples.data,
-                    borderColor: '#8b5cf6',
-                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
                     y: {
                         beginAtZero: true,
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.1)'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
+                        title: {
+                            display: true,
+                            text: 'Number of Mutations'
                         }
                     }
                 }
@@ -401,7 +401,7 @@ function initializeGenomicCharts() {
         // Clear existing content
         geneHeatmapContainer.innerHTML = '';
 
-        // Generate random heatmap data
+        // Generate heatmap data (this could be from real data)
         for (let i = 0; i < numRows * numCols; i++) {
             const cell = document.createElement('div');
             const value = Math.random();
@@ -410,6 +410,7 @@ function initializeGenomicCharts() {
                        'from-emerald-500 to-emerald-600';
             
             cell.className = `w-full h-full rounded bg-gradient-to-br ${hue}`;
+            cell.setAttribute('data-tooltip', `Expression: ${(value * 100).toFixed(1)}%`);
             geneHeatmapContainer.appendChild(cell);
         }
     }
@@ -449,7 +450,225 @@ function initializeHeatmap() {
     }
 }
 
-// Tooltip functionality
+// Initialize upload functionality
+function initializeUploadFunctionality() {
+    console.log('Initializing upload functionality...');
+    
+    const uploadForm = document.getElementById('uploadForm');
+    const fileInput = document.getElementById('fileInput');
+    const fileTypeSelect = document.getElementById('fileType');
+    const uploadProgress = document.getElementById('uploadProgress');
+    const uploadStatus = document.getElementById('uploadStatus');
+    
+    if (uploadForm) {
+        uploadForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            handleFileUpload();
+        });
+    }
+    
+    // Template download buttons
+    const templateButtons = document.querySelectorAll('[data-template]');
+    templateButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const templateType = this.getAttribute('data-template');
+            downloadTemplate(templateType);
+        });
+    });
+}
+
+// Handle file upload
+function handleFileUpload() {
+    const fileInput = document.getElementById('fileInput');
+    const fileTypeSelect = document.getElementById('fileType');
+    const uploadProgress = document.getElementById('uploadProgress');
+    const uploadStatus = document.getElementById('uploadStatus');
+    
+    if (!fileInput.files.length) {
+        showUploadStatus('Please select a file to upload.', 'error');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    formData.append('file_type', fileTypeSelect.value);
+    
+    // Show progress
+    if (uploadProgress) {
+        uploadProgress.style.display = 'block';
+    }
+    showUploadStatus('Uploading and processing file...', 'info');
+    
+    fetch('/upload/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': getCsrfToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (uploadProgress) {
+            uploadProgress.style.display = 'none';
+        }
+        
+        if (data.success) {
+            showUploadStatus(data.message, 'success');
+            // Refresh dashboard data
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            showUploadStatus(data.error || 'Upload failed', 'error');
+        }
+    })
+    .catch(error => {
+        if (uploadProgress) {
+            uploadProgress.style.display = 'none';
+        }
+        showUploadStatus('Upload failed: ' + error.message, 'error');
+    });
+}
+
+// Show upload status
+function showUploadStatus(message, type) {
+    const uploadStatus = document.getElementById('uploadStatus');
+    if (uploadStatus) {
+        uploadStatus.textContent = message;
+        uploadStatus.className = `mt-2 text-sm ${
+            type === 'success' ? 'text-green-600' :
+            type === 'error' ? 'text-red-600' :
+            'text-blue-600'
+        }`;
+        uploadStatus.style.display = 'block';
+    }
+}
+
+// Download template
+function downloadTemplate(templateType) {
+    window.location.href = `/download-template/${templateType}/`;
+}
+
+// Initialize analysis functionality
+function initializeAnalysisFunctionality() {
+    console.log('Initializing analysis functionality...');
+    
+    const analysisButtons = document.querySelectorAll('[data-analysis]');
+    analysisButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const analysisType = this.getAttribute('data-analysis');
+            const dataset = this.getAttribute('data-dataset') || 'environmental';
+            runAnalysis(analysisType, dataset);
+        });
+    });
+}
+
+// Run analysis
+function runAnalysis(analysisType, dataset, parameters = {}) {
+    console.log(`Running ${analysisType} analysis on ${dataset} data...`);
+    
+    const analysisStatus = document.getElementById('analysisStatus');
+    if (analysisStatus) {
+        analysisStatus.textContent = 'Running analysis...';
+        analysisStatus.className = 'text-blue-600';
+        analysisStatus.style.display = 'block';
+    }
+    
+    fetch('/api/analysis/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify({
+            analysis_type: analysisType,
+            dataset: dataset,
+            parameters: parameters
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            displayAnalysisResults(data.results);
+            if (analysisStatus) {
+                analysisStatus.textContent = 'Analysis completed successfully!';
+                analysisStatus.className = 'text-green-600';
+            }
+        } else {
+            if (analysisStatus) {
+                analysisStatus.textContent = 'Analysis failed: ' + (data.error || 'Unknown error');
+                analysisStatus.className = 'text-red-600';
+            }
+        }
+    })
+    .catch(error => {
+        if (analysisStatus) {
+            analysisStatus.textContent = 'Analysis failed: ' + error.message;
+            analysisStatus.className = 'text-red-600';
+        }
+    });
+}
+
+// Display analysis results
+function displayAnalysisResults(results) {
+    const resultsContainer = document.getElementById('analysisResults');
+    if (!resultsContainer) return;
+    
+    let html = '<div class="bg-white p-4 rounded-lg shadow mt-4">';
+    html += '<h3 class="text-lg font-semibold mb-3">Analysis Results</h3>';
+    
+    if (results.error) {
+        html += `<p class="text-red-600">${results.error}</p>`;
+    } else {
+        html += '<div class="space-y-2">';
+        html += formatAnalysisResults(results);
+        html += '</div>';
+    }
+    
+    html += '</div>';
+    resultsContainer.innerHTML = html;
+}
+
+// Format analysis results for display
+function formatAnalysisResults(results) {
+    let html = '';
+    
+    // Handle different types of results
+    if (results.summary) {
+        html += '<h4 class="font-medium">Summary</h4>';
+        html += '<ul class="list-disc list-inside ml-4">';
+        for (const [key, value] of Object.entries(results.summary)) {
+            html += `<li>${key.replace('_', ' ')}: ${value}</li>`;
+        }
+        html += '</ul>';
+    }
+    
+    if (results.violations && results.violations.length > 0) {
+        html += '<h4 class="font-medium mt-3">Pollution Violations</h4>';
+        html += '<ul class="list-disc list-inside ml-4 text-red-600">';
+        results.violations.forEach(violation => {
+            html += `<li>${violation.location}: ${violation.violation}</li>`;
+        });
+        html += '</ul>';
+    }
+    
+    if (results.correlations) {
+        html += '<h4 class="font-medium mt-3">Correlations</h4>';
+        html += '<ul class="list-disc list-inside ml-4">';
+        results.correlations.forEach(corr => {
+            html += `<li>${corr.parameter1} vs ${corr.parameter2}: ${corr.correlation.toFixed(3)} (${corr.strength})</li>`;
+        });
+        html += '</ul>';
+    }
+    
+    return html;
+}
+
+// Utility functions
+function getCsrfToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+}
+
 function initializeTooltips() {
     const tooltipElements = document.querySelectorAll('[data-tooltip]');
     
@@ -489,32 +708,8 @@ function initializeTooltips() {
     });
 }
 
-// Utility functions
-function formatNumber(num) {
-    return new Intl.NumberFormat().format(num);
-}
-
-function getStatusColor(status) {
-    const statusColors = {
-        'normal': 'text-emerald-600',
-        'optimal': 'text-emerald-600',
-        'good': 'text-emerald-600',
-        'clear': 'text-emerald-600',
-        'warning': 'text-yellow-600',
-        'critical': 'text-red-600'
-    };
-    return statusColors[status.toLowerCase()] || 'text-gray-600';
-}
-
-// Simple test function for debugging
-function testTabSwitching() {
-    console.log('Testing tab switching...');
-    const tabs = ['overview', 'environmental', 'bioinformatics', 'analytics', 'reports'];
-    
-    tabs.forEach((tab, index) => {
-        setTimeout(() => {
-            console.log(`Testing tab: ${tab}`);
-            showTab(tab);
-        }, index * 1000);
-    });
-}
+// Export functions for global access
+window.showTab = showTab;
+window.runAnalysis = runAnalysis;
+window.handleFileUpload = handleFileUpload;
+window.downloadTemplate = downloadTemplate;

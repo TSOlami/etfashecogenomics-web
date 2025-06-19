@@ -1,510 +1,307 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
-import uuid
-
-
-class Location(models.Model):
-    """Model to store sampling locations with geographic coordinates"""
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=200, help_text="Descriptive name for the location")
-    description = models.TextField(blank=True, help_text="Additional details about the location")
-    latitude = models.DecimalField(
-        max_digits=10, 
-        decimal_places=7,
-        validators=[MinValueValidator(-90), MaxValueValidator(90)],
-        help_text="Latitude in decimal degrees"
-    )
-    longitude = models.DecimalField(
-        max_digits=10, 
-        decimal_places=7,
-        validators=[MinValueValidator(-180), MaxValueValidator(180)],
-        help_text="Longitude in decimal degrees"
-    )
-    elevation = models.DecimalField(
-        max_digits=8, 
-        decimal_places=2, 
-        null=True, 
-        blank=True,
-        help_text="Elevation in meters above sea level"
-    )
-    site_type = models.CharField(
-        max_length=50,
-        choices=[
-            ('industrial', 'Industrial Area'),
-            ('residential', 'Residential Area'),
-            ('commercial', 'Commercial Area'),
-            ('agricultural', 'Agricultural Area'),
-            ('forest', 'Forest/Natural Area'),
-            ('urban', 'Urban Area'),
-            ('suburban', 'Suburban Area'),
-            ('rural', 'Rural Area'),
-            ('coastal', 'Coastal Area'),
-            ('mining', 'Mining Area'),
-            ('landfill', 'Landfill/Waste Site'),
-            ('traffic', 'Traffic/Roadside'),
-            ('background', 'Background/Remote'),
-            ('other', 'Other'),
-        ],
-        default='other'
-    )
-    land_use = models.CharField(
-        max_length=100,
-        blank=True,
-        help_text="Detailed land use description"
-    )
-    distance_to_source = models.DecimalField(
-        max_digits=8,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        help_text="Distance to pollution source in meters"
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='locations')
-
-    class Meta:
-        ordering = ['name']
-        unique_together = ['latitude', 'longitude', 'created_by']
-
-    def __str__(self):
-        return f"{self.name} ({self.latitude}, {self.longitude})"
-
-
-class PollutantType(models.Model):
-    """Model to define different types of pollutants and their properties"""
-    name = models.CharField(max_length=100, unique=True)
-    chemical_formula = models.CharField(max_length=50, blank=True)
-    cas_number = models.CharField(max_length=20, blank=True, help_text="Chemical Abstracts Service Registry Number")
-    category = models.CharField(
-        max_length=50,
-        choices=[
-            ('criteria_air', 'Criteria Air Pollutant'),
-            ('particulate', 'Particulate Matter'),
-            ('heavy_metal', 'Heavy Metal'),
-            ('voc', 'Volatile Organic Compound'),
-            ('pac', 'Polycyclic Aromatic Hydrocarbon'),
-            ('pesticide', 'Pesticide/Herbicide'),
-            ('nutrient', 'Nutrient'),
-            ('physical', 'Physical Parameter'),
-            ('biological', 'Biological Parameter'),
-            ('radioactive', 'Radioactive Material'),
-            ('other', 'Other'),
-        ]
-    )
-    subcategory = models.CharField(max_length=100, blank=True)
-    unit = models.CharField(max_length=20, help_text="Standard unit of measurement")
-    molecular_weight = models.DecimalField(
-        max_digits=10,
-        decimal_places=4,
-        null=True,
-        blank=True,
-        help_text="Molecular weight in g/mol"
-    )
-    
-    # Regulatory Standards
-    who_standard = models.DecimalField(
-        max_digits=15, 
-        decimal_places=6, 
-        null=True, 
-        blank=True,
-        help_text="WHO guideline value"
-    )
-    who_averaging_time = models.CharField(
-        max_length=50,
-        blank=True,
-        help_text="WHO averaging time (e.g., 24-hour, annual)"
-    )
-    nesrea_standard = models.DecimalField(
-        max_digits=15, 
-        decimal_places=6, 
-        null=True, 
-        blank=True,
-        help_text="NESREA standard value"
-    )
-    nesrea_averaging_time = models.CharField(
-        max_length=50,
-        blank=True,
-        help_text="NESREA averaging time"
-    )
-    epa_standard = models.DecimalField(
-        max_digits=15,
-        decimal_places=6,
-        null=True,
-        blank=True,
-        help_text="US EPA standard value"
-    )
-    epa_averaging_time = models.CharField(
-        max_length=50,
-        blank=True,
-        help_text="EPA averaging time"
-    )
-    eu_standard = models.DecimalField(
-        max_digits=15,
-        decimal_places=6,
-        null=True,
-        blank=True,
-        help_text="EU standard value"
-    )
-    
-    # Additional Properties
-    description = models.TextField(blank=True)
-    health_effects = models.TextField(blank=True)
-    environmental_effects = models.TextField(blank=True)
-    sources = models.TextField(blank=True, help_text="Common sources of this pollutant")
-    sampling_method = models.TextField(blank=True, help_text="Standard sampling methods")
-    analytical_method = models.TextField(blank=True, help_text="Standard analytical methods")
-    detection_limit = models.DecimalField(
-        max_digits=15,
-        decimal_places=6,
-        null=True,
-        blank=True,
-        help_text="Typical method detection limit"
-    )
-    
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ['category', 'name']
-
-    def __str__(self):
-        return f"{self.name} ({self.unit})"
-
-
-class EnvironmentalReading(models.Model):
-    """Model to store individual environmental measurements"""
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='readings')
-    pollutant_type = models.ForeignKey(PollutantType, on_delete=models.CASCADE, related_name='readings')
-    
-    # Measurement Data
-    concentration = models.DecimalField(
-        max_digits=15, 
-        decimal_places=6,
-        validators=[MinValueValidator(0)],
-        help_text="Measured concentration value"
-    )
-    measurement_date = models.DateTimeField(help_text="Date and time when measurement was taken")
-    sampling_duration = models.DurationField(
-        null=True,
-        blank=True,
-        help_text="Duration of sampling period"
-    )
-    
-    # Quality Control
-    quality_flag = models.CharField(
-        max_length=20,
-        choices=[
-            ('valid', 'Valid'),
-            ('questionable', 'Questionable'),
-            ('invalid', 'Invalid'),
-            ('below_detection', 'Below Detection Limit'),
-            ('calibration', 'Calibration Check'),
-            ('maintenance', 'Maintenance'),
-        ],
-        default='valid'
-    )
-    detection_limit = models.DecimalField(
-        max_digits=15,
-        decimal_places=6,
-        null=True,
-        blank=True,
-        help_text="Detection limit for this measurement"
-    )
-    uncertainty = models.DecimalField(
-        max_digits=10,
-        decimal_places=4,
-        null=True,
-        blank=True,
-        help_text="Measurement uncertainty (%)"
-    )
-    
-    # Environmental Conditions
-    temperature = models.DecimalField(
-        max_digits=6, 
-        decimal_places=2, 
-        null=True, 
-        blank=True,
-        help_text="Temperature in Celsius"
-    )
-    humidity = models.DecimalField(
-        max_digits=5, 
-        decimal_places=2, 
-        null=True, 
-        blank=True,
-        validators=[MinValueValidator(0), MaxValueValidator(100)],
-        help_text="Relative humidity percentage"
-    )
-    pressure = models.DecimalField(
-        max_digits=8,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        help_text="Atmospheric pressure in hPa"
-    )
-    wind_speed = models.DecimalField(
-        max_digits=5, 
-        decimal_places=2, 
-        null=True, 
-        blank=True,
-        validators=[MinValueValidator(0)],
-        help_text="Wind speed in m/s"
-    )
-    wind_direction = models.DecimalField(
-        max_digits=5,
-        decimal_places=1,
-        null=True,
-        blank=True,
-        validators=[MinValueValidator(0), MaxValueValidator(360)],
-        help_text="Wind direction in degrees (0-360)"
-    )
-    precipitation = models.DecimalField(
-        max_digits=6,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        help_text="Precipitation in mm"
-    )
-    solar_radiation = models.DecimalField(
-        max_digits=8,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        help_text="Solar radiation in W/m²"
-    )
-    
-    # Sampling Information
-    sampling_method = models.CharField(
-        max_length=200,
-        blank=True,
-        help_text="Sampling method used"
-    )
-    equipment_used = models.CharField(
-        max_length=200, 
-        blank=True,
-        help_text="Equipment or instrument used"
-    )
-    equipment_serial = models.CharField(
-        max_length=100,
-        blank=True,
-        help_text="Equipment serial number"
-    )
-    calibration_date = models.DateTimeField(
-        null=True,
-        blank=True,
-        help_text="Last calibration date of equipment"
-    )
-    operator = models.CharField(
-        max_length=100,
-        blank=True,
-        help_text="Person who conducted the measurement"
-    )
-    
-    # Additional Data
-    sample_id = models.CharField(
-        max_length=100,
-        blank=True,
-        help_text="Laboratory sample ID"
-    )
-    chain_of_custody = models.CharField(
-        max_length=100,
-        blank=True,
-        help_text="Chain of custody number"
-    )
-    notes = models.TextField(blank=True)
-    
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='environmental_readings')
-
-    class Meta:
-        ordering = ['-measurement_date']
-        indexes = [
-            models.Index(fields=['location', 'measurement_date']),
-            models.Index(fields=['pollutant_type', 'measurement_date']),
-            models.Index(fields=['created_by', 'measurement_date']),
-            models.Index(fields=['quality_flag']),
-        ]
-
-    def __str__(self):
-        return f"{self.pollutant_type.name}: {self.concentration} {self.pollutant_type.unit} at {self.location.name}"
-
-    @property
-    def exceeds_who_standard(self):
-        """Check if reading exceeds WHO standard"""
-        if self.pollutant_type.who_standard and self.quality_flag == 'valid':
-            return self.concentration > self.pollutant_type.who_standard
-        return None
-
-    @property
-    def exceeds_nesrea_standard(self):
-        """Check if reading exceeds NESREA standard"""
-        if self.pollutant_type.nesrea_standard and self.quality_flag == 'valid':
-            return self.concentration > self.pollutant_type.nesrea_standard
-        return None
-
-    @property
-    def exceeds_epa_standard(self):
-        """Check if reading exceeds EPA standard"""
-        if self.pollutant_type.epa_standard and self.quality_flag == 'valid':
-            return self.concentration > self.pollutant_type.epa_standard
-        return None
-
-    @property
-    def compliance_status(self):
-        """Get overall compliance status"""
-        if self.quality_flag != 'valid':
-            return 'invalid_data'
-            
-        standards_exceeded = []
-        if self.exceeds_who_standard:
-            standards_exceeded.append('WHO')
-        if self.exceeds_nesrea_standard:
-            standards_exceeded.append('NESREA')
-        if self.exceeds_epa_standard:
-            standards_exceeded.append('EPA')
-            
-        if standards_exceeded:
-            return f"exceeds_{'+'.join(standards_exceeded)}"
-        elif any([self.exceeds_who_standard is False, 
-                 self.exceeds_nesrea_standard is False, 
-                 self.exceeds_epa_standard is False]):
-            return 'within_standards'
-        else:
-            return 'no_standards_defined'
-
-
-class SampleBatch(models.Model):
-    """Model to group related environmental readings from a sampling session"""
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=200, help_text="Name or identifier for this sampling batch")
-    description = models.TextField(blank=True)
-    sampling_date = models.DateField(help_text="Date when samples were collected")
-    project_name = models.CharField(max_length=200, blank=True)
-    project_code = models.CharField(max_length=50, blank=True)
-    purpose = models.TextField(blank=True)
-    study_type = models.CharField(
-        max_length=50,
-        choices=[
-            ('baseline', 'Baseline Study'),
-            ('monitoring', 'Routine Monitoring'),
-            ('compliance', 'Compliance Monitoring'),
-            ('research', 'Research Study'),
-            ('impact_assessment', 'Impact Assessment'),
-            ('emergency', 'Emergency Response'),
-            ('other', 'Other'),
-        ],
-        default='monitoring'
-    )
-    weather_summary = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sample_batches')
-
-    class Meta:
-        ordering = ['-sampling_date']
-        verbose_name_plural = "Sample batches"
-
-    def __str__(self):
-        return f"{self.name} - {self.sampling_date}"
-
-    @property
-    def total_readings(self):
-        """Get total number of readings in this batch"""
-        return self.readings.count()
-
-    @property
-    def locations_count(self):
-        """Get number of unique locations in this batch"""
-        return self.readings.values('location').distinct().count()
-
-    @property
-    def pollutants_count(self):
-        """Get number of unique pollutants measured in this batch"""
-        return self.readings.values('pollutant_type').distinct().count()
-
-
-class BatchReading(models.Model):
-    """Model to link environmental readings to sample batches"""
-    batch = models.ForeignKey(SampleBatch, on_delete=models.CASCADE, related_name='readings')
-    reading = models.ForeignKey(EnvironmentalReading, on_delete=models.CASCADE, related_name='batches')
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = ['batch', 'reading']
-
-    def __str__(self):
-        return f"{self.batch.name} - {self.reading}"
-
+import json
 
 class DataUploadLog(models.Model):
-    """Model to track data upload history"""
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    filename = models.CharField(max_length=255)
-    original_filename = models.CharField(max_length=255, blank=True)
-    file_size = models.PositiveIntegerField(help_text="File size in bytes")
-    file_type = models.CharField(
-        max_length=20,
-        choices=[
-            ('csv', 'CSV File'),
-            ('xlsx', 'Excel File'),
-            ('json', 'JSON File'),
-            ('xml', 'XML File'),
-            ('other', 'Other'),
-        ],
-        default='csv'
-    )
-    upload_date = models.DateTimeField(auto_now_add=True)
-    uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='data_uploads')
+    """Model to track data upload activities"""
     
-    # Processing Statistics
-    records_processed = models.PositiveIntegerField(default=0)
-    records_successful = models.PositiveIntegerField(default=0)
-    records_failed = models.PositiveIntegerField(default=0)
-    records_skipped = models.PositiveIntegerField(default=0)
+    PROCESSING_STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('processing', 'Processing'),
+        ('completed', 'Completed'),
+        ('failed', 'Failed'),
+        ('validation_error', 'Validation Error'),
+    ]
     
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    file_name = models.CharField(max_length=255)
+    file_size = models.PositiveIntegerField()  # in bytes
+    upload_timestamp = models.DateTimeField(default=timezone.now)
     processing_status = models.CharField(
-        max_length=20,
-        choices=[
-            ('pending', 'Pending'),
-            ('processing', 'Processing'),
-            ('completed', 'Completed'),
-            ('completed_with_errors', 'Completed with Errors'),
-            ('failed', 'Failed'),
-        ],
+        max_length=max(len(v[0]) for v in PROCESSING_STATUS_CHOICES),
+        choices=PROCESSING_STATUS_CHOICES,
         default='pending'
     )
-    processing_start = models.DateTimeField(null=True, blank=True)
-    processing_end = models.DateTimeField(null=True, blank=True)
-    error_log = models.TextField(blank=True)
-    warning_log = models.TextField(blank=True)
+    processing_started = models.DateTimeField(null=True, blank=True)
+    processing_completed = models.DateTimeField(null=True, blank=True)
+    error_message = models.TextField(blank=True, null=True)
+    records_processed = models.PositiveIntegerField(default=0)
     
-    batch = models.ForeignKey(
-        SampleBatch, 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        blank=True,
-        help_text="Associated sample batch if created"
-    )
-
     class Meta:
-        ordering = ['-upload_date']
-
+        ordering = ['-upload_timestamp']
+        verbose_name = 'Data Upload Log'
+        verbose_name_plural = 'Data Upload Logs'
+    
     def __str__(self):
-        return f"{self.filename} - {self.upload_date.strftime('%Y-%m-%d %H:%M')}"
-
-    @property
-    def success_rate(self):
-        """Calculate success rate of data processing"""
-        if self.records_processed > 0:
-            return (self.records_successful / self.records_processed) * 100
-        return 0
-
+        return f"{self.file_name} - {self.get_processing_status_display()}"
+    
     @property
     def processing_duration(self):
-        """Calculate processing duration"""
-        if self.processing_start and self.processing_end:
-            return self.processing_end - self.processing_start
+        """Calculate processing duration if both start and end times are available"""
+        if self.processing_started and self.processing_completed:
+            return self.processing_completed - self.processing_started
         return None
+
+
+class EnvironmentalData(models.Model):
+    """Model to store environmental monitoring data"""
+    
+    timestamp = models.DateTimeField(default=timezone.now)
+    location = models.CharField(max_length=255, blank=True)
+    
+    # Air Quality Parameters
+    ozone_concentration = models.FloatField(null=True, blank=True, help_text="Ozone concentration in µg/m³")
+    carbon_monoxide = models.FloatField(null=True, blank=True, help_text="CO concentration in mg/m³")
+    nitrogen_dioxide = models.FloatField(null=True, blank=True, help_text="NO2 concentration in µg/m³")
+    sulfur_dioxide = models.FloatField(null=True, blank=True, help_text="SO2 concentration in µg/m³")
+    total_voc = models.FloatField(null=True, blank=True, help_text="Total VOCs in µg/m³")
+    pm25 = models.FloatField(null=True, blank=True, help_text="PM2.5 concentration in µg/m³")
+    pm10 = models.FloatField(null=True, blank=True, help_text="PM10 concentration in µg/m³")
+    
+    # Basic Environmental Parameters
+    temperature = models.FloatField(null=True, blank=True, help_text="Temperature in Celsius")
+    humidity = models.FloatField(null=True, blank=True, help_text="Humidity percentage")
+    ph_level = models.FloatField(null=True, blank=True, help_text="pH level")
+    oxygen_level = models.FloatField(null=True, blank=True, help_text="Dissolved oxygen in mg/L")
+    turbidity = models.FloatField(null=True, blank=True, help_text="Turbidity in NTU")
+    conductivity = models.FloatField(null=True, blank=True, help_text="Electrical conductivity in μS/cm")
+    
+    # Heavy Metals (from soil/plant samples)
+    lead_concentration = models.FloatField(null=True, blank=True, help_text="Lead concentration in mg/kg")
+    chromium_concentration = models.FloatField(null=True, blank=True, help_text="Chromium concentration in mg/kg")
+    cadmium_concentration = models.FloatField(null=True, blank=True, help_text="Cadmium concentration in mg/kg")
+    mercury_concentration = models.FloatField(null=True, blank=True, help_text="Mercury concentration in mg/kg")
+    arsenic_concentration = models.FloatField(null=True, blank=True, help_text="Arsenic concentration in mg/kg")
+    
+    # Georeferencing
+    latitude = models.FloatField(null=True, blank=True, help_text="GPS Latitude")
+    longitude = models.FloatField(null=True, blank=True, help_text="GPS Longitude")
+    
+    notes = models.TextField(blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    
+    class Meta:
+        ordering = ['-timestamp']
+        verbose_name = 'Environmental Data'
+        verbose_name_plural = 'Environmental Data'
+    
+    def __str__(self):
+        return f"Environmental Data - {self.location} - {self.timestamp.strftime('%Y-%m-%d %H:%M')}"
+    
+    def get_air_quality_index(self):
+        """Calculate Air Quality Index based on pollutant concentrations"""
+        # Simplified AQI calculation - can be enhanced with proper formulas
+        pollutants = []
+        if self.pm25: pollutants.append(self.pm25 / 25 * 100)  # WHO guideline: 25 µg/m³
+        if self.pm10: pollutants.append(self.pm10 / 50 * 100)  # WHO guideline: 50 µg/m³
+        if self.ozone_concentration: pollutants.append(self.ozone_concentration / 100 * 100)
+        if self.nitrogen_dioxide: pollutants.append(self.nitrogen_dioxide / 40 * 100)
+        
+        return max(pollutants) if pollutants else 0
+    
+    def check_pollution_standards(self):
+        """Check against WHO/NESREA standards"""
+        violations = []
+        
+        # WHO Air Quality Guidelines
+        if self.pm25 and self.pm25 > 25:
+            violations.append(f"PM2.5 exceeds WHO guideline: {self.pm25} µg/m³ > 25 µg/m³")
+        if self.pm10 and self.pm10 > 50:
+            violations.append(f"PM10 exceeds WHO guideline: {self.pm10} µg/m³ > 50 µg/m³")
+        if self.nitrogen_dioxide and self.nitrogen_dioxide > 40:
+            violations.append(f"NO2 exceeds WHO guideline: {self.nitrogen_dioxide} µg/m³ > 40 µg/m³")
+        if self.sulfur_dioxide and self.sulfur_dioxide > 40:
+            violations.append(f"SO2 exceeds WHO guideline: {self.sulfur_dioxide} µg/m³ > 40 µg/m³")
+        
+        # Heavy metal standards (example thresholds)
+        if self.lead_concentration and self.lead_concentration > 100:
+            violations.append(f"Lead concentration exceeds safe levels: {self.lead_concentration} mg/kg > 100 mg/kg")
+        if self.chromium_concentration and self.chromium_concentration > 100:
+            violations.append(f"Chromium concentration exceeds safe levels: {self.chromium_concentration} mg/kg > 100 mg/kg")
+        
+        return violations
+
+
+class GenomicSample(models.Model):
+    """Model to store genomic sample information"""
+    
+    SAMPLE_TYPE_CHOICES = [
+        ('leaf', 'Leaf Sample'),
+        ('soil', 'Soil Sample'),
+        ('water', 'Water Sample'),
+        ('air', 'Air Sample'),
+        ('root', 'Root Sample'),
+        ('stem', 'Stem Sample'),
+        ('other', 'Other'),
+    ]
+    
+    sample_id = models.CharField(max_length=100, unique=True)
+    sample_type = models.CharField(max_length=20, choices=SAMPLE_TYPE_CHOICES)
+    collection_date = models.DateTimeField(default=timezone.now)
+    location = models.CharField(max_length=255)
+    
+    # Georeferencing
+    latitude = models.FloatField(null=True, blank=True, help_text="GPS Latitude")
+    longitude = models.FloatField(null=True, blank=True, help_text="GPS Longitude")
+    distance_from_source = models.FloatField(null=True, blank=True, help_text="Distance from pollution source in meters")
+    
+    # DNA Analysis Results
+    dna_concentration = models.FloatField(null=True, blank=True, help_text="DNA concentration in ng/µL")
+    dna_purity_260_280 = models.FloatField(null=True, blank=True, help_text="260/280 ratio for purity")
+    dna_purity_260_230 = models.FloatField(null=True, blank=True, help_text="260/230 ratio for purity")
+    
+    # Gene Analysis
+    target_genes = models.TextField(blank=True, help_text="Target genes analyzed (JSON format)")
+    gene_sequences = models.TextField(blank=True, help_text="Gene sequences (JSON format)")
+    mutations_detected = models.TextField(blank=True, help_text="Detected mutations (JSON format)")
+    
+    # Analysis Status
+    analysis_status = models.CharField(
+        max_length=20,
+        choices=[
+            ('collected', 'Sample Collected'),
+            ('dna_extracted', 'DNA Extracted'),
+            ('pcr_amplified', 'PCR Amplified'),
+            ('sequenced', 'Sequenced'),
+            ('analyzed', 'Analysis Complete'),
+            ('failed', 'Analysis Failed'),
+        ],
+        default='collected'
+    )
+    
+    notes = models.TextField(blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    
+    class Meta:
+        ordering = ['-collection_date']
+        verbose_name = 'Genomic Sample'
+        verbose_name_plural = 'Genomic Samples'
+    
+    def __str__(self):
+        return f"Sample {self.sample_id} - {self.get_sample_type_display()}"
+    
+    def get_target_genes_list(self):
+        """Return target genes as a list"""
+        try:
+            return json.loads(self.target_genes) if self.target_genes else []
+        except json.JSONDecodeError:
+            return []
+    
+    def get_mutations_list(self):
+        """Return mutations as a list"""
+        try:
+            return json.loads(self.mutations_detected) if self.mutations_detected else []
+        except json.JSONDecodeError:
+            return []
+
+
+class BiodiversityRecord(models.Model):
+    """Model to store biodiversity assessment records"""
+    
+    CONSERVATION_STATUS_CHOICES = [
+        ('LC', 'Least Concern'),
+        ('NT', 'Near Threatened'),
+        ('VU', 'Vulnerable'),
+        ('EN', 'Endangered'),
+        ('CR', 'Critically Endangered'),
+        ('EW', 'Extinct in the Wild'),
+        ('EX', 'Extinct'),
+        ('DD', 'Data Deficient'),
+        ('NE', 'Not Evaluated'),
+    ]
+    
+    species_name = models.CharField(max_length=255)
+    common_name = models.CharField(max_length=255, blank=True)
+    location = models.CharField(max_length=255)
+    observation_date = models.DateTimeField(default=timezone.now)
+    population_count = models.PositiveIntegerField(null=True, blank=True)
+    conservation_status = models.CharField(
+        max_length=2,
+        choices=CONSERVATION_STATUS_CHOICES,
+        default='NE'
+    )
+    
+    # Georeferencing
+    latitude = models.FloatField(null=True, blank=True, help_text="GPS Latitude")
+    longitude = models.FloatField(null=True, blank=True, help_text="GPS Longitude")
+    
+    habitat_description = models.TextField(blank=True)
+    threat_assessment = models.TextField(blank=True)
+    observer = models.ForeignKey(User, on_delete=models.CASCADE)
+    
+    class Meta:
+        ordering = ['-observation_date']
+        verbose_name = 'Biodiversity Record'
+        verbose_name_plural = 'Biodiversity Records'
+    
+    def __str__(self):
+        return f"{self.species_name} - {self.location}"
+
+
+class AnalysisResult(models.Model):
+    """Model to store analysis results"""
+    
+    ANALYSIS_TYPE_CHOICES = [
+        ('descriptive', 'Descriptive Statistics'),
+        ('ttest', 'T-Test'),
+        ('anova', 'ANOVA'),
+        ('correlation', 'Correlation Analysis'),
+        ('regression', 'Regression Analysis'),
+        ('pollution_assessment', 'Pollution Assessment'),
+        ('gene_alignment', 'Gene Alignment'),
+        ('protein_structure', 'Protein Structure Prediction'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    analysis_type = models.CharField(max_length=50, choices=ANALYSIS_TYPE_CHOICES)
+    dataset_type = models.CharField(max_length=50)  # environmental, genomic, biodiversity
+    parameters = models.TextField(help_text="Analysis parameters (JSON format)")
+    results = models.TextField(help_text="Analysis results (JSON format)")
+    created_at = models.DateTimeField(default=timezone.now)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.get_analysis_type_display()} - {self.created_at.strftime('%Y-%m-%d %H:%M')}"
+    
+    def get_results_dict(self):
+        """Return results as a dictionary"""
+        try:
+            return json.loads(self.results) if self.results else {}
+        except json.JSONDecodeError:
+            return {}
+
+
+class Report(models.Model):
+    """Model to store generated reports"""
+    
+    REPORT_TYPE_CHOICES = [
+        ('environmental', 'Environmental Assessment'),
+        ('genomic', 'Genomic Analysis'),
+        ('biodiversity', 'Biodiversity Assessment'),
+        ('comprehensive', 'Comprehensive Report'),
+        ('publication', 'Publication Ready'),
+    ]
+    
+    FORMAT_CHOICES = [
+        ('pdf', 'PDF'),
+        ('html', 'HTML'),
+        ('docx', 'Word Document'),
+        ('xlsx', 'Excel Spreadsheet'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    report_type = models.CharField(max_length=50, choices=REPORT_TYPE_CHOICES)
+    output_format = models.CharField(max_length=10, choices=FORMAT_CHOICES)
+    content = models.TextField(help_text="Report content")
+    file_path = models.CharField(max_length=500, blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.title} - {self.get_report_type_display()}"
