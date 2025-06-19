@@ -18,7 +18,7 @@ class DataUploadLog(models.Model):
     file_size = models.PositiveIntegerField()  # in bytes
     upload_timestamp = models.DateTimeField(default=timezone.now)
     processing_status = models.CharField(
-        max_length=20,  # Fixed: Changed from 50 to 20 to match the longest choice
+        max_length=max(len(v[0]) for v in PROCESSING_STATUS_CHOICES),
         choices=PROCESSING_STATUS_CHOICES,
         default='pending'
     )
