@@ -18,6 +18,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize analysis functionality
     initializeAnalysisFunctionality();
+    
+    // Initialize report functionality
+    initializeReportFunctionality();
 });
 
 // Set initial active tab state
@@ -151,6 +154,12 @@ function initializeAllCharts() {
 function initializeOverviewCharts() {
     console.log('Initializing overview charts...');
     
+    // Only initialize charts if we have data
+    if (!hasEnvironmentalData) {
+        console.log('No environmental data - skipping chart initialization');
+        return;
+    }
+    
     // Temperature trend chart
     const tempCtx = document.getElementById('temperatureChart');
     if (tempCtx && typeof chartData !== 'undefined') {
@@ -267,6 +276,11 @@ function initializeOverviewCharts() {
 function initializeEnvironmentalCharts() {
     console.log('Initializing environmental charts...');
     
+    if (!hasEnvironmentalData) {
+        console.log('No environmental data - skipping chart initialization');
+        return;
+    }
+    
     const airQualityCtx = document.getElementById('airQualityChart');
     if (airQualityCtx && typeof chartData !== 'undefined') {
         console.log('Creating air quality chart...');
@@ -334,6 +348,11 @@ function initializeEnvironmentalCharts() {
 // Initialize genomic tab charts
 function initializeGenomicCharts() {
     console.log('Initializing genomic charts...');
+    
+    if (!hasGenomicData) {
+        console.log('No genomic data - skipping chart initialization');
+        return;
+    }
     
     // Mutation by distance chart
     const mutationCtx = document.getElementById('mutationChart');
@@ -421,7 +440,7 @@ function initializeHeatmap() {
     console.log('Initializing biodiversity heatmap...');
     
     const heatmapContainer = document.getElementById('heatmap-container');
-    if (heatmapContainer && typeof heatmapData !== 'undefined') {
+    if (heatmapContainer && typeof heatmapData !== 'undefined' && hasBiodiversityData) {
         console.log('Creating biodiversity heatmap...');
         
         heatmapContainer.innerHTML = '';
@@ -467,14 +486,7 @@ function initializeUploadFunctionality() {
         });
     }
     
-    // Template download buttons
-    const templateButtons = document.querySelectorAll('[data-template]');
-    templateButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const templateType = this.getAttribute('data-template');
-            downloadTemplate(templateType);
-        });
-    });
+    // Template download buttons - these are now handled by onclick attributes in HTML
 }
 
 // Handle file upload
@@ -546,21 +558,14 @@ function showUploadStatus(message, type) {
 
 // Download template
 function downloadTemplate(templateType) {
+    console.log('Downloading template:', templateType);
     window.location.href = `/download-template/${templateType}/`;
 }
 
 // Initialize analysis functionality
 function initializeAnalysisFunctionality() {
     console.log('Initializing analysis functionality...');
-    
-    const analysisButtons = document.querySelectorAll('[data-analysis]');
-    analysisButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const analysisType = this.getAttribute('data-analysis');
-            const dataset = this.getAttribute('data-dataset') || 'environmental';
-            runAnalysis(analysisType, dataset);
-        });
-    });
+    // Analysis buttons are now handled by onclick attributes in HTML
 }
 
 // Run analysis
@@ -664,6 +669,60 @@ function formatAnalysisResults(results) {
     return html;
 }
 
+// Initialize report functionality
+function initializeReportFunctionality() {
+    console.log('Initializing report functionality...');
+    // Report generation is handled by onclick attribute in HTML
+}
+
+// Generate report
+function generateReport() {
+    console.log('Generating report...');
+    
+    const reportType = document.getElementById('reportType').value;
+    const reportFormat = document.getElementById('reportFormat').value;
+    const reportStatus = document.getElementById('reportStatus');
+    
+    if (reportStatus) {
+        reportStatus.textContent = 'Generating report...';
+        reportStatus.className = 'text-blue-600';
+        reportStatus.style.display = 'block';
+    }
+    
+    fetch('/api/report/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify({
+            report_type: reportType,
+            output_format: reportFormat,
+            parameters: {}
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (reportStatus) {
+                reportStatus.innerHTML = `Report generated successfully! <a href="${data.download_url}" class="text-emerald-600 underline">Download here</a>`;
+                reportStatus.className = 'text-green-600';
+            }
+        } else {
+            if (reportStatus) {
+                reportStatus.textContent = 'Report generation failed: ' + (data.error || 'Unknown error');
+                reportStatus.className = 'text-red-600';
+            }
+        }
+    })
+    .catch(error => {
+        if (reportStatus) {
+            reportStatus.textContent = 'Report generation failed: ' + error.message;
+            reportStatus.className = 'text-red-600';
+        }
+    });
+}
+
 // Utility functions
 function getCsrfToken() {
     return document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
@@ -713,3 +772,4 @@ window.showTab = showTab;
 window.runAnalysis = runAnalysis;
 window.handleFileUpload = handleFileUpload;
 window.downloadTemplate = downloadTemplate;
+window.generateReport = generateReport;

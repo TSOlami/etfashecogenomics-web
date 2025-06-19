@@ -527,12 +527,12 @@ def get_real_environmental_data(user):
     recent_data = EnvironmentalData.objects.filter(user=user).order_by('-timestamp')[:10]
     
     if not recent_data.exists():
-        # Return sample data structure if no real data
+        # Return empty state for new users
         return {
-            'temperature': {'value': 0, 'unit': '°C', 'status': 'no_data', 'description': 'No data available'},
-            'humidity': {'value': 0, 'unit': '%', 'status': 'no_data', 'description': 'No data available'},
-            'ph_level': {'value': 0, 'unit': 'pH', 'status': 'no_data', 'description': 'No data available'},
-            'air_quality': {'value': 0, 'unit': 'AQI', 'status': 'no_data', 'description': 'No data available'},
+            'temperature': {'value': 0, 'unit': '°C', 'status': 'no_data', 'description': 'No data available - upload environmental data to get started'},
+            'humidity': {'value': 0, 'unit': '%', 'status': 'no_data', 'description': 'No data available - upload environmental data to get started'},
+            'ph_level': {'value': 0, 'unit': 'pH', 'status': 'no_data', 'description': 'No data available - upload environmental data to get started'},
+            'air_quality': {'value': 0, 'unit': 'AQI', 'status': 'no_data', 'description': 'No data available - upload environmental data to get started'},
             'total_samples': 0,
             'locations_monitored': 0,
             'pollution_violations': 0
@@ -704,8 +704,8 @@ def generate_real_heatmap_data(user):
     records = BiodiversityRecord.objects.filter(observer=user)
     
     if not records.exists():
-        # Return sample heatmap if no data
-        return [[0.1, 0.2, 0.3], [0.2, 0.4, 0.5], [0.3, 0.5, 0.7]]
+        # Return empty heatmap for new users
+        return [[0.1, 0.1, 0.1, 0.1, 0.1] for _ in range(5)]
     
     # Create a simple 5x5 heatmap based on location diversity
     locations = list(records.values('location').distinct())

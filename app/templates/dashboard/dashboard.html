@@ -1,836 +1,456 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}Dashboard - EcoGenomics Suite{% endblock %}
-
-{% block content %}
-<!-- Header -->
-<header class="bg-white shadow-sm border-b border-gray-200">
-    <div class="px-4 sm:px-6 py-4">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div class="flex items-center space-x-3 sm:space-x-4">
-                <div class="etfash-logo flex-shrink-0">
-                    <img src="{% static 'images/etfash-logo.jpeg' %}" alt="ETfash Environmental Services Logo" class="w-full h-full rounded-lg">
-                </div>
-                <div>
-                    <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                        <span class="text-lg sm:text-xl md:text-2xl font-bold brand-text">EcoGenomics Suite</span>
-                        <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-1 rounded-full w-fit">Professional Edition</span>
-                    </div>
-                    <p class="text-xs sm:text-sm text-gray-600">Environmental & Genomic Analytics Platform</p>
-                </div>
-            </div>
-            <div class="flex items-center space-x-3 sm:space-x-4 w-full sm:w-auto justify-between sm:justify-end">
-                <div class="text-left sm:text-right">
-                    <span class="text-xs sm:text-sm text-gray-600">Welcome, <span class="font-medium text-emerald-700">{{ user.username }}</span></span>
-                    <p class="text-xs text-gray-500">EcoGenomics Suite User</p>
-                </div>
-                <a href="{% url 'logout' %}" class="text-xs sm:text-sm text-red-600 hover:text-red-800 transition-colors flex items-center">
-                    <i class="fas fa-sign-out-alt mr-1"></i><span class="hidden sm:inline">Logout</span>
-                </a>
-            </div>
-        </div>
-    </div>
-</header>
-
-<!-- Navigation Tabs -->
-<nav class="bg-white border-b border-gray-200 px-2 sm:px-4 md:px-6">
-    <div class="flex space-x-1 sm:space-x-4 md:space-x-8 overflow-x-auto">
-        <button onclick="showTab('overview', event)" class="tab-btn active py-3 sm:py-4 px-2 sm:px-4 border-b-2 border-emerald-500 text-emerald-600 font-medium whitespace-nowrap">
-            <i class="fas fa-tachometer-alt mr-1 sm:mr-2"></i><span class="hidden sm:inline">Dashboard </span>Overview
-        </button>
-        <button onclick="showTab('environmental', event)" class="tab-btn py-3 sm:py-4 px-2 sm:px-4 border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">
-            <i class="fas fa-globe mr-1 sm:mr-2"></i><span class="hidden sm:inline">Environmental </span>Monitoring
-        </button>
-        <button onclick="showTab('bioinformatics', event)" class="tab-btn py-3 sm:py-4 px-2 sm:px-4 border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">
-            <i class="fas fa-dna mr-1 sm:mr-2"></i><span class="hidden sm:inline">Genomic </span>Analytics
-        </button>
-        <button onclick="showTab('analytics', event)" class="tab-btn py-3 sm:py-4 px-2 sm:px-4 border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">
-            <i class="fas fa-chart-line mr-1 sm:mr-2"></i><span class="hidden sm:inline">Advanced </span>Analytics
-        </button>
-        <button onclick="showTab('reports', event)" class="tab-btn py-3 sm:py-4 px-2 sm:px-4 border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">
-            <i class="fas fa-file-alt mr-1 sm:mr-2"></i>Reports<span class="hidden sm:inline"> & Export</span>
-        </button>
-    </div>
-</nav>
-
-<!-- Messages -->
-{% if messages %}
-    {% for message in messages %}
-        <div class="message-container mb-4 p-4 rounded-md {% if message.tags == 'error' %}bg-red-50 border border-red-200{% elif message.tags == 'success' %}bg-green-50 border border-green-200{% else %}bg-blue-50 border border-blue-200{% endif %} relative mx-4 mt-4">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    {% if message.tags == 'error' %}
-                        <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                        </svg>
-                    {% elif message.tags == 'success' %}
-                        <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                        </svg>
-                    {% else %}
-                        <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                        </svg>
-                    {% endif %}
-                </div>
-                <div class="ml-3">
-                    <p class="{% if message.tags == 'error' %}text-red-800{% elif message.tags == 'success' %}text-green-800{% else %}text-blue-800{% endif %} text-sm">{{ message }}</p>
-                </div>
-            </div>
-        </div>
-    {% endfor %}
-{% endif %}
-
-<!-- Overview Tab -->
-<div id="overview" class="tab-content p-4 sm:p-6">
-    <!-- EcoGenomics Suite Branding Header -->
-    <div class="bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-                <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 mb-3">
-                    <div class="etfash-logo bg-white bg-opacity-20 flex-shrink-0">
-                        <img src="{% static 'images/etfash-logo.jpeg' %}" alt="ETfash Environmental Services Logo" class="w-full h-full rounded-lg">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoGenomics Suite - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <div class="etfash-logo">
+                        <img src="{% static 'images/etfash-logo.jpeg' %}" alt="ETfash Environmental Services" class="w-12 h-12 rounded-lg">
                     </div>
                     <div>
-                        <h3 class="text-2xl sm:text-3xl font-bold brand-text">EcoGenomics Suite Dashboard</h3>
+                        <h1 class="text-xl font-bold brand-text">EcoGenomics Suite</h1>
+                        <p class="text-xs text-gray-500">Environmental & Genomic Analytics</p>
                     </div>
                 </div>
-                <p class="text-emerald-100 text-sm sm:text-base">Comprehensive environmental monitoring with molecular insights</p>
-                <p class="text-xs sm:text-sm text-emerald-200 mt-1">Real-time data • Genomic analysis • Regulatory compliance</p>
-            </div>
-            <div class="text-center sm:text-right">
-                <div class="text-2xl sm:text-3xl font-bold text-emerald-200">24/7</div>
-                <div class="text-xs sm:text-sm text-emerald-200">Monitoring Active</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
-        <!-- KPI Cards -->
-        <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 border-l-4 border-l-red-500">
-            <div class="flex items-center">
-                <div class="p-2 sm:p-3 rounded-full bg-red-100 text-red-600 flex-shrink-0">
-                    <i class="fas fa-wind text-lg sm:text-xl"></i>
-                </div>
-                <div class="ml-3 sm:ml-4 min-w-0">
-                    <p class="text-xs sm:text-sm font-medium text-gray-600 truncate">Air Quality Index</p>
-                    <p class="text-xl sm:text-2xl font-bold text-gray-900">156</p>
-                    <p class="text-xs sm:text-sm text-red-600 font-medium">Unhealthy</p>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-600">Welcome, {{ user.username }}</span>
+                    <a href="{% url 'logout' %}" class="text-sm text-red-600 hover:text-red-800">
+                        <i class="fas fa-sign-out-alt mr-1"></i>Logout
+                    </a>
                 </div>
             </div>
         </div>
+    </header>
 
-        <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 border-l-4 border-l-emerald-500">
-            <div class="flex items-center">
-                <div class="p-2 sm:p-3 rounded-full bg-emerald-100 text-emerald-600 flex-shrink-0">
-                    <i class="fas fa-tint text-lg sm:text-xl"></i>
+    <!-- Navigation Tabs -->
+    <nav class="bg-white border-b border-gray-200 px-2 sm:px-4 md:px-6">
+        <div class="flex space-x-1 sm:space-x-4 md:space-x-8 overflow-x-auto">
+            <button onclick="showTab('overview', event)" class="tab-btn active py-3 sm:py-4 px-2 sm:px-4 border-b-2 border-emerald-500 text-emerald-600 font-medium whitespace-nowrap">
+                <i class="fas fa-tachometer-alt mr-1 sm:mr-2"></i><span class="hidden sm:inline">Dashboard </span>Overview
+            </button>
+            <button onclick="showTab('environmental', event)" class="tab-btn py-3 sm:py-4 px-2 sm:px-4 border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">
+                <i class="fas fa-globe mr-1 sm:mr-2"></i><span class="hidden sm:inline">Environmental </span>Monitoring
+            </button>
+            <button onclick="showTab('bioinformatics', event)" class="tab-btn py-3 sm:py-4 px-2 sm:px-4 border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">
+                <i class="fas fa-dna mr-1 sm:mr-2"></i><span class="hidden sm:inline">Genomic </span>Analytics
+            </button>
+            <button onclick="showTab('analytics', event)" class="tab-btn py-3 sm:py-4 px-2 sm:px-4 border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">
+                <i class="fas fa-chart-line mr-1 sm:mr-2"></i><span class="hidden sm:inline">Advanced </span>Analytics
+            </button>
+            <button onclick="showTab('reports', event)" class="tab-btn py-3 sm:py-4 px-2 sm:px-4 border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">
+                <i class="fas fa-file-alt mr-1 sm:mr-2"></i>Reports<span class="hidden sm:inline"> & Export</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- Environmental Status -->
+                <div class="bg-white p-6 rounded-lg card-shadow">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-green-100">
+                            <i class="fas fa-thermometer-half text-green-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Temperature</p>
+                            <p class="text-2xl font-semibold text-gray-900">{{ environmental_data.temperature.value }}{{ environmental_data.temperature.unit }}</p>
+                            <p class="text-xs text-gray-500">{{ environmental_data.temperature.description }}</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="ml-3 sm:ml-4 min-w-0">
-                    <p class="text-xs sm:text-sm font-medium text-gray-600 truncate">Water Quality</p>
-                    <p class="text-xl sm:text-2xl font-bold text-gray-900">78%</p>
-                    <p class="text-xs sm:text-sm text-emerald-600 font-medium">Good</p>
+
+                <!-- Air Quality -->
+                <div class="bg-white p-6 rounded-lg card-shadow">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-blue-100">
+                            <i class="fas fa-wind text-blue-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Air Quality</p>
+                            <p class="text-2xl font-semibold text-gray-900">{{ environmental_data.air_quality.value }}</p>
+                            <p class="text-xs text-gray-500">{{ environmental_data.air_quality.description }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Genomic Samples -->
+                <div class="bg-white p-6 rounded-lg card-shadow">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-purple-100">
+                            <i class="fas fa-dna text-purple-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Samples</p>
+                            <p class="text-2xl font-semibold text-gray-900">{{ genomic_data.total_samples }}</p>
+                            <p class="text-xs text-gray-500">Genomic samples analyzed</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Species Diversity -->
+                <div class="bg-white p-6 rounded-lg card-shadow">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-yellow-100">
+                            <i class="fas fa-seedling text-yellow-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Species</p>
+                            <p class="text-2xl font-semibold text-gray-900">{{ biodiversity_data.total_species }}</p>
+                            <p class="text-xs text-gray-500">Species recorded</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 border-l-4 border-l-yellow-500">
-            <div class="flex items-center">
-                <div class="p-2 sm:p-3 rounded-full bg-yellow-100 text-yellow-600 flex-shrink-0">
-                    <i class="fas fa-seedling text-lg sm:text-xl"></i>
+            <!-- Charts Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Temperature Trend Chart -->
+                <div class="bg-white p-6 rounded-lg card-shadow">
+                    <h3 class="text-lg font-semibold mb-4">Temperature Trend</h3>
+                    {% if environmental_data.total_samples > 0 %}
+                        <div class="chart-container">
+                            <canvas id="temperatureChart"></canvas>
+                        </div>
+                    {% else %}
+                        <div class="flex flex-col items-center justify-center h-64 text-gray-500">
+                            <i class="fas fa-chart-line text-4xl mb-4"></i>
+                            <p class="text-lg font-medium">No Environmental Data</p>
+                            <p class="text-sm text-center">Upload environmental data to see temperature trends</p>
+                            <button onclick="showTab('environmental', event)" class="mt-4 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700">
+                                Upload Data
+                            </button>
+                        </div>
+                    {% endif %}
                 </div>
-                <div class="ml-3 sm:ml-4 min-w-0">
-                    <p class="text-xs sm:text-sm font-medium text-gray-600 truncate">Soil Health</p>
-                    <p class="text-xl sm:text-2xl font-bold text-gray-900">68%</p>
-                    <p class="text-xs sm:text-sm text-yellow-600 font-medium">Moderate</p>
-                </div>
-            </div>
-        </div>
 
-        <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 border-l-4 border-l-purple-500">
-            <div class="flex items-center">
-                <div class="p-2 sm:p-3 rounded-full bg-purple-100 text-purple-600 flex-shrink-0">
-                    <i class="fas fa-dna text-lg sm:text-xl"></i>
-                </div>
-                <div class="ml-3 sm:ml-4 min-w-0">
-                    <p class="text-xs sm:text-sm font-medium text-gray-600 truncate">Genomic Studies</p>
-                    <p class="text-xl sm:text-2xl font-bold text-gray-900">247</p>
-                    <p class="text-xs sm:text-sm text-purple-600 font-medium">Active</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Real-time Charts -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-        <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
-            <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4 flex items-center">
-                <i class="fas fa-chart-line text-emerald-600 mr-2"></i>
-                <span class="truncate">Environmental Trends</span>
-            </h3>
-            <div class="chart-container">
-                <canvas id="airQualityChart"></canvas>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
-            <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4 flex items-center">
-                <i class="fas fa-fire text-cyan-600 mr-2"></i>
-                <span class="truncate">Gene Expression Heatmap</span>
-            </h3>
-            <div id="geneHeatmap" class="grid grid-cols-5 gap-1 h-48 sm:h-64">
-                <!-- Gene expression heatmap cells -->
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Environmental Monitoring Tab -->
-<div id="environmental" class="tab-content hidden p-4 sm:p-6">
-    <div class="mb-4 sm:mb-6">
-        <h2 class="text-xl sm:text-2xl font-bold brand-text mb-2">Environmental Monitoring</h2>
-        <p class="text-sm sm:text-base text-gray-600">Comprehensive air, water, soil, and biological parameter monitoring</p>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        <!-- Air Quality Monitoring -->
-        <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
-            <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
-                <i class="fas fa-wind text-blue-600 mr-2"></i>Air Quality Parameters
-            </h3>
-            <div class="space-y-2 sm:space-y-4">
-                <div class="flex justify-between items-center tooltip p-2 rounded hover:bg-gray-50">
-                    <span class="text-xs sm:text-sm text-gray-600">PM1.0</span>
-                    <span class="font-semibold text-emerald-600 text-xs sm:text-sm">15.2 µg/m³</span>
-                    <span class="tooltiptext">Ultra-fine particles less than 1.0 micrometers</span>
-                </div>
-                <div class="flex justify-between items-center tooltip p-2 rounded hover:bg-gray-50">
-                    <span class="text-xs sm:text-sm text-gray-600">PM2.5</span>
-                    <span class="font-semibold text-red-600 text-xs sm:text-sm">45.7 µg/m³</span>
-                    <span class="tooltiptext">Fine particles less than 2.5 micrometers - Exceeds WHO limit</span>
-                </div>
-                <div class="flex justify-between items-center tooltip p-2 rounded hover:bg-gray-50">
-                    <span class="text-xs sm:text-sm text-gray-600">PM10</span>
-                    <span class="font-semibold text-yellow-600 text-xs sm:text-sm">78.3 µg/m³</span>
-                    <span class="tooltiptext">Coarse particles less than 10 micrometers</span>
-                </div>
-                <div class="flex justify-between items-center tooltip p-2 rounded hover:bg-gray-50">
-                    <span class="text-xs sm:text-sm text-gray-600">HCHO</span>
-                    <span class="font-semibold text-emerald-600 text-xs sm:text-sm">25.1 µg/m³</span>
-                    <span class="tooltiptext">Formaldehyde concentration</span>
-                </div>
-                <div class="flex justify-between items-center tooltip p-2 rounded hover:bg-gray-50">
-                    <span class="text-xs sm:text-sm text-gray-600">TVOC</span>
-                    <span class="font-semibold text-emerald-600 text-xs sm:text-sm">180.5 µg/m³</span>
-                    <span class="tooltiptext">Total Volatile Organic Compounds</span>
-                </div>
-                <div class="flex justify-between items-center tooltip p-2 rounded hover:bg-gray-50">
-                    <span class="text-xs sm:text-sm text-gray-600">SO₂</span>
-                    <span class="font-semibold text-emerald-600 text-xs sm:text-sm">18.4 µg/m³</span>
-                    <span class="tooltiptext">Sulfur Dioxide</span>
-                </div>
-                <div class="flex justify-between items-center tooltip p-2 rounded hover:bg-gray-50">
-                    <span class="text-xs sm:text-sm text-gray-600">NO₂</span>
-                    <span class="font-semibold text-emerald-600 text-xs sm:text-sm">35.8 µg/m³</span>
-                    <span class="tooltiptext">Nitrogen Dioxide</span>
+                <!-- Pollution Levels Chart -->
+                <div class="bg-white p-6 rounded-lg card-shadow">
+                    <h3 class="text-lg font-semibold mb-4">Pollution Levels</h3>
+                    {% if environmental_data.total_samples > 0 %}
+                        <div class="chart-container">
+                            <canvas id="pollutionChart"></canvas>
+                        </div>
+                    {% else %}
+                        <div class="flex flex-col items-center justify-center h-64 text-gray-500">
+                            <i class="fas fa-smog text-4xl mb-4"></i>
+                            <p class="text-lg font-medium">No Pollution Data</p>
+                            <p class="text-sm text-center">Upload environmental data to see pollution analysis</p>
+                            <button onclick="showTab('environmental', event)" class="mt-4 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700">
+                                Upload Data
+                            </button>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
 
-        <!-- Water Quality -->
-        <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
-            <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
-                <i class="fas fa-tint text-cyan-600 mr-2"></i>Water Quality Parameters
-            </h3>
-            <div class="space-y-2 sm:space-y-4">
-                <div class="flex justify-between items-center tooltip p-2 rounded hover:bg-gray-50">
-                    <span class="text-xs sm:text-sm text-gray-600">BOD</span>
-                    <span class="font-semibold text-emerald-600 text-xs sm:text-sm">3.2 mg/L</span>
-                    <span class="tooltiptext">Biochemical Oxygen Demand</span>
+        <!-- Environmental Monitoring Tab -->
+        <div id="environmental" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- File Upload Section -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white p-6 rounded-lg card-shadow">
+                        <h3 class="text-lg font-semibold mb-4">Upload Environmental Data</h3>
+                        <form id="uploadForm" enctype="multipart/form-data" class="space-y-4">
+                            {% csrf_token %}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Data Type</label>
+                                <select id="fileType" name="file_type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                    <option value="environmental">Environmental Data</option>
+                                    <option value="genomic">Genomic Samples</option>
+                                    <option value="biodiversity">Biodiversity Records</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Select File</label>
+                                <input type="file" id="fileInput" name="file" accept=".csv,.xlsx,.xls" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            </div>
+                            <button type="submit" class="w-full bg-emerald-600 text-white py-2 px-4 rounded-md hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                <i class="fas fa-upload mr-2"></i>Upload File
+                            </button>
+                        </form>
+                        
+                        <!-- Upload Progress -->
+                        <div id="uploadProgress" class="mt-4 hidden">
+                            <div class="bg-gray-200 rounded-full h-2">
+                                <div class="bg-emerald-600 h-2 rounded-full animate-pulse" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Upload Status -->
+                        <div id="uploadStatus" class="mt-2 text-sm hidden"></div>
+                        
+                        <!-- Template Downloads -->
+                        <div class="mt-6 pt-6 border-t border-gray-200">
+                            <h4 class="text-sm font-medium text-gray-700 mb-3">Download Templates</h4>
+                            <div class="space-y-2">
+                                <button onclick="downloadTemplate('environmental')" class="w-full text-left px-3 py-2 text-sm text-emerald-600 hover:bg-emerald-50 rounded-md">
+                                    <i class="fas fa-download mr-2"></i>Environmental Template
+                                </button>
+                                <button onclick="downloadTemplate('genomic')" class="w-full text-left px-3 py-2 text-sm text-emerald-600 hover:bg-emerald-50 rounded-md">
+                                    <i class="fas fa-download mr-2"></i>Genomic Template
+                                </button>
+                                <button onclick="downloadTemplate('biodiversity')" class="w-full text-left px-3 py-2 text-sm text-emerald-600 hover:bg-emerald-50 rounded-md">
+                                    <i class="fas fa-download mr-2"></i>Biodiversity Template
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex justify-between items-center tooltip p-2 rounded hover:bg-gray-50">
-                    <span class="text-xs sm:text-sm text-gray-600">Dissolved Oxygen</span>
-                    <span class="font-semibold text-emerald-600 text-xs sm:text-sm">7.8 mg/L</span>
-                    <span class="tooltiptext">Dissolved Oxygen - Good level</span>
+
+                <!-- Air Quality Chart -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white p-6 rounded-lg card-shadow">
+                        <h3 class="text-lg font-semibold mb-4">Air Quality Monitoring</h3>
+                        {% if environmental_data.total_samples > 0 %}
+                            <div class="chart-container">
+                                <canvas id="airQualityChart"></canvas>
+                            </div>
+                        {% else %}
+                            <div class="flex flex-col items-center justify-center h-64 text-gray-500">
+                                <i class="fas fa-wind text-4xl mb-4"></i>
+                                <p class="text-lg font-medium">No Air Quality Data</p>
+                                <p class="text-sm text-center">Upload environmental data to see air quality trends</p>
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
-                <div class="flex justify-between items-center tooltip p-2 rounded hover:bg-gray-50">
-                    <span class="text-xs sm:text-sm text-gray-600">Turbidity</span>
-                    <span class="font-semibold text-emerald-600 text-xs sm:text-sm">2.1 NTU</span>
-                    <span class="tooltiptext">Water clarity measurement</span>
-                </div>
-                <div class="flex justify-between items-center tooltip p-2 rounded hover:bg-gray-50">
-                    <span class="text-xs sm:text-sm text-gray-600">pH</span>
-                    <span class="font-semibold text-emerald-600 text-xs sm:text-sm">7.2</span>
-                    <span class="tooltiptext">Acidity/Alkalinity level</span>
-                </div>
-                <div class="flex justify-between items-center tooltip p-2 rounded hover:bg-gray-50">
-                    <span class="text-xs sm:text-sm text-gray-600">COD</span>
-                    <span class="font-semibold text-emerald-600 text-xs sm:text-sm">15.6 mg/L</span>
-                    <span class="tooltiptext">Chemical Oxygen Demand</span>
-                </div>
+            </div>
+
+            <!-- Recent Uploads -->
+            <div class="bg-white p-6 rounded-lg card-shadow">
+                <h3 class="text-lg font-semibold mb-4">Recent Uploads</h3>
+                {% if recent_uploads %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Records</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for upload in recent_uploads %}
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ upload.file_name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                            {% if upload.processing_status == 'completed' %}bg-green-100 text-green-800
+                                            {% elif upload.processing_status == 'failed' %}bg-red-100 text-red-800
+                                            {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                            {{ upload.get_processing_status_display }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ upload.records_processed }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ upload.upload_timestamp|date:"M d, Y H:i" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-upload text-4xl mb-4"></i>
+                        <p class="text-lg font-medium">No uploads yet</p>
+                        <p class="text-sm">Upload your first environmental data file to get started</p>
+                    </div>
+                {% endif %}
             </div>
         </div>
 
-        <!-- Heavy Metals Multi-Matrix -->
-        <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 md:col-span-2 lg:col-span-1">
-            <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
-                <i class="fas fa-atom text-purple-600 mr-2"></i>Heavy Metals (Multi-Matrix)
-            </h3>
-            <div class="space-y-3">
-                <div class="text-xs font-bold text-gray-500 uppercase tracking-wide">Soil (mg/kg)</div>
-                <div class="grid grid-cols-2 gap-2 text-xs sm:text-sm">
-                    <span class="tooltip p-1 rounded hover:bg-gray-50">Pb: <span class="font-semibold text-red-600">95.4</span><span class="tooltiptext">Lead - Exceeds WHO limit (85 mg/kg)</span></span>
-                    <span class="tooltip p-1 rounded hover:bg-gray-50">Zn: <span class="font-semibold text-emerald-600">285.3</span><span class="tooltiptext">Zinc - Within limits</span></span>
-                    <span class="tooltip p-1 rounded hover:bg-gray-50">Cd: <span class="font-semibold text-emerald-600">2.1</span><span class="tooltiptext">Cadmium - Safe level</span></span>
-                    <span class="tooltip p-1 rounded hover:bg-gray-50">Cr: <span class="font-semibold text-emerald-600">78.7</span><span class="tooltiptext">Chromium - Acceptable</span></span>
-                    <span class="tooltip p-1 rounded hover:bg-gray-50">Hg: <span class="font-semibold text-red-600">2.1</span><span class="tooltiptext">Mercury - Exceeds WHO limit</span></span>
-                    <span class="tooltip p-1 rounded hover:bg-gray-50">Cu: <span class="font-semibold text-yellow-600">168.4</span><span class="tooltiptext">Copper - Elevated but acceptable</span></span>
+        <!-- Genomic Analytics Tab -->
+        <div id="bioinformatics" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Mutation Analysis Chart -->
+                <div class="bg-white p-6 rounded-lg card-shadow">
+                    <h3 class="text-lg font-semibold mb-4">Mutations vs Distance</h3>
+                    {% if genomic_data.total_samples > 0 %}
+                        <div class="chart-container">
+                            <canvas id="mutationChart"></canvas>
+                        </div>
+                    {% else %}
+                        <div class="flex flex-col items-center justify-center h-64 text-gray-500">
+                            <i class="fas fa-dna text-4xl mb-4"></i>
+                            <p class="text-lg font-medium">No Genomic Data</p>
+                            <p class="text-sm text-center">Upload genomic samples to see mutation analysis</p>
+                            <button onclick="showTab('environmental', event)" class="mt-4 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700">
+                                Upload Samples
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Gene Expression Heatmap -->
+                <div class="bg-white p-6 rounded-lg card-shadow">
+                    <h3 class="text-lg font-semibold mb-4">Gene Expression Heatmap</h3>
+                    {% if genomic_data.total_samples > 0 %}
+                        <div class="grid grid-cols-5 gap-1" id="geneHeatmap">
+                            <!-- Heatmap cells will be generated by JavaScript -->
+                        </div>
+                    {% else %}
+                        <div class="flex flex-col items-center justify-center h-64 text-gray-500">
+                            <i class="fas fa-th text-4xl mb-4"></i>
+                            <p class="text-lg font-medium">No Gene Expression Data</p>
+                            <p class="text-sm text-center">Upload genomic data to see gene expression patterns</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Analysis Controls -->
+            <div class="bg-white p-6 rounded-lg card-shadow">
+                <h3 class="text-lg font-semibold mb-4">Genomic Analysis</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button onclick="runAnalysis('mutation_analysis', 'genomic')" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <i class="fas fa-search mr-2"></i>Mutation Analysis
+                    </button>
+                    <button onclick="runAnalysis('distance_correlation', 'genomic')" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <i class="fas fa-chart-scatter mr-2"></i>Distance Correlation
+                    </button>
+                    <button onclick="runAnalysis('sample_summary', 'genomic')" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <i class="fas fa-list mr-2"></i>Sample Summary
+                    </button>
                 </div>
                 
-                <div class="text-xs font-bold text-gray-500 uppercase tracking-wide">Water (mg/L)</div>
-                <div class="grid grid-cols-2 gap-2 text-xs sm:text-sm">
-                    <span class="tooltip p-1 rounded hover:bg-gray-50">Pb: <span class="font-semibold text-emerald-600">0.008</span><span class="tooltiptext">Lead in water - Safe</span></span>
-                    <span class="tooltip p-1 rounded hover:bg-gray-50">Zn: <span class="font-semibold text-emerald-600">1.2</span><span class="tooltiptext">Zinc in water - Normal</span></span>
-                    <span class="tooltip p-1 rounded hover:bg-gray-50">Cd: <span class="font-semibold text-emerald-600">0.001</span><span class="tooltiptext">Cadmium in water - Safe</span></span>
-                    <span class="tooltip p-1 rounded hover:bg-gray-50">Hg: <span class="font-semibold text-yellow-600">0.004</span><span class="tooltiptext">Mercury in water - Slightly elevated</span></span>
-                </div>
+                <!-- Analysis Status -->
+                <div id="analysisStatus" class="mt-4 text-sm hidden"></div>
                 
-                <div class="text-xs font-bold text-gray-500 uppercase tracking-wide">Plant Tissue (mg/kg dry wt)</div>
-                <div class="grid grid-cols-2 gap-2 text-xs sm:text-sm">
-                    <span class="tooltip p-1 rounded hover:bg-gray-50">Pb: <span class="font-semibold text-red-600">0.8</span><span class="tooltiptext">Lead bioaccumulation - Concerning</span></span>
-                    <span class="tooltip p-1 rounded hover:bg-gray-50">Zn: <span class="font-semibold text-emerald-600">45.2</span><span class="tooltiptext">Zinc in plants - Normal</span></span>
-                    <span class="tooltip p-1 rounded hover:bg-gray-50">Cd: <span class="font-semibold text-yellow-600">0.15</span><span class="tooltiptext">Cadmium uptake - Monitor</span></span>
-                    <span class="tooltip p-1 rounded hover:bg-gray-50">Cu: <span class="font-semibold text-emerald-600">12.3</span><span class="tooltiptext">Copper in plants - Acceptable</span></span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Soil and Plant Health -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <div class="bg-white rounded-xl card-shadow p-6">
-            <h3 class="text-lg font-bold text-gray-800 mb-4">
-                <i class="fas fa-seedling text-emerald-600 mr-2"></i>Soil Analysis
-            </h3>
-            <div class="space-y-4">
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-gray-600">Soil pH</span>
-                    <span class="font-semibold text-yellow-600">5.8</span>
-                    <span class="text-xs text-yellow-600">Slightly Acidic</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-3">
-                    <div class="bg-gradient-to-r from-yellow-400 to-yellow-600 h-3 rounded-full" style="width: 58%"></div>
-                </div>
-                <div class="text-xs text-gray-500">Optimal range: 6.0-7.5</div>
+                <!-- Analysis Results -->
+                <div id="analysisResults" class="mt-4"></div>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl card-shadow p-6">
-            <h3 class="text-lg font-bold text-gray-800 mb-4">
-                <i class="fas fa-leaf text-emerald-600 mr-2"></i>Plant Health Indicators
-            </h3>
-            <div class="space-y-4">
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-gray-600">Chlorophyll Content</span>
-                    <span class="font-semibold text-yellow-600">28.5 SPAD</span>
-                    <span class="text-xs text-yellow-600">Stress Detected</span>
-                </div>
-                <div class="grid grid-cols-2 gap-4 text-sm">
-                    <div class="p-2 bg-red-50 rounded">
-                        <span class="text-gray-600">rbcL Expression:</span>
-                        <span class="font-semibold text-red-600">2.1x ↓</span>
-                    </div>
-                    <div class="p-2 bg-red-50 rounded">
-                        <span class="text-gray-600">HSP70 Expression:</span>
-                        <span class="font-semibold text-red-600">3.8x ↑</span>
+        <!-- Advanced Analytics Tab -->
+        <div id="analytics" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Statistical Analysis -->
+                <div class="bg-white p-6 rounded-lg card-shadow">
+                    <h3 class="text-lg font-semibold mb-4">Statistical Analysis</h3>
+                    <div class="space-y-4">
+                        <button onclick="runAnalysis('descriptive', 'environmental')" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <i class="fas fa-calculator mr-2"></i>Descriptive Statistics
+                        </button>
+                        <button onclick="runAnalysis('correlation', 'environmental')" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <i class="fas fa-project-diagram mr-2"></i>Correlation Analysis
+                        </button>
+                        <button onclick="runAnalysis('pollution_assessment', 'environmental')" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>Pollution Assessment
+                        </button>
                     </div>
                 </div>
+
+                <!-- Biodiversity Heatmap -->
+                <div class="bg-white p-6 rounded-lg card-shadow">
+                    <h3 class="text-lg font-semibold mb-4">Biodiversity Distribution</h3>
+                    {% if biodiversity_data.total_species > 0 %}
+                        <div class="flex justify-center">
+                            <div class="grid grid-cols-5 gap-1" id="heatmap-container">
+                                <!-- Heatmap will be generated by JavaScript -->
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="flex flex-col items-center justify-center h-64 text-gray-500">
+                            <i class="fas fa-map text-4xl mb-4"></i>
+                            <p class="text-lg font-medium">No Biodiversity Data</p>
+                            <p class="text-sm text-center">Upload biodiversity records to see distribution patterns</p>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Data Entry Section -->
-    <div class="bg-white rounded-xl card-shadow p-6 mt-6">
-        <h3 class="text-lg font-bold text-gray-800 mb-4">
-            <i class="fas fa-upload text-emerald-600 mr-2"></i>EcoGenomics Data Upload
-        </h3>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div class="border-2 border-dashed border-emerald-300 rounded-xl p-6 text-center bg-emerald-50">
-                <i class="fas fa-cloud-upload-alt text-4xl text-emerald-500 mb-4"></i>
-                <p class="text-gray-600 mb-2 font-medium">Environmental Data Files</p>
-                <p class="text-sm text-gray-500 mb-4">CSV, Excel, or Text files</p>
-                <button class="eco-button text-white px-6 py-2 rounded-lg hover:bg-emerald-700">Browse Files</button>
-            </div>
-            
-            <div class="border-2 border-dashed border-cyan-300 rounded-xl p-6 text-center bg-cyan-50">
-                <i class="fas fa-dna text-4xl text-cyan-500 mb-4"></i>
-                <p class="text-gray-600 mb-2 font-medium">Genomic Sequence Files</p>
-                <p class="text-sm text-gray-500 mb-4">FASTA, GenBank, EMBL, CLUSTAL</p>
-                <button class="bg-gradient-to-r from-cyan-500 to-cyan-600 text-white px-6 py-2 rounded-lg hover:from-cyan-600 hover:to-cyan-700">Upload Sequences</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Bioinformatics Tab -->
-<div id="bioinformatics" class="tab-content hidden p-4 sm:p-6">
-    <div class="mb-4 sm:mb-6">
-        <h2 class="text-xl sm:text-2xl font-bold brand-text mb-2">Genomic Analytics Suite</h2>
-        <p class="text-sm sm:text-base text-gray-600">Advanced bioinformatics tools for genomic and proteomic analysis</p>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-        <!-- Database Integration -->
-        <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
-            <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
-                <i class="fas fa-database text-blue-600 mr-2"></i>Database Integration
-            </h3>
-            <div class="space-y-3 sm:space-y-4">
-                <div class="flex items-center justify-between p-3 bg-emerald-50 rounded-lg border border-emerald-200">
-                    <div class="flex items-center min-w-0">
-                        <i class="fas fa-check-circle text-emerald-600 mr-2 flex-shrink-0"></i>
-                        <span class="font-medium text-sm sm:text-base truncate">NCBI Database</span>
+        <!-- Reports Tab -->
+        <div id="reports" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Report Generation -->
+                <div class="bg-white p-6 rounded-lg card-shadow">
+                    <h3 class="text-lg font-semibold mb-4">Generate Reports</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Report Type</label>
+                            <select id="reportType" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                <option value="environmental">Environmental Assessment</option>
+                                <option value="genomic">Genomic Analysis</option>
+                                <option value="biodiversity">Biodiversity Assessment</option>
+                                <option value="comprehensive">Comprehensive Report</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Output Format</label>
+                            <select id="reportFormat" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                <option value="pdf">PDF</option>
+                                <option value="html">HTML</option>
+                                <option value="docx">Word Document</option>
+                                <option value="xlsx">Excel Spreadsheet</option>
+                            </select>
+                        </div>
+                        <button onclick="generateReport()" class="w-full px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <i class="fas fa-file-download mr-2"></i>Generate Report
+                        </button>
                     </div>
-                    <span class="text-xs sm:text-sm text-emerald-600 font-medium whitespace-nowrap ml-2">Connected</span>
+                    
+                    <!-- Report Status -->
+                    <div id="reportStatus" class="mt-4 text-sm hidden"></div>
                 </div>
-                <div class="flex items-center justify-between p-3 bg-emerald-50 rounded-lg border border-emerald-200">
-                    <div class="flex items-center min-w-0">
-                        <i class="fas fa-check-circle text-emerald-600 mr-2 flex-shrink-0"></i>
-                        <span class="font-medium text-sm sm:text-base truncate">UniProt Database</span>
-                    </div>
-                    <span class="text-xs sm:text-sm text-emerald-600 font-medium whitespace-nowrap ml-2">Connected</span>
-                </div>
-                <div class="p-3 border border-gray-200 rounded-lg">
-                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Search Gene/Protein</label>
-                    <div class="flex flex-col sm:flex-row gap-2">
-                        <input type="text" placeholder="Enter gene symbol" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg sm:rounded-l-lg sm:rounded-r-none focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 text-sm">
-                        <button class="px-4 py-2 eco-button text-white rounded-lg sm:rounded-l-none sm:rounded-r-lg text-sm">Search</button>
-                    </div>
+
+                <!-- Recent Reports -->
+                <div class="bg-white p-6 rounded-lg card-shadow">
+                    <h3 class="text-lg font-semibold mb-4">Recent Reports</h3>
+                    {% if recent_analyses %}
+                        <div class="space-y-3">
+                            {% for analysis in recent_analyses %}
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">{{ analysis.get_analysis_type_display }}</p>
+                                    <p class="text-xs text-gray-500">{{ analysis.created_at|date:"M d, Y H:i" }}</p>
+                                </div>
+                                <button class="text-emerald-600 hover:text-emerald-800">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-file-alt text-4xl mb-4"></i>
+                            <p class="text-lg font-medium">No reports generated</p>
+                            <p class="text-sm">Generate your first report to see it here</p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
+    </main>
 
-        <!-- Primer Design -->
-        <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
-            <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
-                <i class="fas fa-cut text-purple-600 mr-2"></i>Enhanced Primer Design
-            </h3>
-            <div class="space-y-3 sm:space-y-4">
-                <div>
-                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Organism</label>
-                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 text-sm">
-                        <option>Arabidopsis thaliana</option>
-                        <option>Oryza sativa (Rice)</option>
-                        <option>Zea mays (Maize)</option>
-                        <option>Homo sapiens</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Reference Genome Accession</label>
-                    <input type="text" placeholder="GCF_000001735.4" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Target Gene</label>
-                    <input type="text" placeholder="rbcL" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 text-sm">
-                </div>
-                <button class="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-3 rounded-lg hover:from-purple-700 hover:to-purple-800 font-medium text-sm">Design Primers with BLAST Validation</button>
-            </div>
-        </div>
-    </div>
+    <!-- JavaScript Data -->
+    <script>
+        // Pass data from Django to JavaScript
+        const chartData = {{ chart_data|safe }};
+        const heatmapData = {{ heatmap_data|safe }};
+        const hasEnvironmentalData = {{ environmental_data.total_samples }} > 0;
+        const hasGenomicData = {{ genomic_data.total_samples }} > 0;
+        const hasBiodiversityData = {{ biodiversity_data.total_species }} > 0;
+    </script>
 
-    <!-- Sequence Analysis Tools -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-4 sm:mt-6">
-        <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
-            <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
-                <i class="fas fa-align-left text-emerald-600 mr-2"></i>Sequence Alignment
-            </h3>
-            <div class="space-y-2 sm:space-y-3">
-                <button class="w-full eco-button text-white py-2 rounded-lg font-medium text-sm">Pairwise Alignment</button>
-                <button class="w-full eco-button text-white py-2 rounded-lg font-medium text-sm">Multiple Alignment</button>
-                <button class="w-full eco-button text-white py-2 rounded-lg font-medium text-sm">Phylogenetic Analysis</button>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
-            <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
-                <i class="fas fa-exchange-alt text-orange-600 mr-2"></i>DNA Translation
-            </h3>
-            <div class="space-y-2 sm:space-y-3">
-                <button class="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-2 rounded-lg hover:from-orange-600 hover:to-orange-700 font-medium text-sm">6-Frame Translation</button>
-                <button class="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-2 rounded-lg hover:from-orange-600 hover:to-orange-700 font-medium text-sm">ORF Detection</button>
-                <button class="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-2 rounded-lg hover:from-orange-600 hover:to-orange-700 font-medium text-sm">Codon Usage</button>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 md:col-span-2 lg:col-span-1">
-            <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
-                <i class="fas fa-cube text-red-600 mr-2"></i>Structure Modeling
-            </h3>
-            <div class="space-y-2 sm:space-y-3">
-                <button class="w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-2 rounded-lg hover:from-red-600 hover:to-red-700 font-medium text-sm">Protein Modeling</button>
-                <button class="w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-2 rounded-lg hover:from-red-600 hover:to-red-700 font-medium text-sm">Model Comparison</button>
-                <button class="w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-2 rounded-lg hover:from-red-600 hover:to-red-700 font-medium text-sm">Mutation Analysis</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Custom Gene/Protein Panels -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mt-4 sm:mt-6">
-        <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
-            <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
-                <i class="fas fa-dna text-blue-600 mr-2"></i>Custom Gene Panels
-            </h3>
-            <div class="space-y-3 sm:space-y-4">
-                <div class="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                    <h4 class="font-medium text-blue-800 text-sm sm:text-base">Stress Response Panel</h4>
-                    <div class="text-xs sm:text-sm text-blue-600 mt-1">rbcL, HSP70, WRKY5, SUT1</div>
-                </div>
-                <div class="p-3 bg-emerald-50 rounded-lg border border-emerald-200">
-                    <h4 class="font-medium text-emerald-800 text-sm sm:text-base">Heavy Metal Response</h4>
-                    <div class="text-xs sm:text-sm text-emerald-600 mt-1">MT1, MT2, HMA4, ZIP1</div>
-                </div>
-                <button class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2 rounded-lg hover:from-blue-600 hover:to-blue-700 font-medium text-sm">Add Custom Gene</button>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
-            <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
-                <i class="fas fa-atom text-purple-600 mr-2"></i>Custom Protein Panels
-            </h3>
-            <div class="space-y-3 sm:space-y-4">
-                <div class="p-3 bg-purple-50 rounded-lg border border-purple-200">
-                    <h4 class="font-medium text-purple-800 text-sm sm:text-base">Antioxidant Enzymes</h4>
-                    <div class="text-xs sm:text-sm text-purple-600 mt-1">SOD, CAT, POX, APX</div>
-                </div>
-                <div class="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                    <h4 class="font-medium text-yellow-800 text-sm sm:text-base">Photosystem Proteins</h4>
-                    <div class="text-xs sm:text-sm text-yellow-600 mt-1">RuBisCO, PsaA, PsbA</div>
-                </div>
-                <button class="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white py-2 rounded-lg hover:from-purple-600 hover:to-purple-700 font-medium text-sm">Add Custom Protein</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Analytics Tab -->
-<div id="analytics" class="tab-content hidden p-4 sm:p-6">
-    <div class="mb-4 sm:mb-6">
-        <h2 class="text-xl sm:text-2xl font-bold brand-text mb-2">Advanced Analytics</h2>
-        <p class="text-sm sm:text-base text-gray-600">Comprehensive data analysis and visualization tools</p>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-        <!-- Interactive Charts -->
-        <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
-            <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
-                <span class="truncate">Water Quality Trends</span>
-            </h3>
-            <div class="chart-container">
-                <canvas id="waterQualityChart"></canvas>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
-            <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
-                <span class="truncate">Heavy Metals Distribution</span>
-            </h3>
-            <div class="chart-container">
-                <canvas id="heavyMetalsChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- Correlation Analysis -->
-    <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 mt-4 sm:mt-6">
-        <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
-            <i class="fas fa-project-diagram text-emerald-600 mr-2"></i>Cross-Parameter Correlation Analysis
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            <div class="p-3 sm:p-4 bg-red-50 rounded-lg border border-red-200">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs sm:text-sm font-medium text-red-800 truncate">PM2.5 vs Chlorophyll</span>
-                    <span class="font-bold text-red-800 text-sm sm:text-base ml-2">-0.72</span>
-                </div>
-                <div class="text-xs text-red-800 mt-1">Strong negative correlation</div>
-            </div>
-            <div class="p-3 sm:p-4 bg-orange-50 rounded-lg border border-orange-200">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs sm:text-sm font-medium text-orange-800 truncate">Lead vs Gene Expression</span>
-                    <span class="font-bold text-orange-600 text-sm sm:text-base ml-2">0.68</span>
-                </div>
-                <div class="text-xs text-orange-600 mt-1">Moderate positive correlation</div>
-            </div>
-            <div class="p-3 sm:p-4 bg-blue-50 rounded-lg border border-blue-200 md:col-span-2 lg:col-span-1">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs sm:text-sm font-medium text-blue-800 truncate">BOD vs Dissolved O₂</span>
-                    <span class="font-bold text-blue-600 text-sm sm:text-base ml-2">-0.85</span>
-                </div>
-                <div class="text-xs text-blue-600 mt-1">Strong negative correlation</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Protein Expression Heatmap -->
-    <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 mt-4 sm:mt-6">
-        <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">Protein Expression Heatmap</h3>
-        <div class="overflow-x-auto">
-            <table class="w-full text-xs sm:text-sm">
-                <thead>
-                    <tr class="border-b-2 border-gray-200">
-                        <th class="text-left py-2 sm:py-3 font-bold">Protein</th>
-                        <th class="text-center py-2 sm:py-3 font-bold">Control</th>
-                        <th class="text-center py-2 sm:py-3 font-bold">Low Stress</th>
-                        <th class="text-center py-2 sm:py-3 font-bold">Med Stress</th>
-                        <th class="text-center py-2 sm:py-3 font-bold">High Stress</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="border-b border-gray-100">
-                        <td class="py-2 sm:py-3 font-medium">SOD</td>
-                        <td class="text-center"><div class="heatmap-cell w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-lg bg-emerald-200" title="1.0x"></div></td>
-                        <td class="text-center"><div class="heatmap-cell w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-lg bg-yellow-300" title="1.8x"></div></td>
-                        <td class="text-center"><div class="heatmap-cell w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-lg bg-orange-400" title="3.2x"></div></td>
-                        <td class="text-center"><div class="heatmap-cell w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-lg bg-red-500" title="5.1x"></div></td>
-                    </tr>
-                    <tr class="border-b border-gray-100">
-                        <td class="py-2 sm:py-3 font-medium">CAT</td>
-                        <td class="text-center"><div class="heatmap-cell w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-lg bg-emerald-200" title="1.0x"></div></td>
-                        <td class="text-center"><div class="heatmap-cell w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-lg bg-yellow-200" title="1.5x"></div></td>
-                        <td class="text-center"><div class="heatmap-cell w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-lg bg-orange-300" title="2.8x"></div></td>
-                        <td class="text-center"><div class="heatmap-cell w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-lg bg-red-400" title="4.2x"></div></td>
-                    </tr>
-                    <tr class="border-b border-gray-100">
-                        <td class="py-2 sm:py-3 font-medium">RuBisCO</td>
-                        <td class="text-center"><div class="heatmap-cell w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-lg bg-emerald-200" title="1.0x"></div></td>
-                        <td class="text-center"><div class="heatmap-cell w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-lg bg-emerald-300" title="0.8x"></div></td>
-                        <td class="text-center"><div class="heatmap-cell w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-lg bg-blue-300" title="0.5x"></div></td>
-                        <td class="text-center"><div class="heatmap-cell w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-lg bg-blue-500" title="0.2x"></div></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="mt-4 flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
-            <div class="flex items-center">
-                <div class="w-3 h-3 sm:w-4 sm:h-4 bg-blue-500 rounded mr-2"></div>
-                <span>Downregulated</span>
-            </div>
-            <div class="flex items-center">
-                <div class="w-3 h-3 sm:w-4 sm:h-4 bg-emerald-200 rounded mr-2"></div>
-                <span>Normal</span>
-            </div>
-            <div class="flex items-center">
-                <div class="w-3 h-3 sm:w-4 sm:h-4 bg-red-500 rounded mr-2"></div>
-                <span>Upregulated</span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Reports Tab -->
-<div id="reports" class="tab-content hidden p-4 sm:p-6">
-    <div class="mb-4 sm:mb-6">
-        <h2 class="text-xl sm:text-2xl font-bold brand-text mb-2">Reports & Export</h2>
-        <p class="text-sm sm:text-base text-gray-600">Generate professional reports and export data in multiple formats</p>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-        <!-- Export Options -->
-        <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
-            <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
-                <i class="fas fa-download text-emerald-600 mr-2"></i>Data Export Options
-            </h3>
-            <div class="space-y-2 sm:space-y-3">
-                <button class="w-full flex items-center justify-center px-4 py-3 eco-button text-white rounded-lg font-medium text-sm">
-                    <i class="fas fa-file-csv mr-2"></i>Export as CSV
-                </button>
-                <button class="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 font-medium text-sm">
-                    <i class="fas fa-file-excel mr-2"></i>Export as Excel
-                </button>
-                <button class="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 font-medium text-sm">
-                    <i class="fas fa-file-pdf mr-2"></i>Generate PDF Report
-                </button>
-                <button class="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 font-medium text-sm">
-                    <i class="fas fa-file-powerpoint mr-2"></i>PowerPoint Export
-                </button>
-            </div>
-        </div>
-
-        <!-- Report Templates -->
-        <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
-            <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
-                <i class="fas fa-file-alt text-purple-600 mr-2"></i>Report Templates
-            </h3>
-            <div class="space-y-2 sm:space-y-3">
-                <div class="p-3 border border-gray-200 rounded-lg hover:bg-emerald-50 hover:border-emerald-300 cursor-pointer transition-colors">
-                    <h4 class="font-medium text-gray-800 text-sm sm:text-base">Environmental Compliance Report</h4>
-                    <p class="text-xs sm:text-sm text-gray-600">WHO, EPA, NESREA standards comparison</p>
-                </div>
-                <div class="p-3 border border-gray-200 rounded-lg hover:bg-emerald-50 hover:border-emerald-300 cursor-pointer transition-colors">
-                    <h4 class="font-medium text-gray-800 text-sm sm:text-base">Research Publication Format</h4>
-                    <p class="text-xs sm:text-sm text-gray-600">Scientific journal ready format</p>
-                </div>
-                <div class="p-3 border border-gray-200 rounded-lg hover:bg-emerald-50 hover:border-emerald-300 cursor-pointer transition-colors">
-                    <h4 class="font-medium text-gray-800 text-sm sm:text-base">Executive Summary</h4>
-                    <p class="text-xs sm:text-sm text-gray-600">High-level overview for management</p>
-                </div>
-                <div class="p-3 border border-gray-200 rounded-lg hover:bg-emerald-50 hover:border-emerald-300 cursor-pointer transition-colors">
-                    <h4 class="font-medium text-gray-800 text-sm sm:text-base">Genomic Analysis Report</h4>
-                    <p class="text-xs sm:text-sm text-gray-600">Complete molecular analysis documentation</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- API Documentation -->
-    <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 mt-4 sm:mt-6">
-        <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
-            <i class="fas fa-code text-emerald-600 mr-2"></i>EcoGenomics Suite API Access
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-            <div>
-                <h4 class="font-medium text-gray-800 mb-3 text-sm sm:text-base">Environmental Data API</h4>
-                <div class="bg-gray-100 p-3 rounded-lg font-mono text-xs sm:text-sm overflow-x-auto">
-                    <div>GET /api/v1/environmental/air</div>
-                    <div>GET /api/v1/environmental/water</div>
-                    <div>GET /api/v1/environmental/soil</div>
-                    <div>POST /api/v1/environmental/upload</div>
-                </div>
-            </div>
-            <div>
-                <h4 class="font-medium text-gray-800 mb-3 text-sm sm:text-base">Genomics API</h4>
-                <div class="bg-gray-100 p-3 rounded-lg font-mono text-xs sm:text-sm overflow-x-auto">
-                    <div>GET /api/v1/genomics/sequences</div>
-                    <div>GET /api/v1/genomics/expression</div>
-                    <div>POST /api/v1/genomics/analysis</div>
-                    <div>GET /api/v1/genomics/primers</div>
-                </div>
-            </div>
-        </div>
-        <div class="mt-4 p-4 bg-emerald-50 rounded-lg border border-emerald-200">
-            <h4 class="font-medium text-emerald-800 mb-2 text-sm sm:text-base">EcoGenomics API Authentication</h4>
-            <p class="text-xs sm:text-sm text-emerald-700">Bearer token required. Rate limit: 1000 requests/hour. Full documentation available.</p>
-        </div>
-    </div>
-
-    <!-- Scheduled Reports -->
-    <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 mt-4 sm:mt-6">
-        <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4">
-            <i class="fas fa-clock text-orange-600 mr-2"></i>Automated Reporting
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            <div class="p-3 sm:p-4 border border-gray-200 rounded-lg">
-                <h4 class="font-medium text-gray-800 text-sm sm:text-base">Daily Environmental Summary</h4>
-                <p class="text-xs sm:text-sm text-gray-600 mt-1">Every day at 6:00 AM</p>
-                <div class="mt-2">
-                    <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-                        Active
-                    </span>
-                </div>
-            </div>
-            <div class="p-3 sm:p-4 border border-gray-200 rounded-lg">
-                <h4 class="font-medium text-gray-800 text-sm sm:text-base">Weekly Genomic Analysis</h4>
-                <p class="text-xs sm:text-sm text-gray-600 mt-1">Every Monday at 8:00 AM</p>
-                <div class="mt-2">
-                    <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-                        Active
-                    </span>
-                </div>
-            </div>
-            <div class="p-3 sm:p-4 border border-gray-200 rounded-lg md:col-span-2 lg:col-span-1">
-                <h4 class="font-medium text-gray-800 text-sm sm:text-base">Monthly Compliance Report</h4>
-                <p class="text-xs sm:text-sm text-gray-600 mt-1">First day of each month</p>
-                <div class="mt-2">
-                    <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-                        Active
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Footer -->
-<footer class="bg-gray-800 text-white py-6 mt-12">
-    <div class="container mx-auto px-6">
-        <div class="flex flex-col md:flex-row items-center md:justify-between gap-4">
-            <div class="flex items-center space-x-4">
-                <div class="etfash-logo bg-white bg-opacity-20">
-                    <img src="{% static 'images/etfash-logo.jpeg' %}" alt="ETfash Environmental Services Logo" class="w-full h-full rounded-lg">
-                </div>
-                <div>
-                    <h4 class="text-lg font-bold text-gray-300">EcoGenomics Suite</h4>
-                    <p class="text-sm text-gray-400">Professional Environmental & Genomic Analytics</p>
-                </div>
-            </div>
-            <div class="text-sm text-gray-400 text-center md:text-right">
-                © 2025 ETfash Environmental Services. All rights reserved.
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- Pass data to JavaScript -->
-<script>
-    // Chart data for JavaScript - using Django template data
-    const chartData = {
-        temperature_trend: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-            data: [22.1, 23.5, 24.2, 23.8, 22.9, 23.5]
-        },
-        species_count: {
-            labels: ['Mammals', 'Birds', 'Fish', 'Reptiles', 'Amphibians'],
-            data: [45, 78, 123, 34, 56]
-        },
-        genetic_diversity: {
-            labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-            data: [0.75, 0.82, 0.78, 0.85]
-        },
-        monthly_samples: {
-            labels: ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            data: [234, 267, 298, 312, 289, 345]
-        }
-    };
-    
-    // Heatmap data
-    const heatmapData = [
-        [0.2, 0.4, 0.6, 0.8, 0.5, 0.3, 0.7],
-        [0.3, 0.6, 0.8, 0.4, 0.7, 0.5, 0.2],
-        [0.5, 0.3, 0.7, 0.9, 0.2, 0.6, 0.4],
-        [0.7, 0.5, 0.3, 0.6, 0.8, 0.4, 0.9],
-        [0.4, 0.8, 0.5, 0.2, 0.6, 0.7, 0.3],
-        [0.6, 0.2, 0.9, 0.5, 0.3, 0.8, 0.6],
-        [0.8, 0.7, 0.4, 0.3, 0.9, 0.2, 0.5]
-    ];
-    
-    console.log('Chart data loaded:', chartData);
-    console.log('Heatmap data loaded:', heatmapData);
-</script>
-{% endblock %}
-
-{% block extra_js %}
-<!-- Additional JavaScript for dashboard functionality -->
-<script>
-    // Dashboard-specific initialization
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Dashboard template loaded');
-        
-        // Verify all tab elements exist
-        const tabIds = ['overview', 'environmental', 'bioinformatics', 'analytics', 'reports'];
-        tabIds.forEach(id => {
-            const element = document.getElementById(id);
-            console.log(`Tab element '${id}':`, element ? 'Found' : 'Missing');
-        });
-        
-        // Verify tab buttons exist
-        const tabButtons = document.querySelectorAll('.tab-btn');
-        console.log('Tab buttons found:', tabButtons.length);
-        
-        // Add click event listeners as backup
-        tabButtons.forEach((button, index) => {
-            button.addEventListener('click', function(e) {
-                console.log('Tab button clicked:', this.textContent.trim());
-            });
-        });
-    });
-</script>
-{% endblock %}
+    <!-- Load JavaScript -->
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>
