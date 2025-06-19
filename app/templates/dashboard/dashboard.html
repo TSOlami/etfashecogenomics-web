@@ -94,7 +94,7 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
             <!-- KPI Cards with Real Data -->
-            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 border-l-4 border-l-red-500">
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 border-l-4 border-l-red-500" data-metric="air_quality">
                 <div class="flex items-center">
                     <div class="p-2 sm:p-3 rounded-full bg-red-100 text-red-600 flex-shrink-0">
                         <i class="fas fa-wind text-lg sm:text-xl"></i>
@@ -107,10 +107,10 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 border-l-4 border-l-emerald-500">
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 border-l-4 border-l-emerald-500" data-metric="temperature">
                 <div class="flex items-center">
                     <div class="p-2 sm:p-3 rounded-full bg-emerald-100 text-emerald-600 flex-shrink-0">
-                        <i class="fas fa-tint text-lg sm:text-xl"></i>
+                        <i class="fas fa-thermometer-half text-lg sm:text-xl"></i>
                     </div>
                     <div class="ml-3 sm:ml-4 min-w-0">
                         <p class="text-xs sm:text-sm font-medium text-gray-600 truncate">Temperature</p>
@@ -120,7 +120,7 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 border-l-4 border-l-yellow-500">
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 border-l-4 border-l-yellow-500" data-metric="ph_level">
                 <div class="flex items-center">
                     <div class="p-2 sm:p-3 rounded-full bg-yellow-100 text-yellow-600 flex-shrink-0">
                         <i class="fas fa-seedling text-lg sm:text-xl"></i>
@@ -133,7 +133,7 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 border-l-4 border-l-purple-500">
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 border-l-4 border-l-purple-500" data-metric="genomic_studies">
                 <div class="flex items-center">
                     <div class="p-2 sm:p-3 rounded-full bg-purple-100 text-purple-600 flex-shrink-0">
                         <i class="fas fa-dna text-lg sm:text-xl"></i>
@@ -228,7 +228,7 @@
             </div>
         </div>
 
-        <!-- Data Entry Section -->
+        <!-- Enhanced Data Entry Section -->
         <div class="bg-white rounded-xl card-shadow p-6 mt-6">
             <h3 class="text-lg font-bold text-gray-800 mb-4">
                 <i class="fas fa-upload text-emerald-600 mr-2"></i>Environmental Data Upload
@@ -243,11 +243,16 @@
                         {% csrf_token %}
                         <input type="file" id="fileInput" name="file" accept=".csv,.xlsx,.xls" class="hidden">
                         <input type="hidden" id="fileType" name="file_type" value="environmental">
+                        
                         <button type="button" onclick="document.getElementById('fileInput').click()" class="eco-button text-white px-6 py-2 rounded-lg hover:bg-emerald-700 mb-2">
-                            Browse Files
+                            <i class="fas fa-folder-open mr-2"></i>Browse Files
                         </button>
-                        <button type="submit" class="w-full bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
-                            Upload Data
+                        
+                        <!-- File Selected Indicator (will be created dynamically) -->
+                        <div id="fileSelectedIndicator" class="mt-3" style="display: none;"></div>
+                        
+                        <button type="submit" class="w-full bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <i class="fas fa-upload mr-2"></i>Upload Data
                         </button>
                     </form>
                     
@@ -255,6 +260,7 @@
                         <div class="w-full bg-gray-200 rounded-full h-2">
                             <div class="bg-emerald-600 h-2 rounded-full animate-pulse" style="width: 100%"></div>
                         </div>
+                        <p class="text-sm text-emerald-600 mt-1">Processing your data...</p>
                     </div>
                     <div id="uploadStatus" class="mt-2 text-sm" style="display: none;"></div>
                 </div>
@@ -265,13 +271,13 @@
                     <p class="text-sm text-gray-500 mb-4">Get started with our data templates</p>
                     <div class="space-y-2">
                         <button onclick="downloadTemplate('environmental')" class="w-full bg-gradient-to-r from-cyan-500 to-cyan-600 text-white px-6 py-2 rounded-lg hover:from-cyan-600 hover:to-cyan-700">
-                            Environmental Template
+                            <i class="fas fa-file-csv mr-2"></i>Environmental Template
                         </button>
                         <button onclick="downloadTemplate('genomic')" class="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-purple-600 hover:to-purple-700">
-                            Genomic Template
+                            <i class="fas fa-dna mr-2"></i>Genomic Template
                         </button>
                         <button onclick="downloadTemplate('biodiversity')" class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 rounded-lg hover:from-green-600 hover:to-green-700">
-                            Biodiversity Template
+                            <i class="fas fa-leaf mr-2"></i>Biodiversity Template
                         </button>
                     </div>
                 </div>
@@ -490,7 +496,7 @@
                         </select>
                     </div>
                     <button onclick="generateReport()" class="w-full eco-button text-white py-3 rounded-lg font-medium">
-                        Generate Report
+                        <i class="fas fa-file-pdf mr-2"></i>Generate Report
                     </button>
                     <div id="reportStatus" class="text-sm" style="display: none;"></div>
                 </div>
@@ -547,9 +553,16 @@
 // Pass data from Django to JavaScript
 const chartData = {{ chart_data|safe }};
 const heatmapData = {{ heatmap_data|safe }};
-const hasEnvironmentalData = {{ environmental_data.total_samples }} > 0;
-const hasGenomicData = {{ genomic_data.total_samples }} > 0;
-const hasBiodiversityData = {{ biodiversity_data.total_species }} > 0;
+const hasEnvironmentalData = {{ has_environmental_data|yesno:"true,false" }};
+const hasGenomicData = {{ has_genomic_data|yesno:"true,false" }};
+const hasBiodiversityData = {{ has_biodiversity_data|yesno:"true,false" }};
+
+console.log('Dashboard data loaded:', {
+    hasEnvironmentalData,
+    hasGenomicData,
+    hasBiodiversityData,
+    chartDataPoints: chartData.temperature_trend.data.length
+});
 </script>
 
 <!-- Custom JavaScript -->

@@ -165,6 +165,11 @@ def dashboard_view(request):
     chart_data = generate_real_chart_data(request.user)
     heatmap_data = generate_real_heatmap_data(request.user)
     
+    # Get recent activity
+    recent_uploads = DataUploadLog.objects.filter(user=request.user).order_by('-upload_timestamp')[:5]
+    recent_analyses = AnalysisResult.objects.filter(user=request.user).order_by('-created_at')[:5]
+    recent_reports = Report.objects.filter(user=request.user).order_by('-created_at')[:5]
+    
     context = {
         'user': request.user,
         'environmental_data': environmental_data,
@@ -172,9 +177,12 @@ def dashboard_view(request):
         'biodiversity_data': biodiversity_data,
         'heatmap_data': json.dumps(heatmap_data),
         'chart_data': json.dumps(chart_data),
-        'recent_uploads': DataUploadLog.objects.filter(user=request.user)[:5],
-        'recent_analyses': AnalysisResult.objects.filter(user=request.user)[:5],
-        'recent_reports': Report.objects.filter(user=request.user)[:5],
+        'recent_uploads': recent_uploads,
+        'recent_analyses': recent_analyses,
+        'recent_reports': recent_reports,
+        'has_environmental_data': environmental_data['total_samples'] > 0,
+        'has_genomic_data': genomic_data['total_samples'] > 0,
+        'has_biodiversity_data': biodiversity_data['total_species'] > 0,
     }
     return render(request, 'dashboard/dashboard.html', context)
 
@@ -191,7 +199,7 @@ def logout_view(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def upload_data(request):
-    """Handle file upload and processing with real data integration"""
+    """Handle file upload and processing with real data integration and progress feedback"""
     try:
         if 'file' not in request.FILES:
             return JsonResponse({'error': 'No file provided'}, status=400)
@@ -203,6 +211,10 @@ def upload_data(request):
         if not uploaded_file.name.endswith(('.csv', '.xlsx', '.xls')):
             return JsonResponse({'error': 'Invalid file type. Please upload CSV or Excel files.'}, status=400)
         
+        # Validate file size (max 50MB)
+        if uploaded_file.size > 50 * 1024 * 1024:
+            return JsonResponse({'error': 'File too large. Maximum size is 50MB.'}, status=400)
+        
         # Create upload log
         upload_log = DataUploadLog.objects.create(
             user=request.user,
@@ -212,12 +224,23 @@ def upload_data(request):
             processing_started=datetime.now()
         )
         
+        logger.info(f'User {request.user.username} started uploading {uploaded_file.name} ({file_type})')
+        
         # Process the file
         try:
             if uploaded_file.name.endswith('.csv'):
                 df = pd.read_csv(uploaded_file)
             else:
                 df = pd.read_excel(uploaded_file)
+            
+            # Validate data structure
+            validation_result = validate_data_structure(df, file_type)
+            if not validation_result['valid']:
+                upload_log.processing_status = 'validation_error'
+                upload_log.error_message = validation_result['error']
+                upload_log.processing_completed = datetime.now()
+                upload_log.save()
+                return JsonResponse({'error': validation_result['error']}, status=400)
             
             # Process based on file type
             records_processed = process_uploaded_data(df, file_type, request.user)
@@ -228,10 +251,16 @@ def upload_data(request):
             upload_log.processing_completed = datetime.now()
             upload_log.save()
             
+            logger.info(f'Successfully processed {records_processed} records for user {request.user.username}')
+            
+            # Get updated dashboard data
+            updated_data = get_dashboard_update_data(request.user)
+            
             return JsonResponse({
                 'success': True,
                 'message': f'File processed successfully. {records_processed} records imported.',
-                'records_processed': records_processed
+                'records_processed': records_processed,
+                'updated_data': updated_data
             })
             
         except Exception as e:
@@ -240,11 +269,51 @@ def upload_data(request):
             upload_log.processing_completed = datetime.now()
             upload_log.save()
             
+            logger.error(f'Upload processing error for user {request.user.username}: {str(e)}')
             return JsonResponse({'error': f'Error processing file: {str(e)}'}, status=500)
             
     except Exception as e:
-        logger.error(f'Upload error: {str(e)}')
+        logger.error(f'Upload error for user {request.user.username}: {str(e)}')
         return JsonResponse({'error': 'Upload failed'}, status=500)
+
+
+def validate_data_structure(df, file_type):
+    """Validate the structure of uploaded data"""
+    required_columns = {
+        'environmental': ['timestamp', 'location'],
+        'genomic': ['sample_id', 'sample_type', 'collection_date', 'location'],
+        'biodiversity': ['species_name', 'location', 'observation_date']
+    }
+    
+    if file_type not in required_columns:
+        return {'valid': False, 'error': f'Unknown file type: {file_type}'}
+    
+    missing_columns = []
+    for col in required_columns[file_type]:
+        if col not in df.columns:
+            missing_columns.append(col)
+    
+    if missing_columns:
+        return {
+            'valid': False, 
+            'error': f'Missing required columns: {", ".join(missing_columns)}. Please check your data format.'
+        }
+    
+    if len(df) == 0:
+        return {'valid': False, 'error': 'File is empty. Please provide data to upload.'}
+    
+    return {'valid': True}
+
+
+def get_dashboard_update_data(user):
+    """Get updated dashboard data after file upload"""
+    return {
+        'environmental_data': get_real_environmental_data(user),
+        'genomic_data': get_real_genomic_data(user),
+        'biodiversity_data': get_real_biodiversity_data(user),
+        'chart_data': generate_real_chart_data(user),
+        'heatmap_data': generate_real_heatmap_data(user)
+    }
 
 
 def process_uploaded_data(df, file_type, user):
@@ -254,11 +323,14 @@ def process_uploaded_data(df, file_type, user):
     if file_type == 'environmental':
         for _, row in df.iterrows():
             try:
+                # Parse timestamp
+                timestamp = pd.to_datetime(row.get('timestamp', datetime.now()))
+                
                 # Create environmental data record with comprehensive field mapping
                 env_data = EnvironmentalData.objects.create(
                     user=user,
-                    timestamp=pd.to_datetime(row.get('timestamp', datetime.now())),
-                    location=row.get('location', ''),
+                    timestamp=timestamp,
+                    location=str(row.get('location', '')),
                     
                     # Air Quality Parameters
                     ozone_concentration=safe_float(row.get('ozone_concentration')),
@@ -288,7 +360,7 @@ def process_uploaded_data(df, file_type, user):
                     latitude=safe_float(row.get('latitude')),
                     longitude=safe_float(row.get('longitude')),
                     
-                    notes=row.get('notes', '')
+                    notes=str(row.get('notes', ''))
                 )
                 records_processed += 1
             except Exception as e:
@@ -297,13 +369,16 @@ def process_uploaded_data(df, file_type, user):
     elif file_type == 'genomic':
         for _, row in df.iterrows():
             try:
+                # Parse collection date
+                collection_date = pd.to_datetime(row.get('collection_date', datetime.now()))
+                
                 # Create genomic sample record
                 genomic_sample = GenomicSample.objects.create(
                     user=user,
-                    sample_id=row.get('sample_id', f'GS_{datetime.now().strftime("%Y%m%d_%H%M%S")}'),
-                    sample_type=row.get('sample_type', 'other'),
-                    collection_date=pd.to_datetime(row.get('collection_date', datetime.now())),
-                    location=row.get('location', ''),
+                    sample_id=str(row.get('sample_id', f'GS_{datetime.now().strftime("%Y%m%d_%H%M%S")}_{records_processed}')),
+                    sample_type=str(row.get('sample_type', 'other')),
+                    collection_date=collection_date,
+                    location=str(row.get('location', '')),
                     
                     # Georeferencing
                     latitude=safe_float(row.get('latitude')),
@@ -316,12 +391,12 @@ def process_uploaded_data(df, file_type, user):
                     dna_purity_260_230=safe_float(row.get('dna_purity_260_230')),
                     
                     # Gene Analysis (JSON fields)
-                    target_genes=row.get('target_genes', ''),
-                    gene_sequences=row.get('gene_sequences', ''),
-                    mutations_detected=row.get('mutations_detected', ''),
+                    target_genes=str(row.get('target_genes', '')),
+                    gene_sequences=str(row.get('gene_sequences', '')),
+                    mutations_detected=str(row.get('mutations_detected', '')),
                     
-                    analysis_status=row.get('analysis_status', 'collected'),
-                    notes=row.get('notes', '')
+                    analysis_status=str(row.get('analysis_status', 'collected')),
+                    notes=str(row.get('notes', ''))
                 )
                 records_processed += 1
             except Exception as e:
@@ -330,20 +405,23 @@ def process_uploaded_data(df, file_type, user):
     elif file_type == 'biodiversity':
         for _, row in df.iterrows():
             try:
+                # Parse observation date
+                observation_date = pd.to_datetime(row.get('observation_date', datetime.now()))
+                
                 BiodiversityRecord.objects.create(
-                    species_name=row.get('species_name', ''),
-                    common_name=row.get('common_name', ''),
-                    location=row.get('location', ''),
-                    observation_date=pd.to_datetime(row.get('observation_date', datetime.now())),
+                    species_name=str(row.get('species_name', '')),
+                    common_name=str(row.get('common_name', '')),
+                    location=str(row.get('location', '')),
+                    observation_date=observation_date,
                     population_count=safe_int(row.get('population_count')),
-                    conservation_status=row.get('conservation_status', 'NE'),
+                    conservation_status=str(row.get('conservation_status', 'NE')),
                     
                     # Georeferencing
                     latitude=safe_float(row.get('latitude')),
                     longitude=safe_float(row.get('longitude')),
                     
-                    habitat_description=row.get('habitat_description', ''),
-                    threat_assessment=row.get('threat_assessment', ''),
+                    habitat_description=str(row.get('habitat_description', '')),
+                    threat_assessment=str(row.get('threat_assessment', '')),
                     observer=user
                 )
                 records_processed += 1
@@ -356,7 +434,9 @@ def process_uploaded_data(df, file_type, user):
 def safe_float(value):
     """Safely convert value to float"""
     try:
-        return float(value) if value is not None and str(value).strip() != '' else None
+        if value is None or str(value).strip() == '' or str(value).lower() in ['nan', 'null', 'none']:
+            return None
+        return float(value)
     except (ValueError, TypeError):
         return None
 
@@ -364,7 +444,9 @@ def safe_float(value):
 def safe_int(value):
     """Safely convert value to int"""
     try:
-        return int(float(value)) if value is not None and str(value).strip() != '' else None
+        if value is None or str(value).strip() == '' or str(value).lower() in ['nan', 'null', 'none']:
+            return None
+        return int(float(value))
     except (ValueError, TypeError):
         return None
 
@@ -453,6 +535,7 @@ def download_template(request, template_type):
     for row in template['sample_data']:
         writer.writerow(row)
     
+    logger.info(f'User {request.user.username} downloaded {template_type} template')
     return response
 
 
@@ -466,6 +549,8 @@ def run_analysis_view(request):
         analysis_type = data.get('analysis_type', 'descriptive')
         parameters = data.get('parameters', {})
         
+        logger.info(f'User {request.user.username} running {analysis_type} analysis on {dataset} data')
+        
         # Run analysis using the analysis module
         results = run_analysis(request.user, analysis_type, dataset, parameters)
         
@@ -475,7 +560,7 @@ def run_analysis_view(request):
         })
         
     except Exception as e:
-        logger.error(f'Analysis error: {str(e)}')
+        logger.error(f'Analysis error for user {request.user.username}: {str(e)}')
         return JsonResponse({'error': str(e)}, status=500)
 
 
@@ -489,6 +574,8 @@ def generate_visualization(request):
         dataset_type = data.get('dataset_type', 'environmental')
         parameters = data.get('parameters', {})
         
+        logger.info(f'User {request.user.username} generating {chart_type} visualization for {dataset_type}')
+        
         # Generate visualization based on real data
         chart_data = create_real_visualization_data(request.user, chart_type, dataset_type, parameters)
         
@@ -498,7 +585,7 @@ def generate_visualization(request):
         })
         
     except Exception as e:
-        logger.error(f'Visualization error: {str(e)}')
+        logger.error(f'Visualization error for user {request.user.username}: {str(e)}')
         return JsonResponse({'error': str(e)}, status=500)
 
 
@@ -512,6 +599,8 @@ def generate_report(request):
         output_format = data.get('output_format', 'pdf')
         parameters = data.get('parameters', {})
         
+        logger.info(f'User {request.user.username} generating {report_type} report in {output_format} format')
+        
         # Generate report from real data
         report_data = create_real_report(request.user, report_type, output_format, parameters)
         
@@ -523,7 +612,7 @@ def generate_report(request):
         })
         
     except Exception as e:
-        logger.error(f'Report generation error: {str(e)}')
+        logger.error(f'Report generation error for user {request.user.username}: {str(e)}')
         return JsonResponse({'error': str(e)}, status=500)
 
 
@@ -546,6 +635,7 @@ def get_real_environmental_data(user):
     
     # Calculate averages and statistics
     latest = recent_data.first()
+    all_data = EnvironmentalData.objects.filter(user=user)
     
     # Calculate pollution violations
     violations = 0
@@ -577,8 +667,8 @@ def get_real_environmental_data(user):
             'status': 'good' if latest.get_air_quality_index() <= 50 else 'warning',
             'description': f'Air Quality Index from {latest.location}'
         },
-        'total_samples': EnvironmentalData.objects.filter(user=user).count(),
-        'locations_monitored': EnvironmentalData.objects.filter(user=user).values('location').distinct().count(),
+        'total_samples': all_data.count(),
+        'locations_monitored': all_data.values('location').distinct().count(),
         'pollution_violations': violations
     }
 

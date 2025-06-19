@@ -1,4 +1,4 @@
-// Main JavaScript functionality - Complete Implementation
+// Main JavaScript functionality - Enhanced with File Upload Feedback and Dynamic Updates
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing EcoGenomics dashboard...');
     
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
         initializeAllCharts();
     }, 200);
     
-    // Initialize upload functionality
+    // Initialize upload functionality with enhanced feedback
     initializeUploadFunctionality();
     
     // Initialize analysis functionality
@@ -490,12 +490,13 @@ function showEmptyChartState(canvasId, message) {
     }
 }
 
-// Initialize upload functionality
+// Initialize upload functionality with enhanced feedback
 function initializeUploadFunctionality() {
     console.log('Initializing upload functionality...');
     
     const uploadForm = document.getElementById('uploadForm');
     const fileInput = document.getElementById('fileInput');
+    const fileSelectedIndicator = document.getElementById('fileSelectedIndicator');
     
     if (uploadForm) {
         uploadForm.addEventListener('submit', function(e) {
@@ -507,15 +508,63 @@ function initializeUploadFunctionality() {
     if (fileInput) {
         fileInput.addEventListener('change', function() {
             const fileName = this.files[0]?.name;
+            const fileSize = this.files[0]?.size;
+            
             if (fileName) {
                 console.log('File selected:', fileName);
-                // You could show the filename here
+                
+                // Show file selection feedback
+                showFileSelectedFeedback(fileName, fileSize);
+                
+                // Enable upload button
+                const uploadButton = document.querySelector('button[type="submit"]');
+                if (uploadButton) {
+                    uploadButton.disabled = false;
+                    uploadButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                    uploadButton.classList.add('hover:bg-blue-700');
+                }
             }
         });
     }
 }
 
-// Handle file upload
+// Show file selection feedback
+function showFileSelectedFeedback(fileName, fileSize) {
+    const fileSelectedIndicator = document.getElementById('fileSelectedIndicator') || createFileSelectedIndicator();
+    
+    const fileSizeKB = (fileSize / 1024).toFixed(1);
+    const fileSizeMB = (fileSize / (1024 * 1024)).toFixed(1);
+    const displaySize = fileSize > 1024 * 1024 ? `${fileSizeMB} MB` : `${fileSizeKB} KB`;
+    
+    fileSelectedIndicator.innerHTML = `
+        <div class="flex items-center space-x-2 p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
+            <i class="fas fa-file-alt text-emerald-600"></i>
+            <div class="flex-1">
+                <p class="text-sm font-medium text-emerald-800">${fileName}</p>
+                <p class="text-xs text-emerald-600">Size: ${displaySize}</p>
+            </div>
+            <i class="fas fa-check-circle text-emerald-600"></i>
+        </div>
+    `;
+    fileSelectedIndicator.style.display = 'block';
+}
+
+// Create file selected indicator if it doesn't exist
+function createFileSelectedIndicator() {
+    const indicator = document.createElement('div');
+    indicator.id = 'fileSelectedIndicator';
+    indicator.style.display = 'none';
+    indicator.className = 'mt-3';
+    
+    const uploadForm = document.getElementById('uploadForm');
+    if (uploadForm) {
+        uploadForm.appendChild(indicator);
+    }
+    
+    return indicator;
+}
+
+// Handle file upload with enhanced feedback and dashboard updates
 function handleFileUpload() {
     const fileInput = document.getElementById('fileInput');
     const fileTypeSelect = document.getElementById('fileType');
@@ -531,10 +580,19 @@ function handleFileUpload() {
     formData.append('file', fileInput.files[0]);
     formData.append('file_type', fileTypeSelect?.value || 'environmental');
     
-    // Show progress
+    // Show progress and disable form
     if (uploadProgress) {
         uploadProgress.style.display = 'block';
     }
+    
+    // Disable upload button during processing
+    const uploadButton = document.querySelector('button[type="submit"]');
+    if (uploadButton) {
+        uploadButton.disabled = true;
+        uploadButton.classList.add('opacity-50', 'cursor-not-allowed');
+        uploadButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+    }
+    
     showUploadStatus('Uploading and processing file...', 'info');
     
     fetch('/upload/', {
@@ -550,12 +608,36 @@ function handleFileUpload() {
             uploadProgress.style.display = 'none';
         }
         
+        // Re-enable upload button
+        if (uploadButton) {
+            uploadButton.disabled = false;
+            uploadButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            uploadButton.innerHTML = 'Upload Data';
+        }
+        
         if (data.success) {
             showUploadStatus(data.message, 'success');
-            // Refresh dashboard data
+            
+            // Update dashboard with new data
+            if (data.updated_data) {
+                updateDashboardWithNewData(data.updated_data);
+            }
+            
+            // Clear file selection
+            fileInput.value = '';
+            const fileSelectedIndicator = document.getElementById('fileSelectedIndicator');
+            if (fileSelectedIndicator) {
+                fileSelectedIndicator.style.display = 'none';
+            }
+            
+            // Show success animation
+            showSuccessAnimation();
+            
+            // Refresh charts after a short delay
             setTimeout(() => {
-                location.reload();
-            }, 2000);
+                refreshAllCharts();
+            }, 1000);
+            
         } else {
             showUploadStatus(data.error || 'Upload failed', 'error');
         }
@@ -564,15 +646,146 @@ function handleFileUpload() {
         if (uploadProgress) {
             uploadProgress.style.display = 'none';
         }
+        
+        // Re-enable upload button
+        if (uploadButton) {
+            uploadButton.disabled = false;
+            uploadButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            uploadButton.innerHTML = 'Upload Data';
+        }
+        
         showUploadStatus('Upload failed: ' + error.message, 'error');
     });
+}
+
+// Update dashboard with new data
+function updateDashboardWithNewData(updatedData) {
+    console.log('Updating dashboard with new data:', updatedData);
+    
+    // Update environmental data cards
+    if (updatedData.environmental_data) {
+        updateEnvironmentalCards(updatedData.environmental_data);
+    }
+    
+    // Update genomic data cards
+    if (updatedData.genomic_data) {
+        updateGenomicCards(updatedData.genomic_data);
+    }
+    
+    // Update biodiversity data cards
+    if (updatedData.biodiversity_data) {
+        updateBiodiversityCards(updatedData.biodiversity_data);
+    }
+    
+    // Update global chart data
+    if (updatedData.chart_data) {
+        window.chartData = updatedData.chart_data;
+        window.hasEnvironmentalData = updatedData.environmental_data.total_samples > 0;
+        window.hasGenomicData = updatedData.genomic_data.total_samples > 0;
+        window.hasBiodiversityData = updatedData.biodiversity_data.total_species > 0;
+    }
+    
+    // Update heatmap data
+    if (updatedData.heatmap_data) {
+        window.heatmapData = updatedData.heatmap_data;
+    }
+}
+
+// Update environmental data cards
+function updateEnvironmentalCards(envData) {
+    // Update temperature card
+    const tempValue = document.querySelector('[data-metric="temperature"] .text-2xl');
+    const tempDesc = document.querySelector('[data-metric="temperature"] .text-sm');
+    if (tempValue && envData.temperature) {
+        tempValue.textContent = `${envData.temperature.value.toFixed(1)}°C`;
+        if (tempDesc) tempDesc.textContent = envData.temperature.description;
+    }
+    
+    // Update air quality card
+    const aqiValue = document.querySelector('[data-metric="air_quality"] .text-2xl');
+    const aqiDesc = document.querySelector('[data-metric="air_quality"] .text-sm');
+    if (aqiValue && envData.air_quality) {
+        aqiValue.textContent = envData.air_quality.value.toFixed(0);
+        if (aqiDesc) aqiDesc.textContent = envData.air_quality.description;
+    }
+    
+    // Update pH level card
+    const phValue = document.querySelector('[data-metric="ph_level"] .text-2xl');
+    const phDesc = document.querySelector('[data-metric="ph_level"] .text-sm');
+    if (phValue && envData.ph_level) {
+        phValue.textContent = envData.ph_level.value.toFixed(1);
+        if (phDesc) phDesc.textContent = envData.ph_level.description;
+    }
+}
+
+// Update genomic data cards
+function updateGenomicCards(genomicData) {
+    const genomicValue = document.querySelector('[data-metric="genomic_studies"] .text-2xl');
+    if (genomicValue) {
+        genomicValue.textContent = genomicData.total_samples;
+    }
+}
+
+// Update biodiversity data cards
+function updateBiodiversityCards(biodiversityData) {
+    // Update any biodiversity-specific cards if they exist
+    console.log('Biodiversity data updated:', biodiversityData);
+}
+
+// Show success animation
+function showSuccessAnimation() {
+    // Create a temporary success notification
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 bg-emerald-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
+    notification.innerHTML = `
+        <div class="flex items-center space-x-2">
+            <i class="fas fa-check-circle"></i>
+            <span>Data uploaded successfully!</span>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.classList.remove('translate-x-full');
+    }, 100);
+    
+    // Animate out and remove
+    setTimeout(() => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}
+
+// Refresh all charts with new data
+function refreshAllCharts() {
+    console.log('Refreshing all charts with new data...');
+    
+    // Destroy existing charts
+    if (window.temperatureChart) window.temperatureChart.destroy();
+    if (window.pollutionChart) window.pollutionChart.destroy();
+    if (window.airQualityChart) window.airQualityChart.destroy();
+    if (window.mutationChart) window.mutationChart.destroy();
+    
+    // Reinitialize charts
+    initializeAllCharts();
 }
 
 // Show upload status
 function showUploadStatus(message, type) {
     const uploadStatus = document.getElementById('uploadStatus');
     if (uploadStatus) {
-        uploadStatus.textContent = message;
+        uploadStatus.innerHTML = `
+            <div class="flex items-center space-x-2">
+                ${type === 'info' ? '<i class="fas fa-spinner fa-spin text-blue-600"></i>' : ''}
+                ${type === 'success' ? '<i class="fas fa-check-circle text-green-600"></i>' : ''}
+                ${type === 'error' ? '<i class="fas fa-exclamation-circle text-red-600"></i>' : ''}
+                <span>${message}</span>
+            </div>
+        `;
         uploadStatus.className = `mt-2 text-sm ${
             type === 'success' ? 'text-green-600' :
             type === 'error' ? 'text-red-600' :
@@ -622,19 +835,19 @@ function runAnalysis(analysisType, dataset, parameters = {}) {
         if (data.success) {
             displayAnalysisResults(data.results);
             if (analysisStatus) {
-                analysisStatus.textContent = 'Analysis completed successfully!';
+                analysisStatus.innerHTML = '<i class="fas fa-check-circle text-green-600 mr-2"></i>Analysis completed successfully!';
                 analysisStatus.className = 'text-green-600';
             }
         } else {
             if (analysisStatus) {
-                analysisStatus.textContent = 'Analysis failed: ' + (data.error || 'Unknown error');
+                analysisStatus.innerHTML = '<i class="fas fa-exclamation-circle text-red-600 mr-2"></i>Analysis failed: ' + (data.error || 'Unknown error');
                 analysisStatus.className = 'text-red-600';
             }
         }
     })
     .catch(error => {
         if (analysisStatus) {
-            analysisStatus.textContent = 'Analysis failed: ' + error.message;
+            analysisStatus.innerHTML = '<i class="fas fa-exclamation-circle text-red-600 mr-2"></i>Analysis failed: ' + error.message;
             analysisStatus.className = 'text-red-600';
         }
     });
@@ -757,19 +970,19 @@ function generateReport() {
     .then(data => {
         if (data.success) {
             if (reportStatus) {
-                reportStatus.innerHTML = `Report generated successfully! <a href="${data.download_url}" class="text-emerald-600 underline">Download here</a>`;
+                reportStatus.innerHTML = `<i class="fas fa-check-circle text-green-600 mr-2"></i>Report generated successfully! <a href="${data.download_url}" class="text-emerald-600 underline">Download here</a>`;
                 reportStatus.className = 'text-green-600';
             }
         } else {
             if (reportStatus) {
-                reportStatus.textContent = 'Report generation failed: ' + (data.error || 'Unknown error');
+                reportStatus.innerHTML = '<i class="fas fa-exclamation-circle text-red-600 mr-2"></i>Report generation failed: ' + (data.error || 'Unknown error');
                 reportStatus.className = 'text-red-600';
             }
         }
     })
     .catch(error => {
         if (reportStatus) {
-            reportStatus.textContent = 'Report generation failed: ' + error.message;
+            reportStatus.innerHTML = '<i class="fas fa-exclamation-circle text-red-600 mr-2"></i>Report generation failed: ' + error.message;
             reportStatus.className = 'text-red-600';
         }
     });
