@@ -128,7 +128,7 @@ def signup_view(request):
             if user:
                 login(request, user)
                 logger.info(f'New user {username} automatically logged in')
-                messages.success(request, f'Account created successfully! Welcome to EcoGenomics Suite, {user.username}!')
+                # No success message - just redirect
                 return redirect('dashboard')
             else:
                 logger.error(f'Account created for {username} but automatic login failed')
@@ -177,7 +177,7 @@ def logout_view(request):
     username = request.user.username if request.user.is_authenticated else "User"
     logout(request)
     logger.info(f'User {username} logged out')
-    messages.success(request, f'You have been successfully logged out. Goodbye, {username}!')
+    # No success message - just redirect
     return redirect('login')
 
 

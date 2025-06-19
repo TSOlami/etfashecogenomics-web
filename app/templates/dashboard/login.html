@@ -18,7 +18,12 @@
         <!-- Messages -->
         {% if messages %}
             {% for message in messages %}
-                <div class="mb-4 p-4 rounded-md {% if message.tags == 'error' %}bg-red-50 border border-red-200{% elif message.tags == 'success' %}bg-green-50 border border-green-200{% else %}bg-blue-50 border border-blue-200{% endif %}">
+                <div class="mb-4 p-4 rounded-md relative {% if message.tags == 'error' %}bg-red-50 border border-red-200{% elif message.tags == 'success' %}bg-green-50 border border-green-200{% else %}bg-blue-50 border border-blue-200{% endif %}">
+                    <button type="button" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600" onclick="this.parentElement.style.display='none'">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
                     <div class="flex">
                         <div class="flex-shrink-0">
                             {% if message.tags == 'error' %}
