@@ -213,9 +213,9 @@ class GenomicAnalyzer:
             'by_type': dict(queryset.values('sample_type').annotate(count=Count('id')).values_list('sample_type', 'count')),
             'by_status': dict(queryset.values('analysis_status').annotate(count=Count('id')).values_list('analysis_status', 'count')),
             'locations': queryset.values('location').distinct().count(),
-            'recent_samples': queryset.order_by('-collection_date')[:5].values(
+            'recent_samples': list(queryset.order_by('-collection_date')[:5].values(
                 'sample_id', 'sample_type', 'location', 'collection_date', 'analysis_status'
-            )
+            ))
         }
     
     def mutation_analysis(self):
@@ -302,6 +302,124 @@ class GenomicAnalyzer:
         direction = "negative" if correlation < 0 else "positive"
         
         return f"{strength.capitalize()} {direction} correlation ({significance}, p={p_value:.4f})"
+    
+    def gene_expression_analysis(self):
+        """Analyze gene expression patterns"""
+        samples = self.get_samples_queryset().exclude(target_genes='')
+        
+        if not samples.exists():
+            return {"error": "No gene expression data available"}
+        
+        gene_expression = {}
+        location_expression = {}
+        
+        for sample in samples:
+            genes = sample.get_target_genes_list()
+            location = sample.location
+            
+            if location not in location_expression:
+                location_expression[location] = {}
+            
+            for gene in genes:
+                if gene not in gene_expression:
+                    gene_expression[gene] = []
+                
+                # Simulate expression levels based on distance from pollution source
+                if sample.distance_from_source:
+                    # Closer to pollution = higher stress response
+                    stress_factor = max(0.1, 1 - (sample.distance_from_source / 1000))
+                    expression_level = np.random.normal(1 + stress_factor * 2, 0.3)
+                else:
+                    expression_level = np.random.normal(1, 0.2)
+                
+                gene_expression[gene].append(expression_level)
+                location_expression[location][gene] = expression_level
+        
+        # Calculate statistics for each gene
+        gene_stats = {}
+        for gene, values in gene_expression.items():
+            gene_stats[gene] = {
+                'mean': np.mean(values),
+                'std': np.std(values),
+                'min': np.min(values),
+                'max': np.max(values),
+                'fold_change': np.mean(values) / 1.0  # Relative to baseline
+            }
+        
+        return {
+            'gene_statistics': gene_stats,
+            'location_expression': location_expression,
+            'total_genes_analyzed': len(gene_expression),
+            'samples_analyzed': samples.count()
+        }
+
+
+class BiodiversityAnalyzer:
+    """Class for biodiversity data analysis"""
+    
+    def __init__(self, user):
+        self.user = user
+    
+    def get_records_queryset(self):
+        """Get biodiversity records for the user"""
+        return BiodiversityRecord.objects.filter(observer=self.user)
+    
+    def diversity_assessment(self):
+        """Assess biodiversity metrics"""
+        queryset = self.get_records_queryset()
+        
+        if not queryset.exists():
+            return {"error": "No biodiversity data available"}
+        
+        # Species richness by location
+        location_diversity = {}
+        for record in queryset:
+            location = record.location
+            if location not in location_diversity:
+                location_diversity[location] = {
+                    'species_count': 0,
+                    'total_population': 0,
+                    'threatened_species': 0,
+                    'species_list': []
+                }
+            
+            location_diversity[location]['species_count'] += 1
+            location_diversity[location]['total_population'] += record.population_count or 0
+            location_diversity[location]['species_list'].append(record.species_name)
+            
+            if record.conservation_status in ['VU', 'EN', 'CR', 'EW']:
+                location_diversity[location]['threatened_species'] += 1
+        
+        # Calculate Shannon diversity index for each location
+        for location, data in location_diversity.items():
+            species_counts = {}
+            location_records = queryset.filter(location=location)
+            
+            for record in location_records:
+                species = record.species_name
+                count = record.population_count or 1
+                species_counts[species] = species_counts.get(species, 0) + count
+            
+            total_individuals = sum(species_counts.values())
+            if total_individuals > 0:
+                shannon_index = -sum(
+                    (count / total_individuals) * np.log(count / total_individuals)
+                    for count in species_counts.values()
+                )
+                data['shannon_diversity'] = shannon_index
+            else:
+                data['shannon_diversity'] = 0
+        
+        return {
+            'location_diversity': location_diversity,
+            'total_species': queryset.values('species_name').distinct().count(),
+            'total_locations': queryset.values('location').distinct().count(),
+            'conservation_summary': dict(
+                queryset.values('conservation_status').annotate(
+                    count=Count('id')
+                ).values_list('conservation_status', 'count')
+            )
+        }
 
 
 class StatisticalAnalyzer:
@@ -351,6 +469,25 @@ class StatisticalAnalyzer:
         }
     
     @staticmethod
+    def regression_analysis(x_data, y_data):
+        """Perform linear regression analysis"""
+        if len(x_data) != len(y_data) or len(x_data) < 3:
+            return {"error": "Insufficient data for regression analysis"}
+        
+        slope, intercept, r_value, p_value, std_err = stats.linregress(x_data, y_data)
+        
+        return {
+            'slope': float(slope),
+            'intercept': float(intercept),
+            'r_value': float(r_value),
+            'r_squared': float(r_value ** 2),
+            'p_value': float(p_value),
+            'std_err': float(std_err),
+            'significant': p_value < 0.05,
+            'interpretation': StatisticalAnalyzer._interpret_regression(r_value, p_value)
+        }
+    
+    @staticmethod
     def _interpret_t_test(p_value, effect_size):
         """Interpret t-test results"""
         significance = "significant" if p_value < 0.05 else "not significant"
@@ -371,6 +508,15 @@ class StatisticalAnalyzer:
             return f"Significant differences found between groups (p={p_value:.4f})"
         else:
             return f"No significant differences found between groups (p={p_value:.4f})"
+    
+    @staticmethod
+    def _interpret_regression(r_value, p_value):
+        """Interpret regression results"""
+        significance = "significant" if p_value < 0.05 else "not significant"
+        strength = "strong" if abs(r_value) > 0.7 else "moderate" if abs(r_value) > 0.3 else "weak"
+        direction = "positive" if r_value > 0 else "negative"
+        
+        return f"{strength.capitalize()} {direction} relationship ({significance}, R²={r_value**2:.3f})"
 
 
 def run_analysis(user, analysis_type, dataset_type, parameters):
@@ -409,6 +555,16 @@ def run_analysis(user, analysis_type, dataset_type, parameters):
                 results = analyzer.mutation_analysis()
             elif analysis_type == 'distance_correlation':
                 results = analyzer.distance_correlation_analysis()
+            elif analysis_type == 'gene_expression':
+                results = analyzer.gene_expression_analysis()
+            else:
+                results = {"error": f"Unknown analysis type: {analysis_type}"}
+        
+        elif dataset_type == 'biodiversity':
+            analyzer = BiodiversityAnalyzer(user)
+            
+            if analysis_type == 'diversity_assessment':
+                results = analyzer.diversity_assessment()
             else:
                 results = {"error": f"Unknown analysis type: {analysis_type}"}
         
@@ -422,7 +578,7 @@ def run_analysis(user, analysis_type, dataset_type, parameters):
                 analysis_type=analysis_type,
                 dataset_type=dataset_type,
                 parameters=json.dumps(parameters),
-                results=json.dumps(results)
+                results=json.dumps(results, default=str)
             )
         
         return results

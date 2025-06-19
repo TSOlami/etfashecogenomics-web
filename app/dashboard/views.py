@@ -17,9 +17,16 @@ import csv
 from datetime import datetime, timedelta
 import os
 from .models import DataUploadLog, EnvironmentalData, GenomicSample, BiodiversityRecord, AnalysisResult, Report
-from .analysis import run_analysis, EnvironmentalAnalyzer, GenomicAnalyzer
+from .analysis import run_analysis, EnvironmentalAnalyzer, GenomicAnalyzer, BiodiversityAnalyzer
 from django.db.models import Count, Avg, Max, Min
 import numpy as np
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.lib import colors
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+from django.conf import settings
 
 # Get logger for this module
 logger = logging.getLogger('dashboard')
@@ -128,7 +135,6 @@ def signup_view(request):
             if user:
                 login(request, user)
                 logger.info(f'New user {username} automatically logged in')
-                # No success message - just redirect
                 return redirect('dashboard')
             else:
                 logger.error(f'Account created for {username} but automatic login failed')
@@ -168,6 +174,7 @@ def dashboard_view(request):
         'chart_data': json.dumps(chart_data),
         'recent_uploads': DataUploadLog.objects.filter(user=request.user)[:5],
         'recent_analyses': AnalysisResult.objects.filter(user=request.user)[:5],
+        'recent_reports': Report.objects.filter(user=request.user)[:5],
     }
     return render(request, 'dashboard/dashboard.html', context)
 
@@ -177,7 +184,6 @@ def logout_view(request):
     username = request.user.username if request.user.is_authenticated else "User"
     logout(request)
     logger.info(f'User {username} logged out')
-    # No success message - just redirect
     return redirect('login')
 
 
@@ -406,7 +412,7 @@ def download_template(request, template_type):
                 ['GS001', 'leaf', '2024-01-01', 'Factory Site A',
                  '6.5244', '3.3792', '100',
                  '150.5', '1.85', '2.1',
-                 '["rbcL", "matK", "ITS"]', '["ATCGATCG..."]', '["point_mutation_rbcL_pos_245"]',
+                 '["rbcL", "matK", "ITS"]', '["ATCGATCG..."]', '[{"gene": "rbcL", "position": 245, "type": "point_mutation", "change": "A>G"}]',
                  'analyzed', 'Leaf sample from stressed plant'],
                 ['GS002', 'leaf', '2024-01-01', 'Control Site B',
                  '6.5200', '3.3800', '2000',
@@ -773,7 +779,7 @@ def create_real_visualization_data(user, chart_type, dataset_type, parameters):
 
 def create_real_report(user, report_type, output_format, parameters):
     """Create report from real data"""
-    # This would generate actual reports - for now return metadata
+    # Generate actual report content
     report_content = generate_report_content(user, report_type, parameters)
     
     # Save report to database
@@ -787,12 +793,125 @@ def create_real_report(user, report_type, output_format, parameters):
     
     filename = f"{report_type}_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.{output_format}"
     
+    # Generate actual file based on format
+    if output_format == 'pdf':
+        file_path = generate_pdf_report(report_content, filename, user)
+    elif output_format == 'html':
+        file_path = generate_html_report(report_content, filename, user)
+    else:
+        file_path = None
+    
+    report.file_path = file_path
+    report.save()
+    
     return {
         'filename': filename,
         'report_id': report.id,
         'title': report.title,
-        'created_at': report.created_at.isoformat()
+        'created_at': report.created_at.isoformat(),
+        'file_path': file_path
     }
+
+
+def generate_pdf_report(content, filename, user):
+    """Generate PDF report using ReportLab"""
+    try:
+        # Create reports directory if it doesn't exist
+        reports_dir = os.path.join(settings.MEDIA_ROOT, 'reports')
+        os.makedirs(reports_dir, exist_ok=True)
+        
+        file_path = os.path.join(reports_dir, filename)
+        
+        # Create PDF document
+        doc = SimpleDocTemplate(file_path, pagesize=letter)
+        styles = getSampleStyleSheet()
+        story = []
+        
+        # Title
+        title_style = ParagraphStyle(
+            'CustomTitle',
+            parent=styles['Heading1'],
+            fontSize=18,
+            spaceAfter=30,
+            textColor=colors.HexColor('#059669')
+        )
+        story.append(Paragraph("EcoGenomics Suite Report", title_style))
+        story.append(Spacer(1, 12))
+        
+        # Content
+        for line in content.split('\n'):
+            if line.strip():
+                if line.startswith('#'):
+                    # Header
+                    story.append(Paragraph(line.replace('#', '').strip(), styles['Heading2']))
+                else:
+                    # Regular text
+                    story.append(Paragraph(line, styles['Normal']))
+                story.append(Spacer(1, 6))
+        
+        # Build PDF
+        doc.build(story)
+        
+        return file_path
+    except Exception as e:
+        logger.error(f'PDF generation error: {str(e)}')
+        return None
+
+
+def generate_html_report(content, filename, user):
+    """Generate HTML report"""
+    try:
+        # Create reports directory if it doesn't exist
+        reports_dir = os.path.join(settings.MEDIA_ROOT, 'reports')
+        os.makedirs(reports_dir, exist_ok=True)
+        
+        file_path = os.path.join(reports_dir, filename.replace('.html', '.html'))
+        
+        # Convert markdown-style content to HTML
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>EcoGenomics Suite Report</title>
+            <style>
+                body {{ font-family: Arial, sans-serif; margin: 40px; }}
+                h1 {{ color: #059669; }}
+                h2 {{ color: #0284c7; }}
+                .header {{ border-bottom: 2px solid #059669; padding-bottom: 10px; }}
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>EcoGenomics Suite Report</h1>
+                <p>Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+            </div>
+            <div class="content">
+        """
+        
+        for line in content.split('\n'):
+            if line.strip():
+                if line.startswith('# '):
+                    html_content += f"<h1>{line[2:]}</h1>\n"
+                elif line.startswith('## '):
+                    html_content += f"<h2>{line[3:]}</h2>\n"
+                elif line.startswith('- '):
+                    html_content += f"<li>{line[2:]}</li>\n"
+                else:
+                    html_content += f"<p>{line}</p>\n"
+        
+        html_content += """
+            </div>
+        </body>
+        </html>
+        """
+        
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+        
+        return file_path
+    except Exception as e:
+        logger.error(f'HTML generation error: {str(e)}')
+        return None
 
 
 def generate_report_content(user, report_type, parameters):
@@ -835,6 +954,46 @@ def generate_report_content(user, report_type, parameters):
             content += "- Mutation Types:\n"
             for mut_type, count in mutations['mutation_types'].items():
                 content += f"  - {mut_type}: {count}\n"
+    
+    elif report_type == 'biodiversity':
+        bio_analyzer = BiodiversityAnalyzer(user)
+        diversity = bio_analyzer.diversity_assessment()
+        
+        content += "## Biodiversity Assessment Summary\n\n"
+        if 'error' not in diversity:
+            content += f"- Total Species: {diversity['total_species']}\n"
+            content += f"- Total Locations: {diversity['total_locations']}\n"
+            content += "- Conservation Status Distribution:\n"
+            for status, count in diversity['conservation_summary'].items():
+                content += f"  - {status}: {count}\n"
+    
+    elif report_type == 'comprehensive':
+        # Include all data types
+        content += "## Comprehensive Analysis Report\n\n"
+        content += "This report includes environmental, genomic, and biodiversity data analysis.\n\n"
+        
+        # Add environmental section
+        env_analyzer = EnvironmentalAnalyzer(user)
+        env_stats = env_analyzer.descriptive_statistics()
+        if 'error' not in env_stats:
+            content += "### Environmental Data\n"
+            content += f"- Parameters analyzed: {len(env_stats)}\n"
+            content += f"- Data points: {sum(data['count'] for data in env_stats.values())}\n\n"
+        
+        # Add genomic section
+        genomic_analyzer = GenomicAnalyzer(user)
+        genomic_summary = genomic_analyzer.sample_summary()
+        content += "### Genomic Data\n"
+        content += f"- Total samples: {genomic_summary['total_samples']}\n"
+        content += f"- Sample types: {len(genomic_summary['by_type'])}\n\n"
+        
+        # Add biodiversity section
+        bio_analyzer = BiodiversityAnalyzer(user)
+        bio_diversity = bio_analyzer.diversity_assessment()
+        if 'error' not in bio_diversity:
+            content += "### Biodiversity Data\n"
+            content += f"- Species recorded: {bio_diversity['total_species']}\n"
+            content += f"- Locations surveyed: {bio_diversity['total_locations']}\n\n"
     
     return content
 
