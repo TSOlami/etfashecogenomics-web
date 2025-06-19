@@ -466,7 +466,7 @@ class DataUploadLog(models.Model):
     records_skipped = models.PositiveIntegerField(default=0)
     
     processing_status = models.CharField(
-        max_length=20,
+        max_length=25,
         choices=[
             ('pending', 'Pending'),
             ('processing', 'Processing'),
