@@ -2,3 +2,9 @@
 # Points to the main application requirements
 
 -r app/requirements.txt
+
+# Additional deployment-specific packages
+gunicorn==21.2.0
+dj-database-url==2.1.0
+whitenoise==6.5.0
+python-dotenv==1.0.0
