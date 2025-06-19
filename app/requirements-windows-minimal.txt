@@ -1,0 +1,14 @@
+# Minimal Windows requirements - Core functionality only
+# Use this if you're having compilation issues
+
+Django==4.2.7
+python-dotenv==1.0.0
+whitenoise==6.5.0
+
+# Essential data processing (these usually have Windows wheels)
+pandas>=2.0.0
+numpy>=1.24.0
+openpyxl>=3.1.0
+
+# Skip scientific computing packages if they cause issues
+# You can add them later if needed
