@@ -15,7 +15,7 @@ urlpatterns = [
     path('download-template/<str:template_type>/', views.download_template, name='download_template'),
     
     # Analysis URLs
-    path('api/analysis/', views.run_analysis, name='run_analysis'),
+    path('api/analysis/', views.run_analysis_view, name='run_analysis'),
     path('api/visualization/', views.generate_visualization, name='generate_visualization'),
     path('api/report/', views.generate_report, name='generate_report'),
     
