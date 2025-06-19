@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load dashboard_filters %}
 
 {% block title %}Dashboard - EcoGenomics Suite{% endblock %}
 
@@ -264,7 +265,7 @@
                 <div class="bg-white p-6 rounded-lg card-shadow">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-sm font-medium text-gray-600">{{ key|title|replace:"_":" " }}</p>
+                            <p class="text-sm font-medium text-gray-600">{{ key|format_key }}</p>
                             <p class="text-2xl font-semibold text-gray-900">{{ data.value }}{{ data.unit }}</p>
                             <p class="text-sm text-gray-500">{{ data.description }}</p>
                         </div>
@@ -627,24 +628,34 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
     // Show progress
     progressDiv.classList.remove('hidden');
     
-    // Simulate upload progress
-    let progress = 0;
-    const interval = setInterval(() => {
-        progress += Math.random() * 15;
-        if (progress > 100) progress = 100;
-        
-        progressBar.style.width = progress + '%';
-        progressText.textContent = `Processing... ${Math.round(progress)}%`;
-        
-        if (progress >= 100) {
-            clearInterval(interval);
-            progressText.textContent = 'Upload completed successfully!';
+    // Make actual AJAX request to upload endpoint
+    fetch('{% url "upload_data" %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            progressBar.style.width = '100%';
+            progressText.textContent = data.message;
             setTimeout(() => {
                 progressDiv.classList.add('hidden');
                 progressBar.style.width = '0%';
+                // Refresh the page or update the UI
+                location.reload();
             }, 2000);
+        } else {
+            progressText.textContent = 'Error: ' + data.error;
+            progressBar.classList.add('bg-red-600');
         }
-    }, 200);
+    })
+    .catch(error => {
+        progressText.textContent = 'Upload failed: ' + error.message;
+        progressBar.classList.add('bg-red-600');
+    });
 });
 
 // Statistical Analysis Functions
@@ -659,52 +670,29 @@ function runAnalysis() {
     resultsDiv.classList.remove('hidden');
     resultsContent.textContent = 'Running analysis...';
     
-    // Simulate analysis
-    setTimeout(() => {
-        const mockResults = generateMockAnalysisResults(dataset, analysisType);
-        resultsContent.textContent = mockResults;
-    }, 2000);
-}
-
-function generateMockAnalysisResults(dataset, analysisType) {
-    const results = {
-        'descriptive': `Descriptive Statistics for ${dataset}:
-Mean: 23.45
-Median: 22.80
-Standard Deviation: 4.12
-Min: 18.20
-Max: 31.70
-Sample Size: 1,234`,
-        
-        'correlation': `Correlation Analysis for ${dataset}:
-Temperature vs Humidity: r = -0.65 (p < 0.001)
-pH vs Oxygen: r = 0.42 (p < 0.01)
-Conductivity vs Temperature: r = 0.38 (p < 0.05)`,
-        
-        'ttest': `T-Test Results for ${dataset}:
-Group 1 Mean: 24.3 ± 3.2
-Group 2 Mean: 21.8 ± 2.9
-t-statistic: 3.45
-p-value: 0.0012
-Effect size (Cohen's d): 0.82`,
-        
-        'anova': `ANOVA Results for ${dataset}:
-F-statistic: 12.34
-p-value: < 0.001
-Between groups variance: 45.67
-Within groups variance: 3.21
-Post-hoc: Group A > Group B > Group C`,
-        
-        'regression': `Linear Regression for ${dataset}:
-R-squared: 0.73
-Adjusted R-squared: 0.71
-F-statistic: 89.23 (p < 0.001)
-Coefficients:
-  Intercept: 12.34 (p < 0.001)
-  Slope: 0.67 (p < 0.001)`
-    };
-    
-    return results[analysisType] || 'Analysis completed successfully.';
+    // Make AJAX request to analysis endpoint
+    fetch('{% url "run_analysis" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({
+            dataset: dataset,
+            analysis_type: analysisType
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            resultsContent.textContent = JSON.stringify(data.results, null, 2);
+        } else {
+            resultsContent.textContent = 'Error: ' + data.error;
+        }
+    })
+    .catch(error => {
+        resultsContent.textContent = 'Analysis failed: ' + error.message;
+    });
 }
 
 // Chart Generation Functions
@@ -715,16 +703,38 @@ function generateChart() {
     const chartsDiv = document.getElementById('generatedCharts');
     chartsDiv.classList.remove('hidden');
     
-    // Here you would integrate with actual charting library
-    document.getElementById('chartContainer').innerHTML = `
-        <div class="flex items-center justify-center h-64 bg-gray-100 rounded-lg">
-            <div class="text-center">
-                <i class="fas fa-chart-${chartType === 'scatter' ? 'scatter' : 'bar'} text-4xl text-gray-400 mb-2"></i>
-                <p class="text-gray-600">${chartType.charAt(0).toUpperCase() + chartType.slice(1)} chart generated</p>
-                <p class="text-sm text-gray-500">Variables: ${variables.join(', ')}</p>
-            </div>
-        </div>
-    `;
+    // Make AJAX request to visualization endpoint
+    fetch('{% url "generate_visualization" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({
+            chart_type: chartType,
+            variables: variables
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Create chart with the returned data
+            document.getElementById('chartContainer').innerHTML = `
+                <div class="flex items-center justify-center h-64 bg-gray-100 rounded-lg">
+                    <div class="text-center">
+                        <i class="fas fa-chart-${chartType === 'scatter' ? 'scatter' : 'bar'} text-4xl text-gray-400 mb-2"></i>
+                        <p class="text-gray-600">${chartType.charAt(0).toUpperCase() + chartType.slice(1)} chart generated</p>
+                        <p class="text-sm text-gray-500">Variables: ${variables.join(', ')}</p>
+                    </div>
+                </div>
+            `;
+        } else {
+            document.getElementById('chartContainer').innerHTML = `<p class="text-red-600">Error: ${data.error}</p>`;
+        }
+    })
+    .catch(error => {
+        document.getElementById('chartContainer').innerHTML = `<p class="text-red-600">Chart generation failed: ${error.message}</p>`;
+    });
 }
 
 // Report Generation Functions
@@ -732,6 +742,8 @@ function generateReport() {
     const reportType = document.getElementById('reportType').value;
     const outputFormat = document.getElementById('outputFormat').value;
     const includeCharts = document.getElementById('includeCharts').checked;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
     
     // Show loading state
     const button = event.target;
@@ -739,12 +751,37 @@ function generateReport() {
     button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Generating...';
     button.disabled = true;
     
-    // Simulate report generation
-    setTimeout(() => {
-        alert(`${reportType.charAt(0).toUpperCase() + reportType.slice(1)} report generated successfully as ${outputFormat.toUpperCase()}!`);
+    // Make AJAX request to report endpoint
+    fetch('{% url "generate_report" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({
+            report_type: reportType,
+            output_format: outputFormat,
+            include_charts: includeCharts,
+            start_date: startDate,
+            end_date: endDate
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            // You could also trigger a download here
+        } else {
+            alert('Error: ' + data.error);
+        }
         button.innerHTML = originalText;
         button.disabled = false;
-    }, 3000);
+    })
+    .catch(error => {
+        alert('Report generation failed: ' + error.message);
+        button.innerHTML = originalText;
+        button.disabled = false;
+    });
 }
 
 // Utility Functions
