@@ -1,0 +1,61 @@
+species_name,common_name,location,observation_date,population_count,conservation_status,latitude,longitude,habitat_description,threat_assessment
+Mangifera indica,Mango Tree,Factory Zone 1,2024-01-01,8,LC,6.5244,3.3792,Heavy industrial exposure,Very High - severe leaf damage and fruit drop
+Mangifera indica,Mango Tree,Factory Zone 2,2024-01-01,6,LC,6.5245,3.3793,Direct pollution impact,Very High - visible stress and reduced growth
+Mangifera indica,Mango Tree,Factory Zone 3,2024-01-01,10,LC,6.5243,3.3791,Industrial perimeter,High - moderate stress symptoms
+Mangifera indica,Mango Tree,Factory Zone 4,2024-01-01,12,LC,6.5246,3.3794,Factory boundary,High - dust accumulation on leaves
+Mangifera indica,Mango Tree,Industrial Area A,2024-01-01,15,LC,6.5240,3.3790,Mixed industrial use,Medium - some environmental stress
+Mangifera indica,Mango Tree,Industrial Area B,2024-01-01,14,LC,6.5241,3.3789,Light industrial zone,Medium - fair condition
+Mangifera indica,Mango Tree,Industrial Area C,2024-01-01,16,LC,6.5239,3.3791,Industrial buffer,Medium - moderate health
+Mangifera indica,Mango Tree,Industrial Area D,2024-01-01,13,LC,6.5242,3.3788,Industrial edge,Medium - visible but manageable stress
+Mangifera indica,Mango Tree,Residential Block 1,2024-01-01,22,LC,6.5250,3.3810,Urban residential,Low - good condition
+Mangifera indica,Mango Tree,Residential Block 2,2024-01-01,20,LC,6.5251,3.3811,Suburban area,Low - healthy population
+Mangifera indica,Mango Tree,Residential Block 3,2024-01-01,24,LC,6.5249,3.3809,Residential gardens,Low - thriving trees
+Mangifera indica,Mango Tree,Residential Block 4,2024-01-01,18,LC,6.5252,3.3812,Urban neighborhood,Low - stable population
+Mangifera indica,Mango Tree,Agricultural Field 1,2024-01-01,28,LC,6.5220,3.3850,Farm boundary,Very Low - excellent condition
+Mangifera indica,Mango Tree,Agricultural Field 2,2024-01-01,26,LC,6.5221,3.3851,Agricultural area,Very Low - optimal growth
+Mangifera indica,Mango Tree,Agricultural Field 3,2024-01-01,30,LC,6.5219,3.3849,Rural setting,Very Low - pristine condition
+Mangifera indica,Mango Tree,Agricultural Field 4,2024-01-01,25,LC,6.5222,3.3852,Farmland edge,Very Low - healthy specimens
+Mangifera indica,Mango Tree,Control Forest 1,2024-01-01,35,LC,6.5200,3.3800,Protected forest,None - natural habitat
+Mangifera indica,Mango Tree,Control Forest 2,2024-01-01,32,LC,6.5201,3.3801,Forest reserve,None - undisturbed ecosystem
+Mangifera indica,Mango Tree,Control Forest 3,2024-01-01,38,LC,6.5199,3.3799,Natural preserve,None - optimal conditions
+Mangifera indica,Mango Tree,Control Forest 4,2024-01-01,33,LC,6.5202,3.3802,Wilderness area,None - pristine environment
+Terminalia catappa,Indian Almond,Factory Zone 1,2024-01-01,4,LC,6.5244,3.3792,Industrial exposure,Very High - severe defoliation
+Terminalia catappa,Indian Almond,Factory Zone 2,2024-01-01,3,LC,6.5245,3.3793,Heavy pollution,Very High - critical condition
+Terminalia catappa,Indian Almond,Factory Zone 3,2024-01-01,5,LC,6.5243,3.3791,Factory vicinity,High - significant stress
+Terminalia catappa,Indian Almond,Factory Zone 4,2024-01-01,6,LC,6.5246,3.3794,Industrial border,High - visible damage
+Terminalia catappa,Indian Almond,Industrial Area A,2024-01-01,9,LC,6.5240,3.3790,Industrial zone,Medium - moderate impact
+Terminalia catappa,Indian Almond,Industrial Area B,2024-01-01,8,LC,6.5241,3.3789,Light industry,Medium - fair health
+Terminalia catappa,Indian Almond,Industrial Area C,2024-01-01,10,LC,6.5239,3.3791,Industrial buffer,Medium - stable condition
+Terminalia catappa,Indian Almond,Industrial Area D,2024-01-01,7,LC,6.5242,3.3788,Industrial edge,Medium - some stress
+Terminalia catappa,Indian Almond,Residential Block 1,2024-01-01,16,LC,6.5250,3.3810,Urban residential,Low - good health
+Terminalia catappa,Indian Almond,Residential Block 2,2024-01-01,14,LC,6.5251,3.3811,Suburban setting,Low - healthy trees
+Terminalia catappa,Indian Almond,Residential Block 3,2024-01-01,18,LC,6.5249,3.3809,Residential area,Low - thriving population
+Terminalia catappa,Indian Almond,Residential Block 4,2024-01-01,12,LC,6.5252,3.3812,Urban neighborhood,Low - stable numbers
+Terminalia catappa,Indian Almond,Agricultural Field 1,2024-01-01,22,LC,6.5220,3.3850,Farm area,Very Low - excellent condition
+Terminalia catappa,Indian Almond,Agricultural Field 2,2024-01-01,20,LC,6.5221,3.3851,Agricultural zone,Very Low - optimal health
+Terminalia catappa,Indian Almond,Agricultural Field 3,2024-01-01,24,LC,6.5219,3.3849,Rural environment,Very Low - pristine state
+Terminalia catappa,Indian Almond,Agricultural Field 4,2024-01-01,19,LC,6.5222,3.3852,Farmland,Very Low - healthy population
+Terminalia catappa,Indian Almond,Control Forest 1,2024-01-01,28,LC,6.5200,3.3800,Forest habitat,None - natural environment
+Terminalia catappa,Indian Almond,Control Forest 2,2024-01-01,26,LC,6.5201,3.3801,Protected area,None - undisturbed
+Terminalia catappa,Indian Almond,Control Forest 3,2024-01-01,30,LC,6.5199,3.3799,Nature reserve,None - ideal conditions
+Terminalia catappa,Indian Almond,Control Forest 4,2024-01-01,25,LC,6.5202,3.3802,Wilderness,None - perfect habitat
+Azadirachta indica,Neem Tree,Factory Zone 1,2024-01-01,6,LC,6.5244,3.3792,Heavy industrial,Very High - severe canopy loss
+Azadirachta indica,Neem Tree,Factory Zone 2,2024-01-01,4,LC,6.5245,3.3793,Direct pollution,Very High - critical decline
+Azadirachta indica,Neem Tree,Factory Zone 3,2024-01-01,8,LC,6.5243,3.3791,Industrial impact,High - significant stress
+Azadirachta indica,Neem Tree,Factory Zone 4,2024-01-01,9,LC,6.5246,3.3794,Factory area,High - visible damage
+Azadirachta indica,Neem Tree,Industrial Area A,2024-01-01,12,LC,6.5240,3.3790,Industrial setting,Medium - moderate health
+Azadirachta indica,Neem Tree,Industrial Area B,2024-01-01,11,LC,6.5241,3.3789,Light industrial,Medium - fair condition
+Azadirachta indica,Neem Tree,Industrial Area C,2024-01-01,13,LC,6.5239,3.3791,Industrial buffer,Medium - stable population
+Azadirachta indica,Neem Tree,Industrial Area D,2024-01-01,10,LC,6.5242,3.3788,Industrial edge,Medium - some impact
+Azadirachta indica,Neem Tree,Residential Block 1,2024-01-01,19,LC,6.5250,3.3810,Urban area,Low - good condition
+Azadirachta indica,Neem Tree,Residential Block 2,2024-01-01,17,LC,6.5251,3.3811,Suburban zone,Low - healthy trees
+Azadirachta indica,Neem Tree,Residential Block 3,2024-01-01,21,LC,6.5249,3.3809,Residential,Low - thriving population
+Azadirachta indica,Neem Tree,Residential Block 4,2024-01-01,15,LC,6.5252,3.3812,Urban neighborhood,Low - stable numbers
+Azadirachta indica,Neem Tree,Agricultural Field 1,2024-01-01,25,LC,6.5220,3.3850,Farm boundary,Very Low - excellent health
+Azadirachta indica,Neem Tree,Agricultural Field 2,2024-01-01,23,LC,6.5221,3.3851,Agricultural area,Very Low - optimal condition
+Azadirachta indica,Neem Tree,Agricultural Field 3,2024-01-01,27,LC,6.5219,3.3849,Rural setting,Very Low - pristine state
+Azadirachta indica,Neem Tree,Agricultural Field 4,2024-01-01,22,LC,6.5222,3.3852,Farmland edge,Very Low - healthy specimens
+Azadirachta indica,Neem Tree,Control Forest 1,2024-01-01,31,LC,6.5200,3.3800,Natural habitat,None - undisturbed ecosystem
+Azadirachta indica,Neem Tree,Control Forest 2,2024-01-01,29,LC,6.5201,3.3801,Forest reserve,None - natural environment
+Azadirachta indica,Neem Tree,Control Forest 3,2024-01-01,33,LC,6.5199,3.3799,Protected forest,None - ideal conditions
+Azadirachta indica,Neem Tree,Control Forest 4,2024-01-01,28,LC,6.5202,3.3802,Wilderness area,None - perfect habitat

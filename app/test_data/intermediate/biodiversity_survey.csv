@@ -1,0 +1,41 @@
+species_name,common_name,location,observation_date,population_count,conservation_status,latitude,longitude,habitat_description,threat_assessment
+Mangifera indica,Mango Tree,Factory North,2024-01-01,12,LC,6.5244,3.3792,Industrial area with heavy dust,High - visible leaf damage and reduced fruit production
+Mangifera indica,Mango Tree,Factory South,2024-01-01,8,LC,6.5240,3.3790,Near cement processing,Very High - severe stress symptoms
+Mangifera indica,Mango Tree,Residential East,2024-01-01,18,LC,6.5250,3.3810,Urban residential area,Medium - moderate dust exposure
+Mangifera indica,Mango Tree,Control West,2024-01-01,25,LC,6.5200,3.3800,Protected forest area,Low - healthy population
+Terminalia catappa,Indian Almond,Factory North,2024-01-01,6,LC,6.5244,3.3792,Roadside industrial,High - leaf browning observed
+Terminalia catappa,Indian Almond,Factory South,2024-01-01,4,LC,6.5240,3.3790,Heavy industrial zone,Very High - population decline
+Terminalia catappa,Indian Almond,Residential East,2024-01-01,14,LC,6.5250,3.3810,Residential streets,Medium - some stress visible
+Terminalia catappa,Indian Almond,Control West,2024-01-01,22,LC,6.5200,3.3800,Natural habitat,Low - thriving population
+Azadirachta indica,Neem Tree,Factory North,2024-01-01,10,LC,6.5244,3.3792,Industrial perimeter,High - reduced canopy density
+Azadirachta indica,Neem Tree,Factory South,2024-01-01,5,LC,6.5240,3.3790,Processing plant vicinity,Very High - significant dieback
+Azadirachta indica,Neem Tree,Residential East,2024-01-01,16,LC,6.5250,3.3810,Urban parks,Medium - moderate health
+Azadirachta indica,Neem Tree,Control West,2024-01-01,28,LC,6.5200,3.3800,Forest reserve,Low - excellent condition
+Delonix regia,Flame Tree,Factory North,2024-01-01,3,LC,6.5244,3.3792,Industrial landscape,High - poor flowering
+Delonix regia,Flame Tree,Factory South,2024-01-01,2,LC,6.5240,3.3790,Heavy pollution zone,Very High - near extinction locally
+Delonix regia,Flame Tree,Residential East,2024-01-01,8,LC,6.5250,3.3810,Residential gardens,Medium - reduced blooming
+Delonix regia,Flame Tree,Control West,2024-01-01,15,LC,6.5200,3.3800,Protected area,Low - spectacular flowering
+Ficus benjamina,Weeping Fig,Factory North,2024-01-01,7,LC,6.5244,3.3792,Industrial roadside,High - extensive leaf drop
+Ficus benjamina,Weeping Fig,Factory South,2024-01-01,3,LC,6.5240,3.3790,Factory perimeter,Very High - severe defoliation
+Ficus benjamina,Weeping Fig,Residential East,2024-01-01,12,LC,6.5250,3.3810,Urban environment,Medium - moderate leaf loss
+Ficus benjamina,Weeping Fig,Control West,2024-01-01,20,LC,6.5200,3.3800,Natural setting,Low - full canopy
+Eucalyptus camaldulensis,River Red Gum,Factory North,2024-01-01,4,LC,6.5244,3.3792,Industrial drainage,High - bark damage visible
+Eucalyptus camaldulensis,River Red Gum,Factory South,2024-01-01,2,LC,6.5240,3.3790,Polluted waterway,Very High - tree mortality
+Eucalyptus camaldulensis,River Red Gum,Residential East,2024-01-01,9,LC,6.5250,3.3810,Urban creek,Medium - some dieback
+Eucalyptus camaldulensis,River Red Gum,Control West,2024-01-01,18,LC,6.5200,3.3800,Clean watershed,Low - healthy growth
+Albizia lebbeck,Woman's Tongue,Factory North,2024-01-01,5,LC,6.5244,3.3792,Industrial buffer zone,High - reduced pod production
+Albizia lebbeck,Woman's Tongue,Factory South,2024-01-01,2,LC,6.5240,3.3790,Heavy impact zone,Very High - stunted growth
+Albizia lebbeck,Woman's Tongue,Residential East,2024-01-01,11,LC,6.5250,3.3810,Suburban area,Medium - fair condition
+Albizia lebbeck,Woman's Tongue,Control West,2024-01-01,19,LC,6.5200,3.3800,Natural forest,Low - vigorous growth
+Cassia fistula,Golden Shower,Factory North,2024-01-01,6,LC,6.5244,3.3792,Industrial landscape,High - poor flowering
+Cassia fistula,Golden Shower,Factory South,2024-01-01,3,LC,6.5240,3.3790,Pollution impact zone,Very High - minimal blooming
+Cassia fistula,Golden Shower,Residential East,2024-01-01,13,LC,6.5250,3.3810,Urban gardens,Medium - moderate flowering
+Cassia fistula,Golden Shower,Control West,2024-01-01,21,LC,6.5200,3.3800,Protected habitat,Low - abundant golden blooms
+Polyalthia longifolia,False Ashoka,Factory North,2024-01-01,8,LC,6.5244,3.3792,Industrial avenue,High - leaf yellowing
+Polyalthia longifolia,False Ashoka,Factory South,2024-01-01,4,LC,6.5240,3.3790,Factory vicinity,Very High - severe chlorosis
+Polyalthia longifolia,False Ashoka,Residential East,2024-01-01,15,LC,6.5250,3.3810,Street planting,Medium - some yellowing
+Polyalthia longifolia,False Ashoka,Control West,2024-01-01,24,LC,6.5200,3.3800,Natural environment,Low - deep green foliage
+Tamarindus indica,Tamarind,Factory North,2024-01-01,4,LC,6.5244,3.3792,Industrial perimeter,High - reduced fruit yield
+Tamarindus indica,Tamarind,Factory South,2024-01-01,2,LC,6.5240,3.3790,Heavy pollution,Very High - fruit abortion
+Tamarindus indica,Tamarind,Residential East,2024-01-01,10,LC,6.5250,3.3810,Community spaces,Medium - fair fruiting
+Tamarindus indica,Tamarind,Control West,2024-01-01,17,LC,6.5200,3.3800,Forest edge,Low - excellent fruit production

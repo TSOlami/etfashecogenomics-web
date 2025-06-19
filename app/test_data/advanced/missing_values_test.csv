@@ -1,0 +1,16 @@
+timestamp,location,latitude,longitude,ozone_concentration,carbon_monoxide,nitrogen_dioxide,sulfur_dioxide,total_voc,pm25,pm10,temperature,humidity,ph_level,oxygen_level,turbidity,conductivity,lead_concentration,chromium_concentration,cadmium_concentration,mercury_concentration,arsenic_concentration,notes
+2024-01-01 08:00:00,Test Site Alpha,6.5244,3.3792,120,,45,25,200,35,55,28.5,65,7.2,8.5,2.1,450,25,15,2,0.5,8,Missing CO sensor data
+2024-01-01 12:00:00,Test Site Alpha,6.5244,3.3792,,18,52,28,220,42,62,31.2,58,7.1,8.2,2.3,465,28,18,2.2,0.6,9,Ozone sensor malfunction
+2024-01-01 16:00:00,Test Site Alpha,6.5244,3.3792,125,16,48,26,210,38,58,29.8,,7.2,8.4,2.2,455,26,16,2.1,0.5,8.5,Humidity sensor offline
+2024-01-01 08:00:00,Test Site Beta,6.5200,3.3800,80,8,25,15,150,20,35,28.1,68,,8.6,1.8,420,10,8,1,0.2,3,pH probe calibration needed
+2024-01-01 12:00:00,Test Site Beta,6.5200,3.3800,85,9,28,16,155,22,38,30.5,64,7.0,8.5,1.9,,12,9,1.1,0.3,3.5,Conductivity meter error
+2024-01-01 16:00:00,Test Site Beta,6.5200,3.3800,82,8,26,15,152,21,36,29.8,66,7.1,8.5,1.8,422,11,,1.0,0.2,3.2,Heavy metals analysis pending
+2024-01-01 08:00:00,Test Site Gamma,6.5230,3.3805,95,12,35,20,175,28,45,27.5,70,7.3,8.7,1.9,435,15,12,,0.4,5.5,Cadmium analysis failed
+2024-01-01 12:00:00,Test Site Gamma,6.5230,3.3805,105,14,40,24,190,32,50,32.1,62,7.1,8.5,2.1,445,18,14,1.8,,6.2,Mercury detection limit
+2024-01-01 16:00:00,Test Site Gamma,6.5230,3.3805,98,13,37,22,182,30,47,30.8,65,7.2,8.6,2.0,440,16,13,1.6,0.3,,Arsenic sample contaminated
+2024-01-01 08:00:00,Test Site Delta,,3.3815,88,10,30,18,165,24,40,26.8,72,7.4,8.8,1.7,425,12,9,1.2,0.3,4.2,GPS coordinates missing
+2024-01-01 12:00:00,Test Site Delta,6.5235,,92,11,32,19,170,26,42,31.5,64,7.3,8.7,1.8,430,13,10,1.3,0.3,4.5,Longitude data corrupted
+2024-01-01 16:00:00,Test Site Delta,6.5235,3.3815,90,10,31,18,168,25,41,30.2,66,7.3,8.7,1.7,428,12,9,1.2,0.3,4.3,Complete data set
+2024-01-01 08:00:00,Test Site Epsilon,6.5225,3.3825,,,,,,,,,,,,,,,,,,,Equipment failure - complete data loss
+2024-01-01 12:00:00,Test Site Epsilon,6.5225,3.3825,78,8,24,12,145,18,30,29.5,68,7.5,8.8,1.4,415,8,6,0.8,0.2,3.0,Equipment restored
+2024-01-01 16:00:00,Test Site Epsilon,6.5225,3.3825,75,7,22,11,140,17,28,28.8,70,7.6,8.9,1.3,412,7,5,0.7,0.1,2.8,Normal operation resumed

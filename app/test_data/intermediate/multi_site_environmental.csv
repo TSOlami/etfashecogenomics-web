@@ -1,0 +1,25 @@
+timestamp,location,latitude,longitude,ozone_concentration,carbon_monoxide,nitrogen_dioxide,sulfur_dioxide,total_voc,pm25,pm10,temperature,humidity,ph_level,oxygen_level,turbidity,conductivity,lead_concentration,chromium_concentration,cadmium_concentration,mercury_concentration,arsenic_concentration,notes
+2024-01-01 06:00:00,Cement Factory North,6.5244,3.3792,95,12,38,20,180,28,45,26.8,72,7.3,8.7,1.9,440,18,12,1.5,0.4,6,Early morning baseline
+2024-01-01 06:00:00,Cement Factory South,6.5240,3.3790,98,13,40,22,185,30,48,26.9,71,7.2,8.6,2.0,445,20,13,1.6,0.4,6.5,South side monitoring
+2024-01-01 06:00:00,Residential Area East,6.5250,3.3810,75,8,22,12,140,18,28,26.5,74,7.4,8.8,1.5,415,8,6,0.8,0.2,3,Residential baseline
+2024-01-01 06:00:00,Control Forest West,6.5200,3.3800,65,6,18,10,120,15,25,26.2,76,7.5,9.0,1.2,400,5,4,0.5,0.1,2,Forest control site
+2024-01-01 09:00:00,Cement Factory North,6.5244,3.3792,125,16,48,28,220,38,58,29.2,65,7.1,8.4,2.3,465,25,16,2.0,0.6,8.5,Production start
+2024-01-01 09:00:00,Cement Factory South,6.5240,3.3790,130,17,50,30,225,40,60,29.4,64,7.0,8.3,2.4,470,27,17,2.1,0.6,9,Higher south readings
+2024-01-01 09:00:00,Residential Area East,6.5250,3.3810,85,10,28,16,160,22,35,28.8,68,7.3,8.7,1.7,425,12,8,1.0,0.3,4,Residential impact
+2024-01-01 09:00:00,Control Forest West,6.5200,3.3800,70,7,20,12,125,16,26,28.5,70,7.4,8.9,1.3,405,6,5,0.6,0.1,2.5,Forest remains stable
+2024-01-01 12:00:00,Cement Factory North,6.5244,3.3792,145,20,55,35,250,45,68,32.1,58,6.9,8.1,2.6,485,32,22,2.5,0.8,10,Peak production
+2024-01-01 12:00:00,Cement Factory South,6.5240,3.3790,150,21,58,38,255,48,72,32.3,57,6.8,8.0,2.7,490,35,24,2.6,0.8,11,Peak south impact
+2024-01-01 12:00:00,Residential Area East,6.5250,3.3810,95,12,32,20,180,26,42,31.5,62,7.2,8.5,1.9,435,15,10,1.2,0.4,5,Midday residential
+2024-01-01 12:00:00,Control Forest West,6.5200,3.3800,75,8,22,14,130,18,28,31.2,64,7.3,8.8,1.4,410,7,6,0.7,0.2,3,Forest midday
+2024-01-01 15:00:00,Cement Factory North,6.5244,3.3792,135,18,52,32,240,42,65,33.8,55,7.0,8.2,2.5,480,30,20,2.3,0.7,9.5,Afternoon production
+2024-01-01 15:00:00,Cement Factory South,6.5240,3.3790,140,19,54,34,245,44,67,34.0,54,6.9,8.1,2.6,485,32,21,2.4,0.7,10,Afternoon south
+2024-01-01 15:00:00,Residential Area East,6.5250,3.3810,90,11,30,18,170,24,38,33.2,58,7.1,8.6,1.8,430,13,9,1.1,0.3,4.5,Afternoon residential
+2024-01-01 15:00:00,Control Forest West,6.5200,3.3800,72,7,21,13,128,17,27,32.8,60,7.2,8.7,1.3,408,6,5,0.6,0.1,2.8,Forest afternoon
+2024-01-01 18:00:00,Cement Factory North,6.5244,3.3792,115,14,45,25,210,35,55,30.5,62,7.1,8.3,2.2,460,22,15,1.8,0.5,7.5,Evening reduction
+2024-01-01 18:00:00,Cement Factory South,6.5240,3.3790,118,15,47,27,215,37,57,30.7,61,7.0,8.2,2.3,465,24,16,1.9,0.5,8,Evening south
+2024-01-01 18:00:00,Residential Area East,6.5250,3.3810,82,9,26,15,155,20,32,30.1,65,7.2,8.6,1.6,420,10,7,0.9,0.2,3.8,Evening residential
+2024-01-01 18:00:00,Control Forest West,6.5200,3.3800,68,6,19,11,122,16,25,29.8,67,7.3,8.8,1.2,402,5,4,0.5,0.1,2.2,Evening forest
+2024-01-02 06:00:00,Cement Factory North,6.5244,3.3792,92,11,36,18,175,26,42,25.9,74,7.3,8.8,1.8,435,16,11,1.3,0.3,5.5,Day 2 morning
+2024-01-02 06:00:00,Cement Factory South,6.5240,3.3790,95,12,38,20,180,28,45,26.1,73,7.2,8.7,1.9,440,18,12,1.4,0.4,6,Day 2 south morning
+2024-01-02 06:00:00,Residential Area East,6.5250,3.3810,73,7,20,10,135,16,26,25.6,76,7.4,8.9,1.4,410,7,5,0.7,0.1,2.8,Day 2 residential
+2024-01-02 06:00:00,Control Forest West,6.5200,3.3800,63,5,16,8,115,13,22,25.3,78,7.5,9.1,1.1,395,4,3,0.4,0.1,1.8,Day 2 forest

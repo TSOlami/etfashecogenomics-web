@@ -1,0 +1,6 @@
+timestamp,location,latitude,longitude,ozone_concentration,carbon_monoxide,nitrogen_dioxide,sulfur_dioxide,total_voc,pm25,pm10,temperature,humidity,ph_level,oxygen_level,turbidity,conductivity,lead_concentration,chromium_concentration,cadmium_concentration,mercury_concentration,arsenic_concentration,notes
+2024-01-01 08:00:00,Factory Site A,6.5244,3.3792,120,15,45,25,200,35,55,28.5,65,7.2,8.5,2.1,450,25,15,2,0.5,8,Morning sample near cement factory
+2024-01-01 12:00:00,Factory Site A,6.5244,3.3792,135,18,52,28,220,42,62,31.2,58,7.1,8.2,2.3,465,28,18,2.2,0.6,9,Midday sample - peak activity
+2024-01-01 16:00:00,Factory Site A,6.5244,3.3792,125,16,48,26,210,38,58,29.8,62,7.2,8.4,2.2,455,26,16,2.1,0.5,8.5,Afternoon sample
+2024-01-01 08:00:00,Control Site B,6.5200,3.3800,80,8,25,15,150,20,35,28.1,68,7.1,8.6,1.8,420,10,8,1,0.2,3,Control site 2km away
+2024-01-01 12:00:00,Control Site B,6.5200,3.3800,85,9,28,16,155,22,38,30.5,64,7.0,8.5,1.9,425,12,9,1.1,0.3,3.5,Control midday reading

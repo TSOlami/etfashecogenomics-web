@@ -1,0 +1,6 @@
+species_name,common_name,location,observation_date,population_count,conservation_status,latitude,longitude,habitat_description,threat_assessment
+Mangifera indica,Mango Tree,Factory Site A,2024-01-01,15,LC,6.5244,3.3792,Urban environment with dust exposure,High - cement dust accumulation on leaves
+Terminalia catappa,Indian Almond,Control Site B,2024-01-01,25,LC,6.5200,3.3800,Natural forest edge,Low - minimal human impact
+Azadirachta indica,Neem Tree,Factory Site A,2024-01-01,8,LC,6.5244,3.3792,Industrial area with air pollution,Medium - visible stress symptoms
+Delonix regia,Flame Tree,Control Site B,2024-01-01,12,LC,6.5200,3.3800,Protected area,Low - healthy population
+Ficus benjamina,Weeping Fig,Factory Site A,2024-01-01,6,LC,6.5244,3.3792,Roadside near factory,High - leaf damage visible
