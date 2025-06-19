@@ -3,20 +3,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.db import IntegrityError
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_http_methods
 import json
 import logging
-import pandas as pd
-import io
-import csv
-from datetime import datetime, timedelta
-import os
-from .models import DataUploadLog, EnvironmentalData, GenomicSample, BiodiversityRecord
 
 # Get logger for this module
 logger = logging.getLogger('dashboard')
@@ -151,8 +143,8 @@ def dashboard_view(request):
         'user': request.user,
         'environmental_data': get_environmental_data(),
         'genomic_data': get_genomic_data(),
-        'heatmap_data': json.dumps(get_heatmap_data()),
-        'chart_data': json.dumps(get_chart_data()),
+        'heatmap_data': get_heatmap_data(),
+        'chart_data': get_chart_data(),
     }
     return render(request, 'dashboard/dashboard.html', context)
 
@@ -164,284 +156,6 @@ def logout_view(request):
     logger.info(f'User {username} logged out')
     messages.success(request, f'You have been successfully logged out. Goodbye, {username}!')
     return redirect('login')
-
-
-@login_required
-@csrf_exempt
-@require_http_methods(["POST"])
-def upload_data(request):
-    """Handle file upload and processing"""
-    try:
-        if 'file' not in request.FILES:
-            return JsonResponse({'error': 'No file provided'}, status=400)
-        
-        uploaded_file = request.FILES['file']
-        file_type = request.POST.get('file_type', 'environmental')
-        
-        # Validate file type
-        if not uploaded_file.name.endswith(('.csv', '.xlsx', '.xls')):
-            return JsonResponse({'error': 'Invalid file type. Please upload CSV or Excel files.'}, status=400)
-        
-        # Create upload log
-        upload_log = DataUploadLog.objects.create(
-            user=request.user,
-            file_name=uploaded_file.name,
-            file_size=uploaded_file.size,
-            processing_status='processing'
-        )
-        
-        # Process the file
-        try:
-            if uploaded_file.name.endswith('.csv'):
-                df = pd.read_csv(uploaded_file)
-            else:
-                df = pd.read_excel(uploaded_file)
-            
-            # Process based on file type
-            records_processed = process_uploaded_data(df, file_type, request.user)
-            
-            # Update upload log
-            upload_log.processing_status = 'completed'
-            upload_log.records_processed = records_processed
-            upload_log.processing_completed = datetime.now()
-            upload_log.save()
-            
-            return JsonResponse({
-                'success': True,
-                'message': f'File processed successfully. {records_processed} records imported.',
-                'records_processed': records_processed
-            })
-            
-        except Exception as e:
-            upload_log.processing_status = 'failed'
-            upload_log.error_message = str(e)
-            upload_log.save()
-            
-            return JsonResponse({'error': f'Error processing file: {str(e)}'}, status=500)
-            
-    except Exception as e:
-        logger.error(f'Upload error: {str(e)}')
-        return JsonResponse({'error': 'Upload failed'}, status=500)
-
-
-def process_uploaded_data(df, file_type, user):
-    """Process uploaded data based on file type"""
-    records_processed = 0
-    
-    if file_type == 'environmental':
-        for _, row in df.iterrows():
-            try:
-                EnvironmentalData.objects.create(
-                    temperature=row.get('temperature', 0),
-                    humidity=row.get('humidity', 0),
-                    ph_level=row.get('ph_level', 7),
-                    oxygen_level=row.get('oxygen_level', 0),
-                    turbidity=row.get('turbidity', 0),
-                    conductivity=row.get('conductivity', 0),
-                    location=row.get('location', ''),
-                    notes=row.get('notes', '')
-                )
-                records_processed += 1
-            except Exception as e:
-                logger.warning(f'Error processing environmental record: {e}')
-                
-    elif file_type == 'genomic':
-        for _, row in df.iterrows():
-            try:
-                GenomicSample.objects.create(
-                    sample_id=row.get('sample_id', ''),
-                    sample_type=row.get('sample_type', 'other'),
-                    location=row.get('location', ''),
-                    species_identified=row.get('species_identified', 0),
-                    genetic_variants=row.get('genetic_variants', 0),
-                    notes=row.get('notes', '')
-                )
-                records_processed += 1
-            except Exception as e:
-                logger.warning(f'Error processing genomic record: {e}')
-                
-    elif file_type == 'biodiversity':
-        for _, row in df.iterrows():
-            try:
-                BiodiversityRecord.objects.create(
-                    species_name=row.get('species_name', ''),
-                    common_name=row.get('common_name', ''),
-                    location=row.get('location', ''),
-                    population_count=row.get('population_count', None),
-                    conservation_status=row.get('conservation_status', 'NE'),
-                    habitat_description=row.get('habitat_description', ''),
-                    threat_assessment=row.get('threat_assessment', ''),
-                    observer=user
-                )
-                records_processed += 1
-            except Exception as e:
-                logger.warning(f'Error processing biodiversity record: {e}')
-    
-    return records_processed
-
-
-@login_required
-def download_template(request, template_type):
-    """Download CSV template for data upload"""
-    templates = {
-        'environmental': {
-            'filename': 'environmental_template.csv',
-            'headers': ['timestamp', 'temperature', 'humidity', 'ph_level', 'oxygen_level', 'turbidity', 'conductivity', 'location', 'notes'],
-            'sample_data': [
-                ['2024-01-01 10:00:00', '23.5', '65', '7.2', '8.5', '2.1', '450', 'Lake Station A', 'Morning sample'],
-                ['2024-01-01 14:00:00', '25.1', '62', '7.1', '8.3', '2.3', '465', 'Lake Station A', 'Afternoon sample']
-            ]
-        },
-        'genomic': {
-            'filename': 'genomic_template.csv',
-            'headers': ['sample_id', 'sample_type', 'collection_date', 'location', 'species_identified', 'genetic_variants', 'notes'],
-            'sample_data': [
-                ['GS001', 'water', '2024-01-01', 'Lake Station A', '15', '234', 'High diversity sample'],
-                ['GS002', 'soil', '2024-01-01', 'Forest Plot B', '23', '456', 'Rich soil microbiome']
-            ]
-        },
-        'biodiversity': {
-            'filename': 'biodiversity_template.csv',
-            'headers': ['species_name', 'common_name', 'location', 'observation_date', 'population_count', 'conservation_status', 'habitat_description', 'threat_assessment'],
-            'sample_data': [
-                ['Quercus alba', 'White Oak', 'Forest Plot A', '2024-01-01', '45', 'LC', 'Mature forest canopy', 'Low threat level'],
-                ['Rana pipiens', 'Northern Leopard Frog', 'Wetland Area C', '2024-01-01', '12', 'NT', 'Shallow pond edge', 'Habitat degradation concern']
-            ]
-        }
-    }
-    
-    if template_type not in templates:
-        return JsonResponse({'error': 'Invalid template type'}, status=400)
-    
-    template = templates[template_type]
-    
-    # Create CSV response
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = f'attachment; filename="{template["filename"]}"'
-    
-    writer = csv.writer(response)
-    writer.writerow(template['headers'])
-    for row in template['sample_data']:
-        writer.writerow(row)
-    
-    return response
-
-
-@login_required
-@csrf_exempt
-def run_analysis(request):
-    """Run statistical analysis on data"""
-    try:
-        data = json.loads(request.body)
-        dataset = data.get('dataset', 'environmental')
-        analysis_type = data.get('analysis_type', 'descriptive')
-        
-        # Mock analysis results (replace with actual analysis)
-        results = perform_statistical_analysis(dataset, analysis_type)
-        
-        return JsonResponse({
-            'success': True,
-            'results': results
-        })
-        
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
-
-
-@login_required
-@csrf_exempt
-def generate_visualization(request):
-    """Generate data visualization"""
-    try:
-        data = json.loads(request.body)
-        chart_type = data.get('chart_type', 'scatter')
-        variables = data.get('variables', [])
-        
-        # Mock visualization data (replace with actual chart generation)
-        chart_data = create_visualization_data(chart_type, variables)
-        
-        return JsonResponse({
-            'success': True,
-            'chart_data': chart_data
-        })
-        
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
-
-
-@login_required
-@csrf_exempt
-def generate_report(request):
-    """Generate and download report"""
-    try:
-        data = json.loads(request.body)
-        report_type = data.get('report_type', 'comprehensive')
-        output_format = data.get('output_format', 'pdf')
-        
-        # Mock report generation (replace with actual report creation)
-        report_data = create_report(report_type, output_format)
-        
-        return JsonResponse({
-            'success': True,
-            'download_url': f'/reports/{report_data["filename"]}',
-            'message': 'Report generated successfully'
-        })
-        
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
-
-
-# Helper functions for mock data and analysis
-def perform_statistical_analysis(dataset, analysis_type):
-    """Perform statistical analysis (mock implementation)"""
-    results = {
-        'descriptive': {
-            'mean': 23.45,
-            'median': 22.80,
-            'std': 4.12,
-            'min': 18.20,
-            'max': 31.70,
-            'count': 1234
-        },
-        'correlation': {
-            'correlations': [
-                {'variables': 'Temperature vs Humidity', 'r': -0.65, 'p_value': 0.001},
-                {'variables': 'pH vs Oxygen', 'r': 0.42, 'p_value': 0.01}
-            ]
-        },
-        'ttest': {
-            'statistic': 3.45,
-            'p_value': 0.0012,
-            'effect_size': 0.82
-        }
-    }
-    
-    return results.get(analysis_type, {'message': 'Analysis completed'})
-
-
-def create_visualization_data(chart_type, variables):
-    """Create visualization data (mock implementation)"""
-    return {
-        'type': chart_type,
-        'data': {
-            'labels': ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-            'datasets': [{
-                'label': 'Sample Data',
-                'data': [12, 19, 3, 5, 2]
-            }]
-        }
-    }
-
-
-def create_report(report_type, output_format):
-    """Create report (mock implementation)"""
-    filename = f"{report_type}_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.{output_format}"
-    
-    return {
-        'filename': filename,
-        'size': '2.3 MB',
-        'pages': 15
-    }
 
 
 # Data functions (hardcoded for demo purposes)
@@ -538,7 +252,7 @@ def get_chart_data():
     }
 
 
-# API endpoints for AJAX requests
+# API endpoints for AJAX requests (future use)
 @login_required
 def api_environmental_data(request):
     """API endpoint for environmental data"""
