@@ -1,0 +1,19 @@
+# Windows-friendly minimal requirements
+Django==4.2.7
+python-dotenv==1.0.0
+whitenoise==6.5.0
+
+# Data processing (essential)
+pandas
+openpyxl
+
+# Optional: Install these if you have Visual Studio Build Tools
+# scikit-learn
+# matplotlib
+# seaborn
+# plotly
+# reportlab
+
+# Note: For full functionality, install Anaconda/Miniconda and use:
+# conda install pandas numpy scipy scikit-learn matplotlib seaborn plotly
+# pip install Django python-dotenv whitenoise openpyxl reportlab
